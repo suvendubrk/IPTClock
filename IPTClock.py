@@ -1,13 +1,32 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#########################
+# IPTClock, a graphical countdown clock for use with the
+# international physicist's tournament
+#
+# This clock is written for python3 but should work i a crippled state for python 2
+# Still, python 3 is the future...
+#
+##########################
+
+
+
 # check tkversion
 
-# Import packages
+# Import packages, and check for python version
 import sys
 if sys.version_info[0] < 3:
     import Tkinter as tk
+    usePython3 =False
+    print('You are using a Python version < 3 !! \n Functionality crippled!\n ')
 else:
     import tkinter as tk
+    import _thread #in order to utilize threads # the threading that is used is written for python 3
+    usePython3 = True
 
-import _thread #in order to utilize threads
+    
+
     
 #import tkfont #to change font 
 
@@ -31,13 +50,14 @@ for module in modules:
         print('No Matplotlib installed!!! \n Functionality crippled! ')
 
 ######################################################
-import matplotlib as mplotlib
-mplotlib.use('TkAgg')	
-installedMatplotlib = True
-import matplotlib.patches as mpatches
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+#import matplotlib as mplotlib
+#mplotlib.use('TkAgg')	
+#installedMatplotlib = True
+#import matplotlib.patches as mpatches
+#import matplotlib.pyplot as plt
+#from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 #########################################################
+
 # check if we use audio or not (.wave format)
 try:
     import pyaudio
@@ -56,17 +76,20 @@ if (installedPyaudio):
 ####### global variables of use, to change each IPT year ##################
 
 presentationText = "IPT 2017 Göteborg" # should be string, text that shows at start
-
-## To be introduced...:
-# defaultFont = # string deciding the standard font
-# defaultFontSize =  # integer, fontsize of text
 defaultBackgroundColor = None #'blue'    # String, following tkinter naming. color used for background, buttons and labels etc. NOT color behind wedge, use "None" without "" to get system default
 wedgeBackgroundColor = None # '#13235b' #String, following matplotlib naming.  color of the wedge background (for example to adhere to present year's color scheme
 wedgeColor = '#ffe000' # String, following matplotlib naming. color of the wedge (for example to adhere to present year's color scheme
 #leftSponsImagePath = './Albin-300x286.gif'
 leftSponsImagePath = './ponyAndDuck.gif'
 
-pathToSoundFile = ''#'allahu.wav' #'SaleelSawarimNasheed.wav' # If left empty nothing happens
+pathToSoundFile = './theDuckSong2.wav'#'allahu.wav' #'SaleelSawarimNasheed.wav' # If left empty nothing happens
+
+
+## To be introduced...:
+# defaultFont = # string deciding the standard font
+# defaultFontSize =  # integer, fontsize of text
+
+
 
 
  
@@ -90,7 +113,7 @@ def update_countdown():
         update_angle()
         
         # check for countdown time for activating "low health mode"
-        if ( countdownTime == 55):
+        if ( countdownTime == 55  ):
             _thread.start_new_thread(PlayASoundFile, (pathToSoundFile,) )
 
         
@@ -248,7 +271,7 @@ def PlayASoundFile(pathToSoundFile):
 
     
 
-#### DEFINITION OF STAGES ###############
+####### DEFINITION OF STAGES ############### (Yeah ugly, I know...)
             
 def SetCountdownStage(countdownStartTimeInput):
     global countdownState, countdownStartTime, countdownTime
@@ -267,11 +290,12 @@ def SetCountdownStage(countdownStartTimeInput):
     currentAngle=90
     DrawWedgeOnCanvas(currentAngle)
 
+
 def SetStage1():
     titleText = "The Opponent Challenges the Reporter"
     countdownStartTime = 1*60 # time in seconds
     SetCountdownStage(countdownStartTime) # make the time adjustment
-    presentationTextLabel.configure(text=titleText)
+    presentationTextLabel.configure(text=titleText) # update text presenting stage
 
 def SetStage2():
     titleText = "The Reporter accepts or rejects the challenge"
@@ -373,10 +397,12 @@ def SetStage16():
     
 countdownState = False # set start state of timer to false.    
 countdownStartTime = 10 # initialise
-### Start of GUI part ###
+
+
+############# Start of GUI part ### #####################
 master = tk.Tk() #define master tk object
 
-#countdownStartTime = 10 #### TestTime
+
 countdownTime = countdownStartTime
 pattern = '{0:02d}:{1:02d}' # the pattern format for the timer to ensure 2 digits
 
@@ -501,7 +527,7 @@ filemenu.add_separator()
 filemenu.add_command(label="Exit", command=_quit)
 menubar.add_cascade(label="File", menu=filemenu)
 
-
+# drop down menu to chose stage, each command should correspond to corresponding definition defined earlier.
 stagemenu = tk.Menu(menubar, tearoff=0)
 stagemenu.add_command(label="1:The Opponent Challenges the Reporter", command=SetStage1 )
 stagemenu.add_command(label="2:The Reporter accepts or rejects the challenge", command=SetStage2 )
@@ -525,7 +551,6 @@ menubar.add_cascade(label="Stage", menu=stagemenu)
 master.config(menu=menubar)
 
 ############################
-
 
 
 
