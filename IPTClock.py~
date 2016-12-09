@@ -33,7 +33,7 @@ from tkinter import messagebox
 #Check for matplotlib and import ELSE DOESN'T DRAW GRAPHICS
 modules = set(["matplotlib"])
 for module in modules:
-#    try:
+    try:
         __import__(module)
         # imports the matplotlib and set variable installedMatplotlib
         installedMatplotlib = True
@@ -45,11 +45,18 @@ for module in modules:
         import matplotlib.pyplot as plt
         from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 
-#    except ImportError:
-#        installedMatplotlib = False
-#        print('No Matplotlib installed!!! \n Functionality crippled! ')
+    except ImportError:
+        installedMatplotlib = False
+        print('No Matplotlib installed!!! \n Functionality crippled! ')
 
-
+######################################################
+#import matplotlib as mplotlib
+#mplotlib.use('TkAgg')	
+#installedMatplotlib = True
+#import matplotlib.patches as mpatches
+#import matplotlib.pyplot as plt
+#from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+#########################################################
 
 # check if we use audio or not (.wave format)
 try:
@@ -70,8 +77,7 @@ if (installedPyaudio):
 
 presentationText = "IPT 2017 Göteborg" # should be string, text that shows at start
 defaultBackgroundColor = None #'blue'    # String, following tkinter naming. color used for background, buttons and labels etc. NOT color behind wedge, use "None" without "" to get system default
-wedgeBackgroundColor = None # '#13235b' #String, following matplotlib naming.  color of the wedge background (for example to adhere to present year's color scheme. None defaults to Tkinter color from defaultBackgroundColor
-
+wedgeBackgroundColor = None # '#13235b' #String, following matplotlib naming.  color of the wedge background (for example to adhere to present year's color scheme
 wedgeColor = '#ffe000' # String, following matplotlib naming. color of the wedge (for example to adhere to present year's color scheme
 #leftSponsImagePath = './Albin-300x286.gif'
 leftSponsImagePath = './ponyAndDuck.gif'
@@ -194,51 +200,48 @@ def on_closing():
 # canvas for drawing wedge
 ##############################
 def DrawWedgeOnCanvas(currentAngle):
-        if (installedMatplotlib): # doesn't draw the wedge in case no matplotlib dependencies
-                global  wedgeBackgroundColor, wedgeColor, globalFirstRun, wedgeCanvas, wedgeAx
+    if (installedMatplotlib): # doesn't draw the wedge in case no matplotlib dependencies
+        global  wedgeBackgroundColor, wedgeColor, globalFirstRun
         
-                startPos =[0,0]
-                startAngle = 90
-                R = 0.9
+        startPos =[0,0]
+        startAngle = 90
+        R = 0.9
         
-                if( globalFirstRun): # to avoid redrawing/creating the figure each time
-                        wedgeFig = plt.figure(figsize=(16,16), edgecolor=None, facecolor=wedgeBackgroundColor)  #figsize is used to make sure the countdown wedge is large enough. If you find it to small, increase the figsize.
-                        wedgeFig.patch.set_alpha(0.5)
-                        wedgeAx = wedgeFig.add_subplot(111)
-                        wedgeAx.set_axis_bgcolor(None)
+        
+		if (globalFirstRun):
+			fig = plt.figure(figsize=(16,16), facecolor=wedgeBackgroundColor) # figsize is used to make sure the countdown wedge is large enough. If you find it to small, increase the figsize.
+			ax = fig.add_subplot(111)
+			globalFirstRun=False
 
-                wedge=mpatches.Wedge(startPos, R, currentAngle, startAngle, facecolor=wedgeColor)
+		wedge=mpatches.Wedge(startPos, R, currentAngle, startAngle, facecolor=wedgeColor)
 
         
-                #adds circle at along perimeter
-                perimeterCircle=mpatches.Circle(startPos, R, fill=False)
-                wedgeAx.add_patch(perimeterCircle)
+        #adds circle at along perimeter
+        perimeterCircle=mpatches.Circle(startPos, R, fill=False)
+        ax.add_patch(perimeterCircle)
     
-                wedgeAx.add_patch(wedge) # add wedge
-                wedgeAx.set_xlim(-1,1)
-                wedgeAx.set_ylim(-1,1)
+        ax.add_patch(wedge) # add wedge
+        ax.set_xlim(-1,1)
+        ax.set_ylim(-1,1)
 
 
-                #remove axis and ticks
-                plt.tick_params(
-                        axis='both',       # changes apply to both axis
-                        which='both',      # both major and minor ticks are affected
-                        bottom='off',      # ticks along the bottom edge are off
-                        top='off',         # ticks along the top edge are off
-                        labelbottom='off', # labels along the bottom edge are off
-                        labelleft='off')   # labels to the left
+        #remove axis and ticks
+        plt.tick_params(
+            axis='both',       # changes apply to both axis
+            which='both',      # both major and minor ticks are affected
+            bottom='off',      # ticks along the bottom edge are off
+            top='off',         # ticks along the top edge are off
+            labelbottom='off', # labels along the bottom edge are off
+            labelleft='off')   # labels to the left
 
-                plt.axis('equal')     # equal axis 
-                plt.axis('off')       # removes axis from figure
+        plt.axis('equal')     # equal axis 
+        plt.axis('off')       # removes axis from figure
 
 
-                if(globalFirstRun):
-                        wedgeCanvas = FigureCanvasTkAgg(wedgeFig, master=master)
-                        wedgeCanvas.show()
-                        wedgeCanvas.get_tk_widget().grid(row=0, column =2, columnspan=3, rowspan= 3, sticky=tk.N)
-                        globalFirstRun=False
+        canvas2 = FigureCanvasTkAgg(fig, master=master)
+        canvas2.show()
+        canvas2.get_tk_widget().grid(row=0, column =2, columnspan=3, rowspan= 3, sticky=tk.N)
 
-                wedgeCanvas.draw()
 
 ######### For playing sound ##########
 def PlayASoundFile(pathToSoundFile):
@@ -409,7 +412,6 @@ countdownStartTime = 10 # initialise
 master = tk.Tk() #define master tk object
 
 
-
 countdownTime = countdownStartTime
 pattern = '{0:02d}:{1:02d}' # the pattern format for the timer to ensure 2 digits
 
@@ -417,14 +419,6 @@ pattern = '{0:02d}:{1:02d}' # the pattern format for the timer to ensure 2 digit
 # set the background color, given from variable at start
 master.configure(background=defaultBackgroundColor)
 
-
-#Find default background color and check in case we use it
-defaultbgColor = master.cget('bg') # find system window default color
-rgb=master.winfo_rgb(defaultbgColor)
-rgb = (rgb[0]/(256**2), rgb[1]/(256**2), rgb[2]/(256**2))
-
-if( wedgeBackgroundColor is None):
-        wedgeBackgroundColor = rgb
 
 ##########################
 ### Sponsor image to left (thought of as a combined image, preferable in .gif format else use ImageTk
