@@ -203,7 +203,7 @@ def DrawWedgeOnCanvas(currentAngle):
         
                 if( globalFirstRun): # to avoid redrawing/creating the figure each time
                         wedgeFig = plt.figure(figsize=(16,16), edgecolor=None, facecolor=wedgeBackgroundColor)  #figsize is used to make sure the countdown wedge is large enough. If you find it to small, increase the figsize.
-                        wedgeFig.patch.set_alpha(0.5)
+                        #wedgeFig.patch.set_alpha(0.5)
                         wedgeAx = wedgeFig.add_subplot(111)
                         wedgeAx.set_axis_bgcolor(None)
 
