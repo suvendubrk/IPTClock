@@ -284,6 +284,33 @@ def PlayASoundFile(pathToSoundFile):
 ########################
 # Definition of Stages #
 ########################
+# Stage description and time in seconds
+stages = [("The Opponent Challenges the Reporter", 1*60),
+          ("The Reporter accepts or rejects the challenge", 2*60),
+          ("Preparation of the Reporter", 5*60),
+          ("Presentation of the report", 10*60),
+          ("Questions from the opponent", 2*60),
+          ("Preparation for the opponent", 3*60),
+          ("The opponent's speech", 5*60),
+          ("Discussion between the reporter and opponent", 5*60),
+          ("Questions from the reviewer", 2*60),
+          ("Preparation for the reviewer", 1*60),
+          ("The reviewer's speech", 3*60),
+          ("Discussion on stage", 4*60),
+          ("General discussion between the teams", 5*60),
+          ("Concluding remarks of the reporter", 1*60),
+          ("Questions of the jury", 6*60),
+          ("Putting marks", 1*60),
+          ("Jury remarks", 4*60)]
+
+
+def SetStage(stageNumber):
+    titleText = stages[stageNumber][0]
+    countdownStartTime = stages[stageNumber][1]
+    SetCountdownStage(countdownStartTime)  # make the time adjustment
+    presentationTextLabel.configure(text=titleText)  # update text presenting stage
+
+
 def SetCountdownStage(countdownStartTimeInput):
     global countdownState, countdownStartTime, countdownTime
     countdownState = False  # Reassuring
@@ -299,125 +326,6 @@ def SetCountdownStage(countdownStartTimeInput):
     
     # update the wedge on canvas
     ResetCountdown()
-
-
-def SetStage1():
-    titleText = "The Opponent Challenges the Reporter"
-    countdownStartTime = 1*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage2():
-    titleText = "The Reporter accepts or rejects the challenge"
-    countdownStartTime = 2*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage3():
-    titleText = "Preparation of the Reporter"
-    countdownStartTime = 5*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage3():
-    titleText = "Presentation of the report"
-    countdownStartTime = 10*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage4():
-    titleText = "Questions from the opponent"
-    countdownStartTime = 2*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage5():
-    titleText = "Preparation for the opponent"
-    countdownStartTime = 3*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage6():
-    titleText = "The opponent's speech"
-    countdownStartTime = 5*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage7():
-    titleText = "Discussion between the reporter and opponent"
-    countdownStartTime = 5*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage8():
-    titleText = "Questions from the reviewer"
-    countdownStartTime = 2*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage9():
-    titleText = "Preparation for the reviewer"
-    countdownStartTime = 1*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage10():
-    titleText = "The reviewer's speech"
-    countdownStartTime = 3*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage11():
-    titleText = "Discussion on stage"
-    countdownStartTime = 4*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage12():
-    titleText = "General discussion between the teams"
-    countdownStartTime = 5*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage13():
-    titleText = "Concluding remarks of the reporter"
-    countdownStartTime = 1*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage14():
-    titleText = "Questions of the jury"
-    countdownStartTime = 6*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage15():
-    titleText = "Putting marks"
-    countdownStartTime = 1*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-
-
-def SetStage16():
-    titleText = "Jury remarks"
-    countdownStartTime = 4*60  # time in seconds
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
 
 
 countdownState = False  # set start state of timer to false.
@@ -583,27 +491,13 @@ filemenu.add_separator()
 filemenu.add_command(label="Exit", command=_quit)
 menubar.add_cascade(label="File", menu=filemenu)
 
-# drop down menu to chose stage, each command should correspond to corresponding definition defined earlier.
+# drop down menu to chose stage
 stagemenu = tk.Menu(menubar, tearoff=0)
-stagemenu.add_command(label="1:The Opponent Challenges the Reporter", command=SetStage1)
-stagemenu.add_command(label="2:The Reporter accepts or rejects the challenge", command=SetStage2)
-stagemenu.add_command(label="3:Preparation of the Reporter", command=SetStage3)
-stagemenu.add_command(label="4:Questions from the opponent", command=SetStage4)
-stagemenu.add_command(label="5:Preparation for the opponent", command=SetStage5)
-stagemenu.add_command(label="6:The opponent's speech", command=SetStage6)
-stagemenu.add_command(label="7:Discussion between the reporter and opponent", command=SetStage7)
-stagemenu.add_command(label="8:Questions from the reviewer", command=SetStage8)
-stagemenu.add_command(label="9:Preparation for the reviewer", command=SetStage9)
-stagemenu.add_command(label="10:The reviewer's speech", command=SetStage10)
-stagemenu.add_command(label="11:Discussion on stage", command=SetStage11)
-stagemenu.add_command(label="12:General discussion between the teams", command=SetStage12)
-stagemenu.add_command(label="13:Concluding remarks of the reporter", command=SetStage13)
-stagemenu.add_command(label="14:Questions of the jury", command=SetStage14)
-stagemenu.add_command(label="15:Putting marks", command=SetStage15)
-stagemenu.add_command(label="16:Jury remarks", command=SetStage16)
+for stageNumber in range(len(stages)):
+    stagemenu.add_command(label=str(stageNumber+1) + ":" + stages[stageNumber][0],
+                          command=lambda stageNumber=stageNumber: SetStage(stageNumber))
 
 menubar.add_cascade(label="Stage", menu=stagemenu)
-
 master.config(menu=menubar)
 
 
