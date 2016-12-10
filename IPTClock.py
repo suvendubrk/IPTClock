@@ -5,15 +5,13 @@
 # IPTClock, a graphical countdown clock for use with the
 # international physicist's tournament
 #
-# This clock is written for python3 but should work i a crippled state for python 2
-# Still, python 3 is the future...
+# Written in python 3, will exit for lower verions
 #
 ##########################
 
 
 
 # check tkversion
-
 # Import packages, and check for python version
 import sys
 if sys.version_info[0] < 3:
@@ -26,29 +24,18 @@ else:
 
 from tkinter import messagebox
 	
-
     
-#import tkfont #to change font 
+#import tkfont #to change font #NOT IMPLEMENTED
 
-#Check for matplotlib and import ELSE DOESN'T DRAW GRAPHICS
-modules = set(["matplotlib"])
-for module in modules:
-#    try:
-        __import__(module)
-        # imports the matplotlib and set variable installedMatplotlib
-        installedMatplotlib = True
+# imports the matplotlib and set variable installedMatplotlib
+installedMatplotlib = True
         
-        import matplotlib as mplotlib
-        mplotlib.use('TkAgg')
+import matplotlib as mpl
+mpl.use('TkAgg')
 
-        import matplotlib.patches as mpatches
-        import matplotlib.pyplot as plt
-        from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
-
-#    except ImportError:
-#        installedMatplotlib = False
-#        print('No Matplotlib installed!!! \n Functionality crippled! ')
-
+import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 
 
 # check if we use audio or not (.wave format)
@@ -98,7 +85,8 @@ def update_countdown():
     
         
     if (countdownTime <= 0 ):
-        countdownState = False
+        wedge.set_facecolor('red') # change background disc color when countdown becomes negative
+        backgroundDisc.set_facecolor(wedgeColor)
 
     if (countdownState):
         countdownTime -= 1
@@ -120,12 +108,18 @@ def update_countdownText():
     if (countdownState):
         global countdownTime #variable containing seconds left
              
-          
         # create string for countdownTimer
-        timerSeconds = countdownTime % 60
-        timerMinutes = countdownTime // 60
+        timerSeconds = abs(countdownTime) % 60
+        timerMinutes = abs(countdownTime) // 60
         
-        timeString = pattern.format(timerMinutes, timerSeconds)
+        # fixes the countdown clock when deadline is passed
+        if( countdownTime <0 ):
+                if (timerMinutes > 0):
+                        timeString = pattern.format(-timerMinutes, timerSeconds)
+                else:
+                        timeString = pattern.format(timerMinutes, -timerSeconds)
+        else:
+                timeString = pattern.format(timerMinutes, timerSeconds)
         # Update the countdownText Label with the updated time
         countdownText.configure(text=timeString)
         
@@ -141,8 +135,8 @@ def update_angle():
          #angle starts at 90 then negative direction clockwise
          angle = 90 - 360*( (countdownStartTime-countdownTime) /countdownStartTime )
          currentAngle = angle
-         DrawWedgeOnCanvas(currentAngle )
-
+         update_wedgeAx(wedgeAx, currentAngle)
+         updateWedgeCanvas(wedgeCanvas) # call tkinter to redraw the canvas
 
 
 ##### the commands for the buttons #####
@@ -160,9 +154,10 @@ def PausCountdown():
 
 # To reset the countdown to startTime
 def ResetCountdown():
-    global countdownTime, countdownStartTime
+    global countdownTime, countdownStartTime, countdownState
     countdownTime = countdownStartTime 
-
+    countdownState = False
+    
     # create string for countdownTimer
     timerSeconds = countdownTime % 60
     timerMinutes = countdownTime // 60
@@ -173,74 +168,73 @@ def ResetCountdown():
 
     #update the wedge on canvas
     currentAngle=90
-    DrawWedgeOnCanvas(currentAngle)
-
+    wedge.set_facecolor(wedgeColor)
+    backgroundDisc.set_facecolor(wedgeBackgroundColor)
+    update_wedgeAx(wedgeAx, currentAngle)
+    updateWedgeCanvas(wedgeCanvas) # call tkinter to redraw the canvas
 
 # emphesise quit()
 def _quit():
-	#master.destroy()  # this is necessary on Windows to prevent	
-					  # Fatal Python Error: PyEval_RestoreThread: NULL tstate
-	#master.quit()     # stops mainloop
-	sys.exit(0)
+	sys.exit(0) # shuts down entire python script
 
 def on_closing():
 	if messagebox.askokcancel("Quit", "Do you want to quit?"):
 		sys.exit(0)
-        #master.destroy()
-		
+
 
 	
-###############################
-# canvas for drawing wedge
-##############################
-def DrawWedgeOnCanvas(currentAngle):
-        if (installedMatplotlib): # doesn't draw the wedge in case no matplotlib dependencies
-                global  wedgeBackgroundColor, wedgeColor, globalFirstRun, wedgeCanvas, wedgeAx
+
+##########################################################################
+################## Functions for controlling matplotlib ###################
+##########################################################################
+def initialize_figure(wedgeBackgroundColor):
+    # figsize is used to make sure the countdown wedge is large enough. If you find it to small, increase the figsize.
+    wedgeFig = plt.figure(figsize=(16, 16), edgecolor=None, facecolor=wedgeBackgroundColor)
+    wedgeAx = wedgeFig.add_subplot(111)
+    wedgeCanvas = FigureCanvasTkAgg(wedgeFig, master=master)
+    wedgeCanvas.show()
+    wedgeCanvas.get_tk_widget().grid(row=0, column =2, columnspan=3, rowspan= 3, sticky=tk.N)
+    return wedgeFig, wedgeAx, wedgeCanvas
+
+def set_wedgeAx_settings(wedgeAx):
+    wedgeAx.set_axis_bgcolor(None)
+    wedgeAx.set_xlim(-1, 1)
+    wedgeAx.set_ylim(-1, 1)
+
+    wedgeAx.set_aspect(1)   # similar to "axis('equal')", but better.
+    wedgeAx.axis('off')     # makes axis borders etc invisible. Comment out the current line if you want to compare set_aspect to axis('equal')
+
+def initialize_wedge(wedgeAx, wedgeColor, zOrder):
+    # simply creates a wedge and return handle
+    startPos = [0, 0]
+    startAngle = 90
+    R = 0.9
+
+    wedge = mpl.patches.Wedge(startPos, R, startAngle, startAngle, facecolor=wedgeColor, zorder=zOrder)
+    wedgeAx.add_patch(wedge)
+    return wedge
+
+def initialize_circle(wedgeAx, filledCircle, zOrder, circleColor):
+        #simply creates a circle or disc and returns handle
+        startPos = [0, 0]
+        R = 0.9
+        perimeterCircle = mpl.patches.Circle(startPos, R, fill=filledCircle, zorder=zOrder, facecolor= circleColor)
+        wedgeAx.add_patch(perimeterCircle)
+        return  perimeterCircle
+
         
-                startPos =[0,0]
-                startAngle = 90
-                R = 0.9
-        
-                if( globalFirstRun): # to avoid redrawing/creating the figure each time
-                        wedgeFig = plt.figure(figsize=(16,16), edgecolor=None, facecolor=wedgeBackgroundColor)  #figsize is used to make sure the countdown wedge is large enough. If you find it to small, increase the figsize.
-                        #wedgeFig.patch.set_alpha(0.5)
-                        wedgeAx = wedgeFig.add_subplot(111)
-                        wedgeAx.set_axis_bgcolor(None)
+def update_wedgeAx(wedgeAx, currentAngle):
+    # updates the wedges in wedgeAx with respect to angle
+    wedges = [patch for patch in wedgeAx.patches if isinstance(patch, mpl.patches.Wedge)]
+    wedge = wedges[-1]
+    wedge.set_theta1(currentAngle)
 
-                wedge=mpatches.Wedge(startPos, R, currentAngle, startAngle, facecolor=wedgeColor)
+def updateWedgeCanvas(wedgeCanvas):
+        #Tkinter need to redraw the canvas to actually show the new updated matplotlib figure
+        wedgeCanvas.draw()
 
-        
-                #adds circle at along perimeter
-                perimeterCircle=mpatches.Circle(startPos, R, fill=False)
-                wedgeAx.add_patch(perimeterCircle)
-    
-                wedgeAx.add_patch(wedge) # add wedge
-                wedgeAx.set_xlim(-1,1)
-                wedgeAx.set_ylim(-1,1)
-
-
-                #remove axis and ticks
-                plt.tick_params(
-                        axis='both',       # changes apply to both axis
-                        which='both',      # both major and minor ticks are affected
-                        bottom='off',      # ticks along the bottom edge are off
-                        top='off',         # ticks along the top edge are off
-                        labelbottom='off', # labels along the bottom edge are off
-                        labelleft='off')   # labels to the left
-
-                plt.axis('equal')     # equal axis 
-                plt.axis('off')       # removes axis from figure
-
-
-                if(globalFirstRun):
-                        wedgeCanvas = FigureCanvasTkAgg(wedgeFig, master=master)
-                        wedgeCanvas.show()
-                        wedgeCanvas.get_tk_widget().grid(row=0, column =2, columnspan=3, rowspan= 3, sticky=tk.N)
-                        globalFirstRun=False
-
-                wedgeCanvas.draw()
-
-######### For playing sound ##########
+                        
+######################## For playing sound ###################
 def PlayASoundFile(pathToSoundFile):
     CHUNK = 64#1024
     wf = wave.open(pathToSoundFile, 'rb')
@@ -277,7 +271,7 @@ def PlayASoundFile(pathToSoundFile):
 
     
 
-####### DEFINITION OF STAGES ############### (Yeah ugly, I know...)
+################### DEFINITION OF STAGES ############### (Yeah ugly, I know...)
             
 def SetCountdownStage(countdownStartTimeInput):
     global countdownState, countdownStartTime, countdownTime
@@ -293,8 +287,7 @@ def SetCountdownStage(countdownStartTimeInput):
     challengeTimeLabel.configure(text=timeString)
     
     #update the wedge on canvas
-    currentAngle=90
-    DrawWedgeOnCanvas(currentAngle)
+    ResetCountdown()
 
 
 def SetStage1():
@@ -404,10 +397,10 @@ def SetStage16():
 countdownState = False # set start state of timer to false.    
 countdownStartTime = 10 # initialise
 
-
+#########################################################
 ############# Start of GUI part ### #####################
+########################################################
 master = tk.Tk() #define master tk object
-
 
 
 countdownTime = countdownStartTime
@@ -420,11 +413,11 @@ master.configure(background=defaultBackgroundColor)
 
 #Find default background color and check in case we use it
 defaultbgColor = master.cget('bg') # find system window default color
-rgb=master.winfo_rgb(defaultbgColor)
-rgb = (rgb[0]/(256**2), rgb[1]/(256**2), rgb[2]/(256**2))
+bgRGB=master.winfo_rgb(defaultbgColor)
+bgRGB = (bgRGB[0]/(256**2), bgRGB[1]/(256**2), bgRGB[2]/(256**2))
 
 if( wedgeBackgroundColor is None):
-        wedgeBackgroundColor = rgb
+        wedgeBackgroundColor = bgRGB
 
 ##########################
 ### Sponsor image to left (thought of as a combined image, preferable in .gif format else use ImageTk
@@ -441,17 +434,18 @@ reporterLabel = tk.Label( master, text= "Reporter",font=('Courier New',16))
 reporterLabel.grid(row=6,column=0)
 reporterLabel.configure(background=defaultBackgroundColor)
 
-repStringv = tk.StringVar()
-#reporterEntry = tk.Entry( master, bd=5, stringvariable=repStringv, font=('Courier New',16))
-#reporterEntry.grid( row=6,column=1)
-#reporterEntry.configure(background=defaultBackgroundColor)
+reporterStringVar = tk.StringVar()
+reporterEntry = tk.Entry( master, bd=5, width=24 ,textvariable = reporterStringVar, font=('Courier New',16))
+reporterEntry.grid( row=6,column=1)
+reporterEntry.configure(background=defaultBackgroundColor)
 
 #Opponent
 opponentLabel = tk.Label( master, text= "Opponent",font=('Courier New',16))
 opponentLabel.grid(row=7,column=0)
 opponentLabel.configure(background=defaultBackgroundColor)
 
-opponentEntry = tk.Entry( master, bd=5, font=('Courier New',16) )
+opponentStringVar = tk.StringVar()
+opponentEntry = tk.Entry( master, bd=5, width=24, textvariable=opponentStringVar, font=('Courier New',16) )
 opponentEntry.grid( row=7,column=1)
 opponentEntry.configure(background=defaultBackgroundColor)
 
@@ -460,22 +454,35 @@ reviewerLabel = tk.Label( master, text= "Reviewer",font=('Courier New',16))
 reviewerLabel.grid(row=8,column=0)
 reviewerLabel.configure(background=defaultBackgroundColor)
 
-reviewerEntry = tk.Entry( master, bd=5, font=('Courier New',16))
+reviewerStringVar = tk.StringVar()
+reviewerEntry = tk.Entry( master, bd=5, width=24, textvariable=reviewerStringVar, font=('Courier New',16))
 reviewerEntry.grid( row=8,column=1 )
 reviewerEntry.configure(background=defaultBackgroundColor)
 
 
 
 
-# Call DrawWedgeOnCanvas first time for initial setup
+# call matplotlib for initial setup
 currentAngle = 90
-if ( installedMatplotlib ): # doesn't draw in case matplotlib isn't installed
-    DrawWedgeOnCanvas(currentAngle)
+
+wedgeFig, wedgeAx, wedgeCanvas = initialize_figure(wedgeBackgroundColor)
+set_wedgeAx_settings(wedgeAx)
+zOrderWedge=2
+wedge = initialize_wedge(wedgeAx,wedgeColor, zOrderWedge)
+
+#background plate
+zOrderCircle=1
+circleFilled = True
+backgroundDisc = initialize_circle(wedgeAx, circleFilled, zOrderCircle, wedgeBackgroundColor)
+#perimiter circle
+zOrderCircle2=3
+circleFilled = False
+perimiterCircle=initialize_circle(wedgeAx, circleFilled,zOrderCircle2, 'black')
+update_wedgeAx(wedgeAx, currentAngle)
     
 #####################
 # frame for bottoms and writing, (at the bottom and right
 ##################
-
 # create string for countdownTimer startTime
 timerSeconds = countdownStartTime % 60
 timerMinutes = countdownStartTime // 60        
@@ -510,8 +517,8 @@ presentationTextLabel = tk.Label(master, text= presentationText, font=('Courier 
 presentationTextLabel.grid(row=4, column=2, columnspan=2)
 presentationTextLabel.configure(background=defaultBackgroundColor)
 
-## Control Buttons ##
 
+##### Control Buttons #####
 #startButton
 startButton = tk.Button(master=master, text='Start', command= StartCountdown )
 startButton.grid(row=5, column=7)
