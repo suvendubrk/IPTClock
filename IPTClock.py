@@ -88,9 +88,14 @@ def update_countdown():
     # Every time this function is called, 
     # decrease countdownTime with one second
 
-    if countdownTime <= 0:
+    if countdownTime == 0:
         wedge.set_facecolor('red')  # change background disc color when countdown becomes negative
         backgroundDisc.set_facecolor(wedgeColor)
+    elif countdownTime < 0 and countdownTime%countdownStartTime == 0:
+        wColor = wedge.get_facecolor()
+        bColor = backgroundDisc.get_facecolor()
+        wedge.set_facecolor(bColor)
+        backgroundDisc.set_facecolor(wColor)
 
     if countdownState:
         countdownTime -= 1
@@ -100,7 +105,7 @@ def update_countdown():
         
         # check for countdown time for activating "low health mode"
         if countdownTime == 55:
-            _thread.start_new_thread(PlayASoundFile, (pathToSoundFile,) )
+            _thread.start_new_thread(PlayASoundFile, (pathToSoundFile,))
 
     # Call the update_countdown() function after 1 second
     master.after(1000, update_countdown)  # wait 1000 [ms]
@@ -137,6 +142,8 @@ def update_angle():
         # angle starts at 90 then negative direction clockwise
         angle = 90 - 360 * ((countdownStartTime-countdownTime)/countdownStartTime)
         currentAngle = angle
+        if countdownTime % countdownStartTime == 0:
+            currentAngle += 0.001
         update_wedgeAx(wedgeAx, currentAngle)
         updateWedgeCanvas(wedgeCanvas)  # call tkinter to redraw the canvas
 
@@ -199,7 +206,7 @@ def initialize_figure(wedgeBackgroundColor):
     wedgeAx = wedgeFig.add_subplot(111)
     wedgeCanvas = FigureCanvasTkAgg(wedgeFig, master=master)
     wedgeCanvas.show()
-    wedgeCanvas.get_tk_widget().grid(row=0, column =2, columnspan=3, rowspan= 3, sticky=tk.N)
+    wedgeCanvas.get_tk_widget().grid(row=0, column=2, columnspan=3, rowspan=3, sticky=tk.N)
     return wedgeFig, wedgeAx, wedgeCanvas
 
 
@@ -234,8 +241,8 @@ def initialize_circle(wedgeAx, filledCircle, zOrder, circleColor):
         
 def update_wedgeAx(wedgeAx, currentAngle):
     # updates the wedges in wedgeAx with respect to angle
-    wedges = [patch for patch in wedgeAx.patches if isinstance(patch, mpl.patches.Wedge)]
-    wedge = wedges[-1]
+    # wedges = [patch for patch in wedgeAx.patches if isinstance(patch, mpl.patches.Wedge)]
+    # wedge = wedges[-1]
     wedge.set_theta1(currentAngle)
 
 
