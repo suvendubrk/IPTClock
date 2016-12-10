@@ -148,7 +148,7 @@ def StartCountdown():
     countdownState = True
 
 # To pause the countdown
-def PausCountdown():
+def PauseCountdown():
     global countdownState
     countdownState = False
 
@@ -525,7 +525,7 @@ startButton.grid(row=5, column=7)
 startButton.configure(background=defaultBackgroundColor)
 
 #PauseButton
-pauseButton = tk.Button(master=master, text='Pause', command= PausCountdown)
+pauseButton = tk.Button(master=master, text='Pause', command= PauseCountdown)
 pauseButton.grid(row=6, column=7)
 pauseButton.configure(background=defaultBackgroundColor)
 
