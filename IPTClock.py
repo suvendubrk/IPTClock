@@ -189,12 +189,43 @@ def ResetCountdown():
 
 # emphasise quit()
 def _quit():
-    sys.exit(0)  # shuts down entire python script
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        sys.exit(0)
+#    sys.exit(0)  # shuts down entire python script
+  
 
 
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
         sys.exit(0)
+
+
+# toggling Fullscreen
+def toogleFullscreen(self):
+    global master, fullscreenButton
+    state = not master.fullscreen
+    master.attributes('-fullscreen', state)
+    master.focus_set()
+    master.fullscreen = state
+ 
+
+def toogleFullscreenButton():
+    global master, fullscreenButton
+    state = not master.fullscreen
+    master.attributes('-fullscreen', state)
+    master.focus_set()
+    master.fullscreen = state
+    if (master.fullscreen):
+        fullscreenButton.configure(text="Windowed")
+    else:
+        fullscreenButton.configure(text="Fullscreen")
+
+  
+def endFullscreen(self):
+    global master
+    master.fullscreen = False
+    master.attributes("-fullscreen", False)
+    master.focus_set()
 
 
 ########################
@@ -206,7 +237,7 @@ def initialize_figure(wedgeBackgroundColor):
     wedgeAx = wedgeFig.add_subplot(111)
     wedgeCanvas = FigureCanvasTkAgg(wedgeFig, master=master)
     wedgeCanvas.show()
-    wedgeCanvas.get_tk_widget().grid(row=0, column=2, columnspan=3, rowspan=3, sticky=tk.N)
+    wedgeCanvas.get_tk_widget().grid(row=3, column=1, columnspan=3, rowspan=1) #, sticky=tk.N)
     return wedgeFig, wedgeAx, wedgeCanvas
 
 
@@ -339,10 +370,16 @@ countdownState = False  # set start state of timer to false.
 countdownStartTime = 10  # initialise
 
 
+
 ###################
 # GUI Definitions #
 ###################
 master = tk.Tk()  # define master tk object
+
+master.fullscreen = False
+master.attributes('-fullscreen', False)
+master.bind("<F11>", toogleFullscreen)
+master.bind("<Escape>", endFullscreen)
 
 countdownTime = countdownStartTime
 pattern = '{0:02d}:{1:02d}'  # the pattern format for the timer to ensure 2 digits
@@ -358,7 +395,13 @@ bgRGB = (bgRGB[0]/(256**2), bgRGB[1]/(256**2), bgRGB[2]/(256**2))
 if wedgeBackgroundColor is None:
         wedgeBackgroundColor = bgRGB
 
-
+# boolean for fullscreen
+master.fullscreen = False
+#master.bind("<F11>", toggle_fullscreen() )
+#master.bind("<Escape>", end_fullscreen() )
+#master.bind("<F11>", master.toggle_fullscreen)
+#master.bind("<Escape>", master.end_fullscreen)        
+        
 #################
 # Sponsor Image #
 #################
@@ -366,7 +409,7 @@ if wedgeBackgroundColor is None:
 sponsImage = tk.PhotoImage(file=leftSponsImagePath)
 
 sponsLabel = tk.Label(master, image=sponsImage)
-sponsLabel.grid(row=0, column=0, columnspan=2, rowspan=2)
+sponsLabel.grid(row=0, column=0, columnspan=1, rowspan=9)
 
 
 ####################
@@ -375,32 +418,32 @@ sponsLabel.grid(row=0, column=0, columnspan=2, rowspan=2)
 # add fields for reporter etc.
 # Reporter
 reporterLabel = tk.Label(master, text="Reporter", font=('Courier New', 16))
-reporterLabel.grid(row=6, column=0)
+reporterLabel.grid(row=10, column=1)
 reporterLabel.configure(background=defaultBackgroundColor)
 
 reporterStringVar = tk.StringVar()
 reporterEntry = tk.Entry(master, bd=5, width=24, textvariable=reporterStringVar, font=('Courier New', 16))
-reporterEntry.grid(row=6, column=1)
+reporterEntry.grid(row=10, column=2)
 reporterEntry.configure(background=defaultBackgroundColor)
 
 # Opponent
 opponentLabel = tk.Label(master, text="Opponent", font=('Courier New', 16))
-opponentLabel.grid(row=7, column=0)
+opponentLabel.grid(row=11, column=1)
 opponentLabel.configure(background=defaultBackgroundColor)
 
 opponentStringVar = tk.StringVar()
 opponentEntry = tk.Entry(master, bd=5, width=24, textvariable=opponentStringVar, font=('Courier New', 16))
-opponentEntry.grid(row=7, column=1)
+opponentEntry.grid(row=11, column=2)
 opponentEntry.configure(background=defaultBackgroundColor)
 
 # Reviewer
 reviewerLabel = tk.Label(master, text="Reviewer", font=('Courier New', 16))
-reviewerLabel.grid(row=8, column=0)
+reviewerLabel.grid(row=12, column=1)
 reviewerLabel.configure(background=defaultBackgroundColor)
 
 reviewerStringVar = tk.StringVar()
 reviewerEntry = tk.Entry(master, bd=5, width=24, textvariable=reviewerStringVar, font=('Courier New', 16))
-reviewerEntry.grid(row=8, column=1)
+reviewerEntry.grid(row=12, column=2)
 reviewerEntry.configure(background=defaultBackgroundColor)
 
 
@@ -437,29 +480,29 @@ timeString = pattern.format(timerMinutes, timerSeconds)
 # Digital clock present time
 # challengeTimeVar = "01:00" # this should be coupled to choice of stage
 challengeTimeVar = timeString
-challengeTimeLabel = tk.Label(master, text=challengeTimeVar, font=('Courier New', 18))
-challengeTimeLabel.grid(row=8, column=3, rowspan=2)
+challengeTimeLabel = tk.Label(master, text=challengeTimeVar, font=('Courier New', 26))
+challengeTimeLabel.grid(row=9, column=1, columnspan=3,rowspan=1)
 challengeTimeLabel.configure(background=defaultBackgroundColor)
 
-challengeTimeTextLabel = tk.Label(master, text="ChallengeTime", font=('Courier New', 18))
-challengeTimeTextLabel.grid(row=6, column=3, rowspan=2)
-challengeTimeTextLabel.configure(background=defaultBackgroundColor)
+#challengeTimeTextLabel = tk.Label(master, text="ChallengeTime", font=('Courier New', 18))
+#challengeTimeTextLabel.grid(row=8, column=4, rowspan=2)
+#challengeTimeTextLabel.configure(background=defaultBackgroundColor)
 
 
 # Digital clock countdown
 digitalCountdownVar = timeString
-countdownText = tk.Label(master, text=digitalCountdownVar, font=('Courier New', 18))
-countdownText.grid(row=8, column=4, rowspan=2)
+countdownText = tk.Label(master, text=digitalCountdownVar, font=('Courier New', 46))
+countdownText.grid(row=2, column=1, columnspan=3)
 countdownText.configure(background=defaultBackgroundColor)
 
-countdownTextLabel = tk.Label(master, text="Countdown", font=('Courier New', 18))
-countdownTextLabel.grid(row=6, column=4, rowspan=2)
-countdownTextLabel.configure(background=defaultBackgroundColor)
+#countdownTextLabel = tk.Label(master, text="Countdown", font=('Courier New', 18))
+#countdownTextLabel.grid(row=1, column=7, rowspan=2)
+#countdownTextLabel.configure(background=defaultBackgroundColor)
 
 
 # Presentation of current phase
-presentationTextLabel = tk.Label(master, text=presentationText, font=('Courier New', 28))
-presentationTextLabel.grid(row=4, column=2, columnspan=2)
+presentationTextLabel = tk.Label(master, text=presentationText, font=('Courier New', 32))
+presentationTextLabel.grid(row=7, column=1, columnspan=3)
 presentationTextLabel.configure(background=defaultBackgroundColor)
 
 
@@ -468,24 +511,28 @@ presentationTextLabel.configure(background=defaultBackgroundColor)
 ###################
 # StartButton
 startButton = tk.Button(master=master, text='Start', command=StartCountdown)
-startButton.grid(row=5, column=7)
+startButton.grid(row=4, column=4, sticky='WE' )
 startButton.configure(background=defaultBackgroundColor)
 
 # PauseButton
 pauseButton = tk.Button(master=master, text='Pause', command=PauseCountdown)
-pauseButton.grid(row=6, column=7)
+pauseButton.grid(row=5, column=4, sticky='WE')
 pauseButton.configure(background=defaultBackgroundColor)
 
 # Reset button
 resetButton = tk.Button(master=master, text='Reset', command=ResetCountdown)
-resetButton.grid(row=6, column=8)
+resetButton.grid(row=10, column=4, sticky='WE')
 resetButton.configure(background=defaultBackgroundColor)
 
 # Quit button
 quitButton = tk.Button(master=master, text='Quit', command=_quit)
-quitButton.grid(row=8, column=8)
+quitButton.grid(row=12, column=4, sticky='WE')
 quitButton.configure(background=defaultBackgroundColor)
 
+# Fullscreen
+fullscreenButton = tk.Button(master=master, text='Fullscreen', command= toogleFullscreenButton)
+fullscreenButton.grid(row=7,column=4, sticky='WE')
+fullscreenButton.configure(background=defaultBackgroundColor)
 
 ##########################
 # Top menu configuration #
@@ -509,12 +556,13 @@ master.config(menu=menubar)
 
 
 # change column behaviour for scaling
+#master.columnconfigure(0, weight=1)
+#master.columnconfigure(2, weight=1)
+#master.columnconfigure(3, pad=7)
 master.columnconfigure(3, weight=1)
-master.columnconfigure(3, pad=7)
-master.columnconfigure(6, weight=1)
-master.rowconfigure(0, weight=1)
-master.rowconfigure(1, weight=1)
-master.rowconfigure(4, pad=7)
+master.rowconfigure(3, weight=1)
+#master.rowconfigure(0, weight=1)
+#master.rowconfigure(4, pad=7)
 
 
 update_countdown()  # update the countdown
