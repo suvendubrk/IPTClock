@@ -406,6 +406,9 @@ stages = [("The Opponent Challenges the Reporter", 1*60),
           ("Putting marks", 1*60),
           ("Jury remarks", 4*60)]
 
+lStages = len(stages)
+
+
 
 def SetStage(stageNumber):
     titleText = stages[stageNumber][0]
@@ -415,8 +418,19 @@ def SetStage(stageNumber):
     challengeTimeLabel.configure(text=timer.string())
     ResetCountdown()
     presentationTextLabel.configure(text=titleText)  # update text presenting stage
+    presentStage.set(stageNumber) # update the present stage
+    
 
+def changeStageUpDown(intTranslatation):
+    newStage = presentStage.get()+intTranslatation
 
+    if (newStage < 0):
+        newStage = 0
+    if (newStage >= (nStages.get() ) ):  # nStage is an tk.IntVar()
+        newStage = nStages.get()-1 
+    SetStage(newStage)
+    
+    
 ###################
 # GUI Definitions #
 ###################
@@ -460,6 +474,12 @@ if wedgeBackgroundColor is None:
 # boolean for fullscreen
 master.fullscreen = False
 
+#  variables for changing stages
+nStages = tk.IntVar()
+nStages.set(lStages)
+presentStage = tk.IntVar()
+presentStage.set(0)
+
 
 #################
 # Sponsor Image #
@@ -481,8 +501,12 @@ reporterLabel.grid(row=11, column=1)
 reporterLabel.configure(background=defaultBackgroundColor)
 
 reporterStringVar = tk.StringVar()
+#master.insert(Tkinter.END, u"\xc1".encode("utf-8"))
 #reporterEntry = tk.Entry(master, bd=5, width=24, textvariable=reporterStringVar, font=('Courier New', 16))
-reporterNameLabel = tk.Label(master, text= '', font=('Courier New', 16) )
+reporterNameLabel = tk.Label(master, text= reporterStringVar, font=('Courier New', 16) )
+
+
+#, u"\xc1".encode("utf-8")
 reporterNameLabel.grid(row=11, column=2)
 #reporterEntry.grid(row=10, column=2)
 #reporterEntry.configure(background=defaultBackgroundColor)
@@ -581,6 +605,14 @@ editReporterButton.grid(row=11, column=3)
 editReporterButton.configure(background=defaultBackgroundColor)
 
 
+#control stages
+previousStageButton = tk.Button(master=master, text='<<', command= lambda intTranslatation=-1: changeStageUpDown(intTranslatation) )
+previousStageButton.grid(row=8,column=5, sticky='WE')
+
+nextStageButton = tk.Button(master=master, text='>>', command= lambda intTranslatation=1: changeStageUpDown(intTranslatation) )
+nextStageButton.grid(row=9,column=5, sticky='WE')
+
+
 #####################
 # layout lines
 ####################
@@ -602,6 +634,7 @@ filemenu.add_separator()
 
 filemenu.add_command(label="Exit", command=_quit)
 menubar.add_cascade(label="File", menu=filemenu)
+
 
 # drop down menu to chose stage
 stagemenu = tk.Menu(menubar, tearoff=0)
