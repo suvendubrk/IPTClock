@@ -26,6 +26,8 @@ else:
     usePython3 = True
 
 from tkinter import messagebox
+#from tkinter import simpledialog
+import tkinter.simpledialog as simpledialog
 
 # import tkfont #to change font #NOT IMPLEMENTED
 
@@ -209,6 +211,14 @@ def endFullscreen(self):
     master.focus_set()
 
 
+def EditReporter():
+   # reporterString=tk.simpledialog.askstring('Edit Reporter', prompt , initialvalue= 'Arnold Schwarzenegger' )
+#    tkinter.simpledialog
+     reporterString=simpledialog.askstring('Edit Reporter', 'Reporter' , initialvalue= 'Arnold Schwarzenegger' )
+     reporterNameLabel.configure(text = reporterString)
+
+
+    
 ###############
 # Clock Class #
 ###############
@@ -216,7 +226,7 @@ class ClockGraphics:
     def __init__(self):
         # Definition of initial clock state/position
         self._clock_center = [0, 0]
-        self._clock_reference_angle = 90
+        self._clock_reference_angle = 30
         self._clock_radius = 0.9
         self._angle = 0
 
@@ -432,9 +442,11 @@ reporterLabel.grid(row=10, column=1)
 reporterLabel.configure(background=defaultBackgroundColor)
 
 reporterStringVar = tk.StringVar()
-reporterEntry = tk.Entry(master, bd=5, width=24, textvariable=reporterStringVar, font=('Courier New', 16))
-reporterEntry.grid(row=10, column=2)
-reporterEntry.configure(background=defaultBackgroundColor)
+#reporterEntry = tk.Entry(master, bd=5, width=24, textvariable=reporterStringVar, font=('Courier New', 16))
+reporterNameLabel = tk.Label(master, text= '', font=('Courier New', 16) )
+reporterNameLabel.grid(row=10, column=2)
+#reporterEntry.grid(row=10, column=2)
+#reporterEntry.configure(background=defaultBackgroundColor)
 
 # Opponent
 opponentLabel = tk.Label(master, text="Opponent", font=('Courier New', 16))
@@ -474,7 +486,7 @@ timeString = pattern.format(timerMinutes, timerSeconds)
 # Digital clock present time
 # challengeTimeVar = "01:00" # this should be coupled to choice of stage
 challengeTimeVar = timeString
-challengeTimeLabel = tk.Label(master, text=challengeTimeVar, font=('Courier New', 26))
+challengeTimeLabel = tk.Label(master, text=challengeTimeVar , font=('Courier New', 26))
 challengeTimeLabel.grid(row=9, column=1, columnspan=3,rowspan=1)
 challengeTimeLabel.configure(background=defaultBackgroundColor)
 
@@ -527,6 +539,11 @@ quitButton.configure(background=defaultBackgroundColor)
 fullscreenButton = tk.Button(master=master, text='Fullscreen', command=toogleFullscreenButton)
 fullscreenButton.grid(row=7, column=4, sticky='WE')
 fullscreenButton.configure(background=defaultBackgroundColor)
+
+
+editReporterButton = tk.Button(master=master, text='Edit', command=EditReporter)
+editReporterButton.grid(row=9, column=3)
+editReporterButton.configure(background=defaultBackgroundColor)
 
 ##########################
 # Top menu configuration #
