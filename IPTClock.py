@@ -56,7 +56,7 @@ if installedPyaudio:
 # for converting and accepting more fileformats for photos, NOT IMPLEMENTED
 # from PIL import Image, ImageTk
 
-
+simulated_time_step = 10  # [ms]
 ######################################
 # Global Variables, change each year #
 ######################################
@@ -84,55 +84,24 @@ pathToSoundFile = './theDuckSong2.wav'  # 'allahu.wav' #'SaleelSawarimNasheed.wa
 
 # function updating the time
 def update_countdown():
-
-    global countdownTime  # variable containing seconds left
-    global countdownState
-   
     # Every time this function is called, 
-    # decrease countdownTime with one second
-    if countdownState:
-        countdownTime -= 1
-        # run the functions updating the graphical representation
-        update_countdownText()
-        update_angle()
+    # decrease timer with one second
+    if timer.isTicking():
+        timer.tick()
+
+        # Update the countdownText Label with the updated time
+        countdownText.configure(text=timer.string())
+
+        # Update the clock graphics. Clock starts at 0 then negative direction clockwise
+        angle = -360 * ((timer.start_time() - timer.time()) / timer.start_time())
+        clock.set_angle(angle)
         
         # check for countdown time for activating "low health mode"
-        if countdownTime == 55:
+        if timer.time() == 55:
             _thread.start_new_thread(PlayASoundFile, (pathToSoundFile,))
 
     # Call the update_countdown() function after 1 second
-    master.after(1000, update_countdown)  # wait 1000 [ms]
-
-
-# function updating the presented digital countdown
-def update_countdownText():
-    if countdownState:
-        global countdownTime  # variable containing seconds left
-             
-        # create string for countdownTimer
-        timerSeconds = abs(countdownTime) % 60
-        timerMinutes = abs(countdownTime) // 60
-        
-        # fixes the countdown clock when deadline is passed
-        if countdownTime < 0:
-                if timerMinutes > 0:
-                        timeString = pattern.format(-timerMinutes, timerSeconds)
-                else:
-                        timeString = pattern.format(timerMinutes, -timerSeconds)
-        else:
-            timeString = pattern.format(timerMinutes, timerSeconds)
-        # Update the countdownText Label with the updated time
-        countdownText.configure(text=timeString)
-
-
-# Function updating and drawing the "pie wedge" for the countdown
-def update_angle():
-    if countdownState:
-        global countdownTime, countdownStartTime
-
-        # angle starts at 0 then negative direction clockwise
-        angle = -360 * ((countdownStartTime-countdownTime)/countdownStartTime)
-        clock.set_angle(angle)
+    master.after(simulated_time_step, update_countdown)  # wait 1000 [ms]
 
 
 ###################
@@ -141,30 +110,21 @@ def update_angle():
     
 # To start the countdown
 def StartCountdown():
-    global countdownState
-#    ResetCountdown
-    countdownState = True
+    timer.start()
 
 
 # To pause the countdown
 def PauseCountdown():
-    global countdownState
-    countdownState = False
+    timer.pause()
 
 
 # To reset the countdown to startTime
 def ResetCountdown():
-    global countdownTime, countdownStartTime, countdownState
-    countdownTime = countdownStartTime 
-    countdownState = False
-    
-    # create string for countdownTimer
-    timerSeconds = countdownTime % 60
-    timerMinutes = countdownTime // 60
-        
-    timeString = pattern.format(timerMinutes, timerSeconds)
+    # reset the timer
+    timer.reset()
+
     # Update the countdownText Label with the updated time
-    countdownText.configure(text=timeString)
+    countdownText.configure(text=timer.string())
 
     # reset the clock
     clock.reset()
@@ -176,7 +136,6 @@ def _quit():
         sys.exit(0)
 #    sys.exit(0)  # shuts down entire python script
   
-
 
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
@@ -211,6 +170,7 @@ def endFullscreen(self):
     master.focus_set()
 
 
+
 def EditReporter():
    # reporterString=tk.simpledialog.askstring('Edit Reporter', prompt , initialvalue= 'Arnold Schwarzenegger' )
 #    tkinter.simpledialog
@@ -222,6 +182,11 @@ def EditReporter():
 ###############
 # Clock Class #
 ###############
+
+#######################
+# ClockGraphics Class #
+#######################
+
 class ClockGraphics:
     def __init__(self):
         # Definition of initial clock state/position
@@ -301,7 +266,68 @@ class ClockGraphics:
     def reset(self):
         self.set_angle(0)
 
-                        
+
+#######################
+# Timer Class #
+#######################
+class Timer:
+    def __init__(self):
+        self._tick_state = False
+        self._time = None
+        self._string = None
+
+        self._string_pattern = '{0:02d}:{1:02d}'  # the pattern format for the timer to ensure 2 digits
+        self._time_step = 1
+        self._start_time = 10
+
+        self.set_timer(self._start_time)
+
+    def _update_string(self):
+        seconds = abs(self._time) % 60
+        minutes = abs(self._time) // 60
+        # fixes the countdown clock when deadline is passed
+        if self._time < 0:
+            if minutes > 0:
+                self._string = self._string_pattern.format(-minutes, seconds)
+            else:
+                self._string = self._string_pattern.format(minutes, -seconds)
+        else:
+            self._string = self._string_pattern.format(minutes, seconds)
+
+    def _set_time(self, time):
+        self._time = time
+        self._update_string()
+
+    def start_time(self):
+        return self._start_time
+
+    def time(self):
+        return self._time
+
+    def string(self):
+        return self._string
+
+    def set_timer(self, start_time):
+        self._start_time = start_time
+        self.reset()
+
+    def tick(self):
+        self._set_time(self._time-self._time_step)
+
+    def isTicking(self):
+        return self._tick_state
+
+    def start(self):
+        self._tick_state = True
+
+    def pause(self):
+        self._tick_state = False
+
+    def reset(self):
+        self._tick_state = False
+        self._set_time(self._start_time)
+
+
 ###################
 # Sound Functions #
 ###################
@@ -364,31 +390,12 @@ stages = [("The Opponent Challenges the Reporter", 1*60),
 
 def SetStage(stageNumber):
     titleText = stages[stageNumber][0]
-    countdownStartTime = stages[stageNumber][1]
-    SetCountdownStage(countdownStartTime)  # make the time adjustment
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
+    timer.set_timer(stages[stageNumber][1])
 
-
-def SetCountdownStage(countdownStartTimeInput):
-    global countdownState, countdownStartTime, countdownTime
-    countdownState = False  # Reassuring
-    countdownStartTime = countdownStartTimeInput
-    countdownTime = countdownStartTime
-    timerSeconds = countdownStartTime % 60
-    timerMinutes = countdownStartTime // 60
-    
-    timeString = pattern.format(timerMinutes, timerSeconds)
-    # Update the countdownText Label with the updated time
-    countdownText.configure(text=timeString)
-    challengeTimeLabel.configure(text=timeString)
-    
-    # update the wedge on canvas
+    countdownText.configure(text=timer.string())
+    challengeTimeLabel.configure(text=timer.string())
     ResetCountdown()
-
-
-countdownState = False  # set start state of timer to false.
-countdownStartTime = 10  # initialise
-
+    presentationTextLabel.configure(text=titleText)  # update text presenting stage
 
 
 ###################
@@ -401,8 +408,6 @@ master.attributes('-fullscreen', False)
 master.bind("<F11>", toogleFullscreen)
 master.bind("<Escape>", endFullscreen)
 
-countdownTime = countdownStartTime
-pattern = '{0:02d}:{1:02d}'  # the pattern format for the timer to ensure 2 digits
 
 # set the background color, given from variable at start
 master.configure(background=defaultBackgroundColor)
@@ -472,21 +477,17 @@ reviewerEntry.configure(background=defaultBackgroundColor)
 ####################
 # Initialize Clock #
 ####################
+timer = Timer()
 clock = ClockGraphics()
 
 #####################
 # frame for bottoms and writing, (at the bottom and right
 ##################
-# create string for countdownTimer startTime
-timerSeconds = countdownStartTime % 60
-timerMinutes = countdownStartTime // 60        
-timeString = pattern.format(timerMinutes, timerSeconds)
-
 
 # Digital clock present time
-# challengeTimeVar = "01:00" # this should be coupled to choice of stage
-challengeTimeVar = timeString
-challengeTimeLabel = tk.Label(master, text=challengeTimeVar , font=('Courier New', 26))
+challengeTimeVar = timer.string()
+challengeTimeLabel = tk.Label(master, text=challengeTimeVar, font=('Courier New', 26))
+
 challengeTimeLabel.grid(row=9, column=1, columnspan=3,rowspan=1)
 challengeTimeLabel.configure(background=defaultBackgroundColor)
 
@@ -496,7 +497,7 @@ challengeTimeLabel.configure(background=defaultBackgroundColor)
 
 
 # Digital clock countdown
-digitalCountdownVar = timeString
+digitalCountdownVar = timer.string()
 countdownText = tk.Label(master, text=digitalCountdownVar, font=('Courier New', 46))
 countdownText.grid(row=2, column=1, columnspan=3)
 countdownText.configure(background=defaultBackgroundColor)
@@ -542,10 +543,8 @@ fullscreenButton.configure(background=defaultBackgroundColor)
 
 
 editReporterButton = tk.Button(master=master, text='Edit', command=EditReporter)
-editReporterButton.grid(row=9, column=3)
+editReporterButton.grid(row=10, column=3)
 editReporterButton.configure(background=defaultBackgroundColor)
-
-
 
 
 #####################
@@ -554,8 +553,6 @@ editReporterButton.configure(background=defaultBackgroundColor)
 
 horizontalLine = tk.Label(master, text='-', foreground='black', background='black', height=1, font=('Courier New', 1), borderwidth = 0 )
 horizontalLine.grid(row=9,column=1, columnspan=3, sticky='WE')
-
-
 
 
 ##########################
