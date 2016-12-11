@@ -25,6 +25,25 @@ else:
     import _thread # in order to utilize threads # the threading that is used is written for python 3
     usePython3 = True
 
+
+
+# check os
+usingLinuxMasterRace = False
+usingWindows = False
+usingMac = False
+from sys import platform as _platform
+
+if _platform == "linux" or _platform == "linux2":
+    # LINUX
+   usingLinuxMasterRace = True
+elif _platform == "darwin":
+   # MAC OS X
+    usingMac = True
+elif _platform == "win32":
+   # Windows
+    usingWindows = True
+
+
 from tkinter import messagebox
 #from tkinter import simpledialog
 import tkinter.simpledialog as simpledialog
@@ -56,7 +75,7 @@ if installedPyaudio:
 # for converting and accepting more fileformats for photos, NOT IMPLEMENTED
 # from PIL import Image, ImageTk
 
-simulated_time_step = 10  # [ms]
+simulated_time_step = 1000  # [ms]
 ######################################
 # Global Variables, change each year #
 ######################################
@@ -403,6 +422,24 @@ def SetStage(stageNumber):
 ###################
 master = tk.Tk()  # define master tk object
 
+
+#fix icon on window
+if (usingWindows):
+    master.iconbitmap(default='./Images/Ico/newIPTlogo_without_text.ico')  
+    
+elif(usingLinuxMaterRace):
+    master.iconbitmap(default='./Images/Ico/newIPTlogo_without_text.png')  
+    
+elif (usingMac):
+    print("doesn't change icon")
+else:
+    print("doesn't change icon")
+
+# change window title
+master.wm_title("IPTClock")
+
+
+ #bindings for fullscreen
 master.fullscreen = False
 master.attributes('-fullscreen', False)
 master.bind("<F11>", toogleFullscreen)
@@ -422,11 +459,8 @@ if wedgeBackgroundColor is None:
 
 # boolean for fullscreen
 master.fullscreen = False
-#master.bind("<F11>", toggle_fullscreen() )
-#master.bind("<Escape>", end_fullscreen() )
-#master.bind("<F11>", master.toggle_fullscreen)
-#master.bind("<Escape>", master.end_fullscreen)        
-        
+
+
 #################
 # Sponsor Image #
 #################
