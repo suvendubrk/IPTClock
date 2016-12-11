@@ -493,7 +493,7 @@ master.fullscreen = False
 nStages = tk.IntVar()
 nStages.set(lStages)
 presentStage = tk.IntVar()
-presentStage.set(0)
+presentStage.set(-1)
 
 
 #################
