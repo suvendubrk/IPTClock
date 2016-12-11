@@ -60,10 +60,11 @@ if installedPyaudio:
 ######################################
 
 presentationText = "IPT 2017 Göteborg"  # should be string, text that shows at start
+
 defaultBackgroundColor = None  # 'blue'    # String, following tkinter naming. color used for background, buttons and labels etc. NOT color behind wedge, use "None" without "" to get system default
 wedgeBackgroundColor = None  # '#13235b' #String, following matplotlib naming.  color of the wedge background (for example to adhere to present year's color scheme. None defaults to Tkinter color from defaultBackgroundColor
+clockColors = ['#ffe000', 'red', 'purple']  # List of colors for the clock to cycle through
 
-wedgeColor = '#ffe000'  # String, following matplotlib naming. color of the wedge (for example to adhere to present year's color scheme
 # leftSponsImagePath = './Albin-300x286.gif'
 leftSponsImagePath = './ponyAndDuck.gif'
 
@@ -87,16 +88,6 @@ def update_countdown():
    
     # Every time this function is called, 
     # decrease countdownTime with one second
-
-    if countdownTime == 0:
-        wedge.set_facecolor('red')  # change background disc color when countdown becomes negative
-        backgroundDisc.set_facecolor(wedgeColor)
-    elif countdownTime < 0 and countdownTime%countdownStartTime == 0:
-        wColor = wedge.get_facecolor()
-        bColor = backgroundDisc.get_facecolor()
-        wedge.set_facecolor(bColor)
-        backgroundDisc.set_facecolor(wColor)
-
     if countdownState:
         countdownTime -= 1
         # run the functions updating the graphical representation
@@ -113,7 +104,7 @@ def update_countdown():
 
 # function updating the presented digital countdown
 def update_countdownText():
-    if (countdownState):
+    if countdownState:
         global countdownTime  # variable containing seconds left
              
         # create string for countdownTimer
@@ -134,18 +125,12 @@ def update_countdownText():
 
 # Function updating and drawing the "pie wedge" for the countdown
 def update_angle():
-    if (countdownState):
+    if countdownState:
         global countdownTime, countdownStartTime
 
-        # if countdownTime%2 > 0: # in case draw is taxing
-
-        # angle starts at 90 then negative direction clockwise
-        angle = 90 - 360 * ((countdownStartTime-countdownTime)/countdownStartTime)
-        currentAngle = angle
-        if countdownTime % countdownStartTime == 0:
-            currentAngle += 0.001
-        update_wedgeAx(wedgeAx, currentAngle)
-        updateWedgeCanvas(wedgeCanvas)  # call tkinter to redraw the canvas
+        # angle starts at 0 then negative direction clockwise
+        angle = -360 * ((countdownStartTime-countdownTime)/countdownStartTime)
+        clock.set_angle(angle)
 
 
 ###################
@@ -179,12 +164,8 @@ def ResetCountdown():
     # Update the countdownText Label with the updated time
     countdownText.configure(text=timeString)
 
-    # update the wedge on canvas
-    currentAngle = 90
-    wedge.set_facecolor(wedgeColor)
-    backgroundDisc.set_facecolor(wedgeBackgroundColor)
-    update_wedgeAx(wedgeAx, currentAngle)
-    updateWedgeCanvas(wedgeCanvas)  # call tkinter to redraw the canvas
+    # reset the clock
+    clock.reset()
 
 
 # emphasise quit()
@@ -228,58 +209,87 @@ def endFullscreen(self):
     master.focus_set()
 
 
-########################
-# matplotlib Functions #
-########################
-def initialize_figure(wedgeBackgroundColor):
-    # figsize is used to make sure the countdown wedge is large enough. If you find it to small, increase the figsize.
-    wedgeFig = plt.figure(figsize=(16, 16), edgecolor=None, facecolor=wedgeBackgroundColor)
-    wedgeAx = wedgeFig.add_subplot(111)
-    wedgeCanvas = FigureCanvasTkAgg(wedgeFig, master=master)
-    wedgeCanvas.show()
-    wedgeCanvas.get_tk_widget().grid(row=3, column=1, columnspan=3, rowspan=1) #, sticky=tk.N)
-    return wedgeFig, wedgeAx, wedgeCanvas
+###############
+# Clock Class #
+###############
+class ClockGraphics:
+    def __init__(self):
+        # Definition of initial clock state/position
+        self._clock_center = [0, 0]
+        self._clock_reference_angle = 90
+        self._clock_radius = 0.9
+        self._angle = 0
 
+        # Creation of clock graphical elements
+        self._ax, self._fig, self._canvas = self._create_canvas()
+        self._wedge = self._create_wedge(2)
+        self._backgroundDisc = self._create_circle(1, True)
+        self._perimiterCircle = self._create_circle(3, False)
 
-def set_wedgeAx_settings(wedgeAx):
-    wedgeAx.set_axis_bgcolor(None)
-    wedgeAx.set_xlim(-1, 1)
-    wedgeAx.set_ylim(-1, 1)
+        # Dependable settings. Should later be set through kwargs.
+        self._colors = [wedgeBackgroundColor] + clockColors  # [wedgeBackgroundColor, wedgeColor, 'red', 'purple']
 
-    wedgeAx.set_aspect(1)   # similar to "axis('equal')", but better.
-    wedgeAx.axis('off')     # makes axis borders etc invisible. Comment out the current line if you want to compare set_aspect to axis('equal')
+        # Reset the clock
+        self.reset()
 
+    def _create_canvas(self):
+        fig = plt.figure(figsize=(16, 16), edgecolor=None, facecolor=wedgeBackgroundColor)
 
-def initialize_wedge(wedgeAx, wedgeColor, zOrder):
-    # simply creates a wedge and return handle
-    startPos = [0, 0]
-    startAngle = 90
-    R = 0.9
+        ax = fig.add_subplot(111)
+        ax.set_axis_bgcolor(None)
+        ax.set_xlim(-1, 1)
+        ax.set_ylim(-1, 1)
+        ax.set_aspect(1)  # similar to "axis('equal')", but better.
+        ax.axis('off')  # makes axis borders etc invisible.
 
-    wedge = mpl.patches.Wedge(startPos, R, startAngle, startAngle, facecolor=wedgeColor, zorder=zOrder)
-    wedgeAx.add_patch(wedge)
-    return wedge
+        canvas = FigureCanvasTkAgg(fig, master=master)
+        canvas.show()
+        canvas.get_tk_widget().grid(row=3, column=1, columnspan=3, rowspan=1)  # , sticky=tk.N)
+        return ax, fig, canvas
 
+    def _create_wedge(self, zOrder):
+        wedge = mpl.patches.Wedge(self._clock_center, self._clock_radius, self._clock_reference_angle, self._clock_reference_angle, zorder=zOrder)
+        self._ax.add_patch(wedge)
+        return wedge
 
-def initialize_circle(wedgeAx, filledCircle, zOrder, circleColor):
-        # simply creates a circle or disc and returns handle
-        startPos = [0, 0]
-        R = 0.9
-        perimeterCircle = mpl.patches.Circle(startPos, R, fill=filledCircle, zorder=zOrder, facecolor= circleColor)
-        wedgeAx.add_patch(perimeterCircle)
-        return perimeterCircle
+    def _create_circle(self, zOrder, fill):
+        circle = mpl.patches.Circle(self._clock_center, self._clock_radius, fill=fill, zorder=zOrder)
+        self._ax.add_patch(circle)
+        return circle
 
-        
-def update_wedgeAx(wedgeAx, currentAngle):
-    # updates the wedges in wedgeAx with respect to angle
-    # wedges = [patch for patch in wedgeAx.patches if isinstance(patch, mpl.patches.Wedge)]
-    # wedge = wedges[-1]
-    wedge.set_theta1(currentAngle)
+    def _update_wedge(self):
+        if self._angle % 360 == 0:
+            self._wedge.set_theta1(self._clock_reference_angle - 0.001)
+        else:
+            self._wedge.set_theta1(self._clock_reference_angle + self._angle)
 
-
-def updateWedgeCanvas(wedgeCanvas):
+    def _updateCanvas(self):
         # Tkinter need to redraw the canvas to actually show the new updated matplotlib figure
-        wedgeCanvas.draw()
+        self._canvas.draw()
+
+    def _switch_colors(self):
+        lap = int(abs(self._angle)//360)
+        if lap < len(self._colors)-1:
+            wedge_color = self._colors[lap+1]
+            background_color = self._colors[lap]
+        else:
+            wedge_color = self._backgroundDisc.get_facecolor()
+            background_color = self._wedge.get_facecolor()
+        self._wedge.set_facecolor(wedge_color)
+        self._backgroundDisc.set_facecolor(background_color)
+
+    def set_angle(self, newAngle):
+        self._angle = newAngle
+        self.update()
+
+    def update(self):
+        if abs(self._angle) % 360 == 0:
+            self._switch_colors()
+        self._update_wedge()
+        self._updateCanvas()
+
+    def reset(self):
+        self.set_angle(0)
 
                         
 ###################
@@ -393,7 +403,7 @@ bgRGB = master.winfo_rgb(defaultbgColor)
 bgRGB = (bgRGB[0]/(256**2), bgRGB[1]/(256**2), bgRGB[2]/(256**2))
 
 if wedgeBackgroundColor is None:
-        wedgeBackgroundColor = bgRGB
+    wedgeBackgroundColor = bgRGB
 
 # boolean for fullscreen
 master.fullscreen = False
@@ -447,27 +457,11 @@ reviewerEntry.grid(row=12, column=2)
 reviewerEntry.configure(background=defaultBackgroundColor)
 
 
-#################################
-# Initialize matplotlib objects #
-#################################
-# call matplotlib for initial setup
-currentAngle = 90
+####################
+# Initialize Clock #
+####################
+clock = ClockGraphics()
 
-wedgeFig, wedgeAx, wedgeCanvas = initialize_figure(wedgeBackgroundColor)
-set_wedgeAx_settings(wedgeAx)
-zOrderWedge = 2
-wedge = initialize_wedge(wedgeAx, wedgeColor, zOrderWedge)
-
-# background plate
-zOrderCircle = 1
-circleFilled = True
-backgroundDisc = initialize_circle(wedgeAx, circleFilled, zOrderCircle, wedgeBackgroundColor)
-# perimiter circle
-zOrderCircle2 = 3
-circleFilled = False
-perimiterCircle = initialize_circle(wedgeAx, circleFilled, zOrderCircle2, 'black')
-update_wedgeAx(wedgeAx, currentAngle)
-    
 #####################
 # frame for bottoms and writing, (at the bottom and right
 ##################
@@ -530,8 +524,8 @@ quitButton.grid(row=12, column=4, sticky='WE')
 quitButton.configure(background=defaultBackgroundColor)
 
 # Fullscreen
-fullscreenButton = tk.Button(master=master, text='Fullscreen', command= toogleFullscreenButton)
-fullscreenButton.grid(row=7,column=4, sticky='WE')
+fullscreenButton = tk.Button(master=master, text='Fullscreen', command=toogleFullscreenButton)
+fullscreenButton.grid(row=7, column=4, sticky='WE')
 fullscreenButton.configure(background=defaultBackgroundColor)
 
 ##########################
