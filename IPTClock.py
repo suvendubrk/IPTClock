@@ -59,7 +59,8 @@ mpl.use('TkAgg')
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
-
+import math
+import time
 
 # check if we use audio or not (.wave format)
 try:
@@ -75,7 +76,8 @@ if installedPyaudio:
 # for converting and accepting more fileformats for photos, NOT IMPLEMENTED
 # from PIL import Image, ImageTk
 
-simulated_time_step = 1000  # [ms]
+fps = 1
+
 ######################################
 # Global Variables, change each year #
 ######################################
@@ -105,6 +107,7 @@ pathToSoundFile = './theDuckSong2.wav'  # 'allahu.wav' #'SaleelSawarimNasheed.wa
 def update_countdown():
     # Every time this function is called, 
     # decrease timer with one second
+    t0 = time.time()
     if timer.isTicking():
         timer.tick()
 
@@ -119,8 +122,10 @@ def update_countdown():
         if timer.time() == 55:
             _thread.start_new_thread(PlayASoundFile, (pathToSoundFile,))
 
-    # Call the update_countdown() function after 1 second
-    master.after(simulated_time_step, update_countdown)  # wait 1000 [ms]
+    # Call the update_countdown() function after 1/fps seconds
+    dt = (time.time() - t0) * 1000
+    time_left = max(0, int(1000 / fps - dt))
+    master.after(time_left, update_countdown)
 
 
 ###################
@@ -251,9 +256,12 @@ class ClockGraphics:
         self._ax.add_patch(circle)
         return circle
 
+    def _isTwelve(self):
+        return abs(self._angle) % 360 < 1e-3 or 360 - abs(self._angle) % 360 < 1e-3
+
     def _update_wedge(self):
-        if self._angle % 360 == 0:
-            self._wedge.set_theta1(self._clock_reference_angle - 0.001)
+        if self._isTwelve():
+            self._wedge.set_theta1(self._clock_reference_angle - 1e-3)
         else:
             self._wedge.set_theta1(self._clock_reference_angle + self._angle)
 
@@ -262,7 +270,7 @@ class ClockGraphics:
         self._canvas.draw()
 
     def _switch_colors(self):
-        lap = int(abs(self._angle)//360)
+        lap = int(abs(self._angle - 1e-3)/360)
         if lap < len(self._colors)-1:
             wedge_color = self._colors[lap+1]
             background_color = self._colors[lap]
@@ -277,7 +285,7 @@ class ClockGraphics:
         self.update()
 
     def update(self):
-        if abs(self._angle) % 360 == 0:
+        if self._isTwelve():
             self._switch_colors()
         self._update_wedge()
         self._updateCanvas()
@@ -296,14 +304,14 @@ class Timer:
         self._string = None
 
         self._string_pattern = '{0:02d}:{1:02d}'  # the pattern format for the timer to ensure 2 digits
-        self._time_step = 1
+        self._time_step = 1/fps
         self._start_time = 10
 
         self.set_timer(self._start_time)
 
     def _update_string(self):
-        seconds = abs(self._time) % 60
-        minutes = abs(self._time) // 60
+        seconds = int(abs(math.ceil(self._time - 1e-3)) % 60)
+        minutes = int(abs(math.ceil(self._time - 1e-3)) // 60)
         # fixes the countdown clock when deadline is passed
         if self._time < 0:
             if minutes > 0:
@@ -346,6 +354,16 @@ class Timer:
         self._tick_state = False
         self._set_time(self._start_time)
 
+
+#######################
+# Clock Class #
+#######################
+"""
+class Clock:
+    def __init__(self):
+        self.timer = Timer()
+        self.clock = ClockGraphics()
+"""
 
 ###################
 # Sound Functions #
