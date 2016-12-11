@@ -545,6 +545,19 @@ editReporterButton = tk.Button(master=master, text='Edit', command=EditReporter)
 editReporterButton.grid(row=9, column=3)
 editReporterButton.configure(background=defaultBackgroundColor)
 
+
+
+
+#####################
+# layout lines
+####################
+
+horizontalLine = tk.Label(master, text='-', foreground='black', background='black', height=1, font=('Courier New', 1), borderwidth = 0 )
+horizontalLine.grid(row=9,column=1, columnspan=3, sticky='WE')
+
+
+
+
 ##########################
 # Top menu configuration #
 ##########################
