@@ -191,7 +191,7 @@ class ClockGraphics:
     def __init__(self):
         # Definition of initial clock state/position
         self._clock_center = [0, 0]
-        self._clock_reference_angle = 30
+        self._clock_reference_angle = 90
         self._clock_radius = 0.9
         self._angle = 0
 
@@ -442,35 +442,35 @@ sponsLabel.grid(row=0, column=0, columnspan=1, rowspan=9)
 ####################
 # add fields for reporter etc.
 # Reporter
-reporterLabel = tk.Label(master, text="Reporter", font=('Courier New', 16))
-reporterLabel.grid(row=10, column=1)
+reporterLabel = tk.Label(master, text="Reporter:", font=('Courier New', 16))
+reporterLabel.grid(row=11, column=1)
 reporterLabel.configure(background=defaultBackgroundColor)
 
 reporterStringVar = tk.StringVar()
 #reporterEntry = tk.Entry(master, bd=5, width=24, textvariable=reporterStringVar, font=('Courier New', 16))
 reporterNameLabel = tk.Label(master, text= '', font=('Courier New', 16) )
-reporterNameLabel.grid(row=10, column=2)
+reporterNameLabel.grid(row=11, column=2)
 #reporterEntry.grid(row=10, column=2)
 #reporterEntry.configure(background=defaultBackgroundColor)
 
 # Opponent
-opponentLabel = tk.Label(master, text="Opponent", font=('Courier New', 16))
-opponentLabel.grid(row=11, column=1)
+opponentLabel = tk.Label(master, text="Opponent:", font=('Courier New', 16))
+opponentLabel.grid(row=12, column=1)
 opponentLabel.configure(background=defaultBackgroundColor)
 
 opponentStringVar = tk.StringVar()
 opponentEntry = tk.Entry(master, bd=5, width=24, textvariable=opponentStringVar, font=('Courier New', 16))
-opponentEntry.grid(row=11, column=2)
+opponentEntry.grid(row=12, column=2)
 opponentEntry.configure(background=defaultBackgroundColor)
 
 # Reviewer
-reviewerLabel = tk.Label(master, text="Reviewer", font=('Courier New', 16))
-reviewerLabel.grid(row=12, column=1)
+reviewerLabel = tk.Label(master, text="Reviewer:", font=('Courier New', 16))
+reviewerLabel.grid(row=13, column=1)
 reviewerLabel.configure(background=defaultBackgroundColor)
 
 reviewerStringVar = tk.StringVar()
 reviewerEntry = tk.Entry(master, bd=5, width=24, textvariable=reviewerStringVar, font=('Courier New', 16))
-reviewerEntry.grid(row=12, column=2)
+reviewerEntry.grid(row=13, column=2)
 reviewerEntry.configure(background=defaultBackgroundColor)
 
 
@@ -518,32 +518,32 @@ presentationTextLabel.configure(background=defaultBackgroundColor)
 ###################
 # StartButton
 startButton = tk.Button(master=master, text='Start', command=StartCountdown)
-startButton.grid(row=4, column=4, sticky='WE' )
+startButton.grid(row=4, column=5, sticky='WE' )
 startButton.configure(background=defaultBackgroundColor)
 
 # PauseButton
 pauseButton = tk.Button(master=master, text='Pause', command=PauseCountdown)
-pauseButton.grid(row=5, column=4, sticky='WE')
+pauseButton.grid(row=5, column=5, sticky='WE')
 pauseButton.configure(background=defaultBackgroundColor)
 
 # Reset button
 resetButton = tk.Button(master=master, text='Reset', command=ResetCountdown)
-resetButton.grid(row=10, column=4, sticky='WE')
+resetButton.grid(row=11, column=5, sticky='WE')
 resetButton.configure(background=defaultBackgroundColor)
 
 # Quit button
 quitButton = tk.Button(master=master, text='Quit', command=_quit)
-quitButton.grid(row=12, column=4, sticky='WE')
+quitButton.grid(row=13, column=5, sticky='WE')
 quitButton.configure(background=defaultBackgroundColor)
 
 # Fullscreen
 fullscreenButton = tk.Button(master=master, text='Fullscreen', command=toogleFullscreenButton)
-fullscreenButton.grid(row=7, column=4, sticky='WE')
+fullscreenButton.grid(row=7, column=5, sticky='WE')
 fullscreenButton.configure(background=defaultBackgroundColor)
 
 
 editReporterButton = tk.Button(master=master, text='Edit', command=EditReporter)
-editReporterButton.grid(row=10, column=3)
+editReporterButton.grid(row=11, column=3)
 editReporterButton.configure(background=defaultBackgroundColor)
 
 
@@ -551,8 +551,11 @@ editReporterButton.configure(background=defaultBackgroundColor)
 # layout lines
 ####################
 
-horizontalLine = tk.Label(master, text='-', foreground='black', background='black', height=1, font=('Courier New', 1), borderwidth = 0 )
-horizontalLine.grid(row=9,column=1, columnspan=3, sticky='WE')
+horizontalLine = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth = 0 )
+horizontalLine.grid(row=10,column=1, columnspan=3, sticky='WE')
+
+verticalLineRight = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth = 0 )
+verticalLineRight.grid(row=0,column=4, columnspan=1,rowspan=14, sticky='NS')
 
 
 ##########################
