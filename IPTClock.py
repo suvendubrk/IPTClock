@@ -73,9 +73,6 @@ if installedPyaudio:
     import wave
 
 
-# for converting and accepting more fileformats for photos, NOT IMPLEMENTED
-# from PIL import Image, ImageTk
-
 fps = 1
 
 ######################################
@@ -459,7 +456,7 @@ master = tk.Tk()  # define master tk object
 if (usingWindows):
     master.iconbitmap(default='./Images/Ico/newIPTlogo_without_text.ico')  
     
-elif(usingLinuxMaterRace):
+elif(usingLinuxMasterRace):
     master.iconbitmap(default='./Images/Ico/newIPTlogo_without_text.png')  
     
 elif (usingMac):
