@@ -1,14 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#########################
-# IPTClock, a graphical countdown clock for use with the
-# international physicist's tournament
+##############################################################################################
+#  IPTClock, a graphical countdown clock for use with the international physicist's tournament
+#    Copyright (C) 2016-2017  Albin Jonasson Svärdsby & Joel Magnusson
 #
-# Written in python 3, will exit for lower verions
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
 #
-##########################
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##############################################################################################
 
+
+
+#########################
+# Written in python 3,
+# will exit for lower verions
+##########################
 
 #######################
 # Import dependencies #
@@ -81,10 +97,10 @@ defaultBackgroundColor = None  # 'blue'    # String, following tkinter naming. c
 wedgeBackgroundColor = None  # '#13235b' #String, following matplotlib naming.  color of the wedge background (for example to adhere to present year's color scheme. None defaults to Tkinter color from defaultBackgroundColor
 clockColors = ['#ffe000', 'red', 'purple']  # List of colors for the clock to cycle through
 
-# leftSponsImagePath = './Albin-300x286.gif'
-leftSponsImagePath = './ponyAndDuck.gif'
+# leftSponsImagePath = 
+leftSponsImagePath = './ponyAndDuck.gif' # './Albin-300x286.gif'
 
-pathToSoundFile = './theDuckSong2.wav'  # 'allahu.wav' #'SaleelSawarimNasheed.wav' # If left empty nothing happens
+pathToSoundFile = './theDuckSong2.wav'  # If left empty nothing happens
 
 stagesPath = "./stages.txt"
 
@@ -307,6 +323,7 @@ class Clock:
         self.stage = Stage()
         self.timer = Timer()
         self.clock_graphics = ClockGraphics()
+        self.startPlayingSongTime = 55 # time in seconds when death mode sound is played
 
         self.challengeTimeLabel, self.countdownText, self.presentationTextLabel = create_clock_labels()
 
@@ -347,7 +364,7 @@ class Clock:
             self.clock_graphics.set_angle(angle)
 
             # check for countdown time for activating "low health mode"
-            if self.timer.time() == 55:
+            if self.timer.time() == self.startPlayingSongTime:
                 _thread.start_new_thread(PlayASoundFile, (pathToSoundFile,))
 
         # Call the update() function after 1/fps seconds
@@ -507,12 +524,18 @@ def create_clock_canvas():
     return ax, fig, canvas
 
 
+def DoNothing():
+    # Dummy function that does nothing
+    pass
+
+
+
 ###################
 # GUI Definitions #
 ###################
 master = tk.Tk()  # define master tk object
 
-
+DoNothing()
 # fix icon on window
 if usingWindows:
     master.iconbitmap(default='./Images/Ico/newIPTlogo_without_text.ico')
@@ -522,10 +545,10 @@ elif usingLinuxMasterRace:
     master.tk.call('wm', 'iconphoto', master._w, img)
 
 elif usingMac:
-    print("doesn't change icon")
+    pass # does nothing
 
 else:
-    print("doesn't change icon")
+    pass
 
 # change window title
 master.wm_title("IPTClock")
@@ -676,21 +699,44 @@ for i, stage in enumerate(IPTClock.stage.get_stages()):
                           command=lambda stage_number=i: IPTClock.set_stage(stage_number))
 
 menubar.add_cascade(label="Stage", menu=stagemenu)
-master.config(menu=menubar)
 
+
+# help menu
+logo_image = tk.PhotoImage(file='./Images/IPTlogos/newIPTlogo_without_text.gif') # needed outside aboutPopup to avoid garbage collect
+
+# about this application
+def AboutPopup():
+    # creates a popup window showing basic info and copywright
+    top_about = tk.Toplevel()
+    top_about.title("About IPTClock")
+
+#    logo_image = tk.PhotoImage(file='./Images/IPTlogos/newIPTlogo_without_text.gif')
+    about_logo=tk.Label(top_about, image=logo_image)
+    about_logo.pack(side='left')
+    
+    about_message = "IPTClock is a countdown clock written for use in the International Physicist's Tournament. The program is written using Python 3 with Tkinter and matplotlib.\n\n Copyright (c) 2016-2017 by Albin Jonasson Svärdsby  \n Joel Magnusson"    
+    about_msg = tk.Message(top_about, text=about_message)
+    about_msg.pack(side='right')
+
+    about_exit_button = tk.Button(top_about, text="Dismiss", command=top_about.destroy)
+    about_exit_button.pack(side='bottom')
+
+
+helpmenu = tk.Menu(menubar, tearoff=0) # create helpmenu
+helpmenu.add_command(label="About", command= AboutPopup )
+
+menubar.add_cascade(label="Help", menu=helpmenu) # add helpmenu
+
+master.config(menu=menubar) # set the final menu
 
 # change column behaviour for scaling
-# master.columnconfigure(0, weight=1)
-# master.columnconfigure(2, weight=1)
-# master.columnconfigure(3, pad=7)
 master.columnconfigure(3, weight=1)
 master.rowconfigure(3, weight=1)
-# master.rowconfigure(0, weight=1)
-# master.rowconfigure(4, pad=7)
 
 
 IPTClock.update()  # update the countdown
 
 master.protocol("WM_DELETE_WINDOW", on_closing)  # necessary to cleanly exit the program when using the windows manager
+
 # start the GUI loop
 master.mainloop()
