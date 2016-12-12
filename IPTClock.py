@@ -26,6 +26,7 @@
 # will exit for lower verions
 ##########################
 
+
 #######################
 # Import dependencies #
 #######################
@@ -99,10 +100,9 @@ fps = 1
 # Purple: '#864da0'
 defaultBackgroundColor = None  # 'blue'    # String, following tkinter naming. color used for background, buttons and labels etc. NOT color behind wedge, use "None" without "" to get system default
 wedgeBackgroundColor = None  # '#13235b' #String, following matplotlib naming.  color of the wedge background (for example to adhere to present year's color scheme. None defaults to Tkinter color from defaultBackgroundColor
-clockColors = ['#7DC7EE', '#eded1e', '#d32c2c', '#864da0']  # List of colors for the clock to cycle through
+clockColors = ['#7DC7EE', '#FED812', '#d32c2c', '#864da0']  # List of colors for the clock to cycle through
 
-# leftSponsImagePath = 
-leftSponsImagePath = './ponyAndDuck.gif' # './Albin-300x286.gif'
+leftSponsImagePath = './testPicture.gif'  # './ponyAndDuck.gif' # './Albin-300x286.gif'
 
 pathToSoundFile = './theDuckSong2.wav'  # If left empty nothing happens
 
@@ -505,18 +505,12 @@ def create_clock_canvas():
     return ax, fig, canvas
 
 
-def DoNothing():
-    # Dummy function that does nothing
-    pass
-
-
-
 ###################
 # GUI Definitions #
 ###################
 master = tk.Tk()  # define master tk object
 
-DoNothing()
+
 # fix icon on window
 if usingWindows:
     master.iconbitmap(default='./Images/Ico/newIPTlogo_without_text.ico')
@@ -526,7 +520,7 @@ elif usingLinuxMasterRace:
     master.tk.call('wm', 'iconphoto', master._w, img)
 
 elif usingMac:
-    pass # does nothing
+    pass
 
 else:
     pass
@@ -694,8 +688,8 @@ def AboutPopup():
 #    logo_image = tk.PhotoImage(file='./Images/IPTlogos/newIPTlogo_without_text.gif')
     about_logo=tk.Label(top_about, image=logo_image)
     about_logo.pack(side='left')
-    
-    about_message = "IPTClock is a countdown clock written for use in the International Physicist's Tournament. The program is written using Python 3 with Tkinter and matplotlib.\n\n Copyright (c) 2016-2017 by Albin Jonasson Svärdsby  \n Joel Magnusson"    
+
+    about_message = "IPTClock is a countdown clock written for use in the International Physicist's Tournament. The program is written using Python 3 with Tkinter and matplotlib.\n\n Copyright (c) 2016-2017 by Albin Jonasson Svärdsby  \n Joel Magnusson"
     about_msg = tk.Message(top_about, text=about_message)
     about_msg.pack(side='right')
 
