@@ -26,7 +26,6 @@ else:
     usePython3 = True
 
 
-
 # check os
 usingLinuxMasterRace = False
 usingWindows = False
@@ -52,7 +51,7 @@ import tkinter.simpledialog as simpledialog
 
 # imports the matplotlib and set variable installedMatplotlib
 installedMatplotlib = True
-        
+
 import matplotlib as mpl
 mpl.use('TkAgg')
 
@@ -73,13 +72,10 @@ if installedPyaudio:
     import wave
 
 
+####################
+# Global Variables #
+####################
 fps = 1
-
-######################################
-# Global Variables, change each year #
-######################################
-
-presentationText = "IPT 2017 Göteborg"  # should be string, text that shows at start
 
 defaultBackgroundColor = None  # 'blue'    # String, following tkinter naming. color used for background, buttons and labels etc. NOT color behind wedge, use "None" without "" to get system default
 wedgeBackgroundColor = None  # '#13235b' #String, following matplotlib naming.  color of the wedge background (for example to adhere to present year's color scheme. None defaults to Tkinter color from defaultBackgroundColor
@@ -96,118 +92,33 @@ pathToSoundFile = './theDuckSong2.wav'  # 'allahu.wav' #'SaleelSawarimNasheed.wa
 # defaultFontSize =  # integer, fontsize of text
 
 
-####################
-# Update Functions #
-####################
+########################################################
+# Settings, later to be imported from settings file(s) #
+########################################################
+# (Stage description, time in seconds)
+stages = [("IPT 2017 Göteborg", 10),
+          ("The Opponent Challenges the Reporter", 1*60),
+          ("The Reporter accepts or rejects the challenge", 2*60),
+          ("Preparation of the Reporter", 5*60),
+          ("Presentation of the report", 10*60),
+          ("Questions from the opponent", 2*60),
+          ("Preparation for the opponent", 3*60),
+          ("The opponent's speech", 5*60),
+          ("Discussion between the reporter and opponent", 5*60),
+          ("Questions from the reviewer", 2*60),
+          ("Preparation for the reviewer", 1*60),
+          ("The reviewer's speech", 3*60),
+          ("Discussion on stage", 4*60),
+          ("General discussion between the teams", 5*60),
+          ("Concluding remarks of the reporter", 1*60),
+          ("Questions of the jury", 6*60),
+          ("Putting marks", 1*60),
+          ("Jury remarks", 4*60)]
 
-# function updating the time
-def update_countdown():
-    # Every time this function is called, 
-    # decrease timer with one second
-    t0 = time.time()
-    if timer.isTicking():
-        timer.tick()
-
-        # Update the countdownText Label with the updated time
-        countdownText.configure(text=timer.string())
-
-        # Update the clock graphics. Clock starts at 0 then negative direction clockwise
-        angle = -360 * ((timer.start_time() - timer.time()) / timer.start_time())
-        clock.set_angle(angle)
-        
-        # check for countdown time for activating "low health mode"
-        if timer.time() == 55:
-            _thread.start_new_thread(PlayASoundFile, (pathToSoundFile,))
-
-    # Call the update_countdown() function after 1/fps seconds
-    dt = (time.time() - t0) * 1000
-    time_left = max(0, int(1000 / fps - dt))
-    master.after(time_left, update_countdown)
-
-
-###################
-# Button Commands #
-###################
-    
-# To start the countdown
-def StartCountdown():
-    timer.start()
-
-
-# To pause the countdown
-def PauseCountdown():
-    timer.pause()
-
-
-# To reset the countdown to startTime
-def ResetCountdown():
-    # reset the timer
-    timer.reset()
-
-    # Update the countdownText Label with the updated time
-    countdownText.configure(text=timer.string())
-
-    # reset the clock
-    clock.reset()
-
-
-# emphasise quit()
-def _quit():
-    if messagebox.askokcancel("Quit", "Do you want to quit?"):
-        sys.exit(0)
-#    sys.exit(0)  # shuts down entire python script
-  
-
-def on_closing():
-    if messagebox.askokcancel("Quit", "Do you want to quit?"):
-        sys.exit(0)
-
-
-# toggling Fullscreen
-def toogleFullscreen(self):
-    global master, fullscreenButton
-    state = not master.fullscreen
-    master.attributes('-fullscreen', state)
-    master.focus_set()
-    master.fullscreen = state
- 
-
-def toogleFullscreenButton():
-    global master, fullscreenButton
-    state = not master.fullscreen
-    master.attributes('-fullscreen', state)
-    master.focus_set()
-    master.fullscreen = state
-    if (master.fullscreen):
-        fullscreenButton.configure(text="Windowed")
-    else:
-        fullscreenButton.configure(text="Fullscreen")
-
-  
-def endFullscreen(self):
-    global master
-    master.fullscreen = False
-    master.attributes("-fullscreen", False)
-    master.focus_set()
-
-
-
-def EditReporter():
-   # reporterString=tk.simpledialog.askstring('Edit Reporter', prompt , initialvalue= 'Arnold Schwarzenegger' )
-#    tkinter.simpledialog
-     reporterString=simpledialog.askstring('Edit Reporter', 'Reporter' , initialvalue= 'Arnold Schwarzenegger' )
-     reporterNameLabel.configure(text = reporterString)
-
-
-    
-###############
-# Clock Class #
-###############
 
 #######################
 # ClockGraphics Class #
 #######################
-
 class ClockGraphics:
     def __init__(self):
         # Definition of initial clock state/position
@@ -217,7 +128,7 @@ class ClockGraphics:
         self._angle = 0
 
         # Creation of clock graphical elements
-        self._ax, self._fig, self._canvas = self._create_canvas()
+        self._ax, self._fig, self._canvas = create_clock_canvas()
         self._wedge = self._create_wedge(2)
         self._backgroundDisc = self._create_circle(1, True)
         self._perimiterCircle = self._create_circle(3, False)
@@ -228,28 +139,13 @@ class ClockGraphics:
         # Reset the clock
         self.reset()
 
-    def _create_canvas(self):
-        fig = plt.figure(figsize=(16, 16), edgecolor=None, facecolor=wedgeBackgroundColor)
-
-        ax = fig.add_subplot(111)
-        ax.set_axis_bgcolor(None)
-        ax.set_xlim(-1, 1)
-        ax.set_ylim(-1, 1)
-        ax.set_aspect(1)  # similar to "axis('equal')", but better.
-        ax.axis('off')  # makes axis borders etc invisible.
-
-        canvas = FigureCanvasTkAgg(fig, master=master)
-        canvas.show()
-        canvas.get_tk_widget().grid(row=3, column=2, columnspan=3, rowspan=1)  # , sticky=tk.N)
-        return ax, fig, canvas
-
-    def _create_wedge(self, zOrder):
-        wedge = mpl.patches.Wedge(self._clock_center, self._clock_radius, self._clock_reference_angle, self._clock_reference_angle, zorder=zOrder)
+    def _create_wedge(self, zorder):
+        wedge = mpl.patches.Wedge(self._clock_center, self._clock_radius, self._clock_reference_angle, self._clock_reference_angle, zorder=zorder)
         self._ax.add_patch(wedge)
         return wedge
 
-    def _create_circle(self, zOrder, fill):
-        circle = mpl.patches.Circle(self._clock_center, self._clock_radius, fill=fill, zorder=zOrder)
+    def _create_circle(self, zorder, fill):
+        circle = mpl.patches.Circle(self._clock_center, self._clock_radius, fill=fill, zorder=zorder)
         self._ax.add_patch(circle)
         return circle
 
@@ -277,8 +173,8 @@ class ClockGraphics:
         self._wedge.set_facecolor(wedge_color)
         self._backgroundDisc.set_facecolor(background_color)
 
-    def set_angle(self, newAngle):
-        self._angle = newAngle
+    def set_angle(self, new_angle):
+        self._angle = new_angle
         self.update()
 
     def update(self):
@@ -291,18 +187,18 @@ class ClockGraphics:
         self.set_angle(0)
 
 
-#######################
+###############
 # Timer Class #
-#######################
+###############
 class Timer:
     def __init__(self):
         self._tick_state = False
-        self._time = None
-        self._string = None
+        self._start_time = 0
+        self._time = 0
+        self._string = ''
 
         self._string_pattern = '{0:02d}:{1:02d}'  # the pattern format for the timer to ensure 2 digits
         self._time_step = 1/fps
-        self._start_time = 10
 
         self.set_timer(self._start_time)
 
@@ -349,15 +245,112 @@ class Timer:
         self._set_time(self._start_time)
 
 
-#######################
+###############
+# Stage Class #
+###############
+class Stage:
+    def __init__(self):
+        self._stages = stages
+        self._nStages = len(self._stages)
+        self._current_stage = 0
+
+    def get(self):
+        return self._current_stage
+
+    def set(self, stage_number):
+        self._current_stage = stage_number
+
+    def description(self):
+        return self._stages[self._current_stage][0]
+
+    def time(self):
+        return self._stages[self._current_stage][1]
+
+    def next(self):
+        if self._current_stage < self._nStages-1:
+            self._current_stage += 1
+
+    def previous(self):
+        if self._current_stage > 0:
+            self._current_stage -= 1
+
+
+###############
 # Clock Class #
-#######################
-"""
+###############
 class Clock:
     def __init__(self):
+        self.stage = Stage()
         self.timer = Timer()
-        self.clock = ClockGraphics()
-"""
+        self.clock_graphics = ClockGraphics()
+
+        self.challengeTimeLabel, self.countdownText, self.presentationTextLabel = create_clock_labels()
+
+        self._update_stage_dependencies()
+
+    # To start the countdown
+    def start(self):
+        self.timer.start()
+
+    # To pause the countdown
+    def pause(self):
+        self.timer.pause()
+
+    # To reset the countdown to startTime
+    def reset(self):
+        # reset the timer
+        self.timer.reset()
+
+        # Update the countdownText Label with the updated time
+        self.countdownText.configure(text=self.timer.string())
+
+        # reset the clock graphics
+        self.clock_graphics.reset()
+
+    # function updating the time
+    def update(self):
+        # Every time this function is called,
+        # decrease timer with one second
+        t0 = time.time()
+        if self.timer.isTicking():
+            self.timer.tick()
+
+            # Update the countdownText Label with the updated time
+            self.countdownText.configure(text=self.timer.string())
+
+            # Update the clock graphics. Clock starts at 0 then negative direction clockwise
+            angle = -360 * ((self.timer.start_time() - self.timer.time()) / self.timer.start_time())
+            self.clock_graphics.set_angle(angle)
+
+            # check for countdown time for activating "low health mode"
+            if self.timer.time() == 55:
+                _thread.start_new_thread(PlayASoundFile, (pathToSoundFile,))
+
+        # Call the update() function after 1/fps seconds
+        dt = (time.time() - t0) * 1000
+        time_left = max(0, int(1000 / fps - dt))
+        master.after(time_left, self.update)
+
+    def set_stage(self, stage_number):
+        self.stage.set(stage_number)
+        self._update_stage_dependencies()
+
+    def previous_stage(self):
+        self.stage.previous()
+        self._update_stage_dependencies()
+
+    def next_stage(self):
+        self.stage.next()
+        self._update_stage_dependencies()
+
+    def _update_stage_dependencies(self):
+        self.timer.set_timer(self.stage.time())
+
+        self.countdownText.configure(text=self.timer.string())
+        self.challengeTimeLabel.configure(text=self.timer.string())
+        self.reset()
+        self.presentationTextLabel.configure(text=self.stage.description())  # update text presenting stage
+
 
 ###################
 # Sound Functions #
@@ -368,7 +361,7 @@ def PlayASoundFile(pathToSoundFile):
 
     # instantiate PyAudio (1)
     p = pyaudio.PyAudio()
-    
+
     # open stream (2)
     stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
                     channels=wf.getnchannels(),
@@ -383,10 +376,10 @@ def PlayASoundFile(pathToSoundFile):
         stream.write(data)
         data = wf.readframes(CHUNK)
 
-# stop stream (4)
+    # stop stream (4)
     stream.stop_stream()
     stream.close()
-        
+
     # close PyAudio (5)
     p.terminate()
 
@@ -396,81 +389,127 @@ def PlayASoundFile(pathToSoundFile):
 ###########################
 
 
-########################
-# Definition of Stages #
-########################
-# Stage description and time in seconds
-stages = [("The Opponent Challenges the Reporter", 1*60),
-          ("The Reporter accepts or rejects the challenge", 2*60),
-          ("Preparation of the Reporter", 5*60),
-          ("Presentation of the report", 10*60),
-          ("Questions from the opponent", 2*60),
-          ("Preparation for the opponent", 3*60),
-          ("The opponent's speech", 5*60),
-          ("Discussion between the reporter and opponent", 5*60),
-          ("Questions from the reviewer", 2*60),
-          ("Preparation for the reviewer", 1*60),
-          ("The reviewer's speech", 3*60),
-          ("Discussion on stage", 4*60),
-          ("General discussion between the teams", 5*60),
-          ("Concluding remarks of the reporter", 1*60),
-          ("Questions of the jury", 6*60),
-          ("Putting marks", 1*60),
-          ("Jury remarks", 4*60)]
-
-lStages = len(stages)
+###################
+# Button Commands #
+###################
+# emphasise quit()
+def _quit():
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        sys.exit(0)
 
 
+def on_closing():
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        sys.exit(0)
 
-def SetStage(stageNumber):
-    titleText = stages[stageNumber][0]
-    timer.set_timer(stages[stageNumber][1])
 
-    countdownText.configure(text=timer.string())
-    challengeTimeLabel.configure(text=timer.string())
-    ResetCountdown()
-    presentationTextLabel.configure(text=titleText)  # update text presenting stage
-    presentStage.set(stageNumber) # update the present stage
-    
+# toggling Fullscreen
+def toogleFullscreen():
+    global master, fullscreenButton
+    state = not master.fullscreen
+    master.attributes('-fullscreen', state)
+    master.focus_set()
+    master.fullscreen = state
 
-def changeStageUpDown(intTranslatation):
-    newStage = presentStage.get()+intTranslatation
 
-    if (newStage < 0):
-        newStage = 0
-    if (newStage >= (nStages.get() ) ):  # nStage is an tk.IntVar()
-        newStage = nStages.get()-1 
-    SetStage(newStage)
-    
-    
+def toogleFullscreenButton():
+    global master, fullscreenButton
+    state = not master.fullscreen
+    master.attributes('-fullscreen', state)
+    master.focus_set()
+    master.fullscreen = state
+    if (master.fullscreen):
+        fullscreenButton.configure(text="Windowed")
+    else:
+        fullscreenButton.configure(text="Fullscreen")
+
+
+def endFullscreen():
+    global master
+    master.fullscreen = False
+    master.attributes("-fullscreen", False)
+    master.focus_set()
+
+
+def EditReporter():
+    reporterString = simpledialog.askstring('Edit Reporter', 'Reporter', initialvalue=reporterNameLabel.cget('text'))
+    reporterNameLabel.configure(text=reporterString)
+
+
+def EditOpponent():
+    opponentString = simpledialog.askstring('Edit Opponent', 'Opponent', initialvalue=opponentNameLabel.cget('text'))
+    opponentNameLabel.configure(text=opponentString)
+
+
+def EditReviewer():
+    reviewerString = simpledialog.askstring('Edit Reviewer', 'Reviewer', initialvalue=reviewerNameLabel.cget('text'))
+    reviewerNameLabel.configure(text=reviewerString)
+
+
+#################
+# GUI Functions #
+#################
+def create_clock_labels():
+    # Digital clock present time
+    challengeTimeLabel = tk.Label(master, text='', font=('Courier New', 26))
+    challengeTimeLabel.grid(row=9, column=2, columnspan=3, rowspan=1)
+    challengeTimeLabel.configure(background=defaultBackgroundColor)
+
+    # Digital clock countdown
+    countdownText = tk.Label(master, text='', font=('Courier New', 46))
+    countdownText.grid(row=2, column=2, columnspan=3)
+    countdownText.configure(background=defaultBackgroundColor)
+
+    # Presentation of current phase
+    presentationTextLabel = tk.Label(master, text='', font=('Courier New', 32))
+    presentationTextLabel.grid(row=7, column=2, columnspan=3)
+    presentationTextLabel.configure(background=defaultBackgroundColor)
+    return challengeTimeLabel, countdownText, presentationTextLabel
+
+
+def create_clock_canvas():
+    fig = plt.figure(figsize=(16, 16), edgecolor=None, facecolor=wedgeBackgroundColor)
+
+    ax = fig.add_subplot(111)
+    ax.set_axis_bgcolor(None)
+    ax.set_xlim(-1, 1)
+    ax.set_ylim(-1, 1)
+    ax.set_aspect(1)  # similar to "axis('equal')", but better.
+    ax.axis('off')  # makes axis borders etc invisible.
+
+    canvas = FigureCanvasTkAgg(fig, master=master)
+    canvas.show()
+    canvas.get_tk_widget().grid(row=3, column=2, columnspan=3, rowspan=1)  # , sticky=tk.N)
+    return ax, fig, canvas
+
+
 ###################
 # GUI Definitions #
 ###################
 master = tk.Tk()  # define master tk object
 
 
-#fix icon on window
-if (usingWindows):
-    master.iconbitmap(default='./Images/Ico/newIPTlogo_without_text.ico')  
-    
-elif(usingLinuxMasterRace):
-    master.iconbitmap(default='./Images/Ico/newIPTlogo_without_text.png')  
-    
-elif (usingMac):
+# fix icon on window
+if usingWindows:
+    master.iconbitmap(default='./Images/Ico/newIPTlogo_without_text.ico')
+
+elif usingLinuxMasterRace:
+    master.iconbitmap(default='./Images/Ico/newIPTlogo_without_text.png')
+
+elif usingMac:
     print("doesn't change icon")
+
 else:
     print("doesn't change icon")
 
 # change window title
 master.wm_title("IPTClock")
 
-
- #bindings for fullscreen
+# bindings for fullscreen
 master.fullscreen = False
 master.attributes('-fullscreen', False)
 master.bind("<F11>", toogleFullscreen)
 master.bind("<Escape>", endFullscreen)
-
 
 # set the background color, given from variable at start
 master.configure(background=defaultBackgroundColor)
@@ -486,12 +525,6 @@ if wedgeBackgroundColor is None:
 # boolean for fullscreen
 master.fullscreen = False
 
-#  variables for changing stages
-nStages = tk.IntVar()
-nStages.set(lStages)
-presentStage = tk.IntVar()
-presentStage.set(-1)
-
 
 #################
 # Sponsor Image #
@@ -506,98 +539,48 @@ sponsLabel.grid(row=0, column=0, columnspan=1, rowspan=9)
 ####################
 # Competitor Names #
 ####################
-# add fields for reporter etc.
 # Reporter
 reporterLabel = tk.Label(master, text="Reporter:", font=('Courier New', 16))
 reporterLabel.grid(row=11, column=2)
 reporterLabel.configure(background=defaultBackgroundColor)
-
-reporterStringVar = tk.StringVar()
-#master.insert(Tkinter.END, u"\xc1".encode("utf-8"))
-#reporterEntry = tk.Entry(master, bd=5, width=24, textvariable=reporterStringVar, font=('Courier New', 16))
-reporterNameLabel = tk.Label(master, text= reporterStringVar, font=('Courier New', 16) )
-
-
-#, u"\xc1".encode("utf-8")
+reporterNameLabel = tk.Label(master, text='', font=('Courier New', 16))
 reporterNameLabel.grid(row=11, column=3)
-#reporterEntry.grid(row=10, column=2)
-#reporterEntry.configure(background=defaultBackgroundColor)
 
 # Opponent
 opponentLabel = tk.Label(master, text="Opponent:", font=('Courier New', 16))
 opponentLabel.grid(row=12, column=2)
 opponentLabel.configure(background=defaultBackgroundColor)
-
-opponentStringVar = tk.StringVar()
-opponentEntry = tk.Entry(master, bd=5, width=24, textvariable=opponentStringVar, font=('Courier New', 16))
-opponentEntry.grid(row=12, column=3)
-opponentEntry.configure(background=defaultBackgroundColor)
+opponentNameLabel = tk.Label(master, text='', font=('Courier New', 16))
+opponentNameLabel.grid(row=12, column=3)
 
 # Reviewer
 reviewerLabel = tk.Label(master, text="Reviewer:", font=('Courier New', 16))
 reviewerLabel.grid(row=13, column=2)
 reviewerLabel.configure(background=defaultBackgroundColor)
-
-reviewerStringVar = tk.StringVar()
-reviewerEntry = tk.Entry(master, bd=5, width=24, textvariable=reviewerStringVar, font=('Courier New', 16))
-reviewerEntry.grid(row=13, column=3)
-reviewerEntry.configure(background=defaultBackgroundColor)
-
+reviewerNameLabel = tk.Label(master, text='', font=('Courier New', 16))
+reviewerNameLabel.grid(row=13, column=3)
 
 ####################
 # Initialize Clock #
 ####################
-timer = Timer()
-clock = ClockGraphics()
-
-#####################
-# frame for bottoms and writing, (at the bottom and right
-##################
-
-# Digital clock present time
-challengeTimeVar = timer.string()
-challengeTimeLabel = tk.Label(master, text=challengeTimeVar, font=('Courier New', 26))
-
-challengeTimeLabel.grid(row=9, column=2, columnspan=3,rowspan=1)
-challengeTimeLabel.configure(background=defaultBackgroundColor)
-
-#challengeTimeTextLabel = tk.Label(master, text="ChallengeTime", font=('Courier New', 18))
-#challengeTimeTextLabel.grid(row=8, column=4, rowspan=2)
-#challengeTimeTextLabel.configure(background=defaultBackgroundColor)
-
-
-# Digital clock countdown
-digitalCountdownVar = timer.string()
-countdownText = tk.Label(master, text=digitalCountdownVar, font=('Courier New', 46))
-countdownText.grid(row=2, column=2, columnspan=3)
-countdownText.configure(background=defaultBackgroundColor)
-
-#countdownTextLabel = tk.Label(master, text="Countdown", font=('Courier New', 18))
-#countdownTextLabel.grid(row=1, column=7, rowspan=2)
-#countdownTextLabel.configure(background=defaultBackgroundColor)
-
-
-# Presentation of current phase
-presentationTextLabel = tk.Label(master, text=presentationText, font=('Courier New', 32))
-presentationTextLabel.grid(row=7, column=2, columnspan=3)
-presentationTextLabel.configure(background=defaultBackgroundColor)
+IPTClock = Clock()
 
 
 ###################
 # Control Buttons #
 ###################
-# StartButton
-startButton = tk.Button(master=master, text='Start', command=StartCountdown)
-startButton.grid(row=4, column=6, sticky='WE' )
+# Start Button
+startButton = tk.Button(master=master, text='Start', command=IPTClock.start)
+startButton.grid(row=4, column=6, sticky='WE')
 startButton.configure(background=defaultBackgroundColor)
 
-# PauseButton
-pauseButton = tk.Button(master=master, text='Pause', command=PauseCountdown)
+# Pause Button
+pauseButton = tk.Button(master=master, text='Pause', command=IPTClock.pause)
 pauseButton.grid(row=5, column=6, sticky='WE')
 pauseButton.configure(background=defaultBackgroundColor)
 
 # Reset button
-resetButton = tk.Button(master=master, text='Reset', command=ResetCountdown)
+resetButton = tk.Button(master=master, text='Reset', command=IPTClock.reset)
 resetButton.grid(row=11, column=6, sticky='WE')
 resetButton.configure(background=defaultBackgroundColor)
 
@@ -611,33 +594,42 @@ fullscreenButton = tk.Button(master=master, text='Fullscreen', command=toogleFul
 fullscreenButton.grid(row=7, column=6, sticky='WE')
 fullscreenButton.configure(background=defaultBackgroundColor)
 
-
+# Edit Reporter
 editReporterButton = tk.Button(master=master, text='Edit', command=EditReporter)
 editReporterButton.grid(row=11, column=4)
 editReporterButton.configure(background=defaultBackgroundColor)
 
+# Edit Opponent
+editOpponentButton = tk.Button(master=master, text='Edit', command=EditOpponent)
+editOpponentButton.grid(row=12, column=4)
+editOpponentButton.configure(background=defaultBackgroundColor)
 
-#control stages
-previousStageButton = tk.Button(master=master, text='<<', command= lambda intTranslatation=-1: changeStageUpDown(intTranslatation) )
-previousStageButton.grid(row=8,column=6, sticky='WE')
+# Edit Reviewer
+editReviewerButton = tk.Button(master=master, text='Edit', command=EditReviewer)
+editReviewerButton.grid(row=13, column=4)
+editReviewerButton.configure(background=defaultBackgroundColor)
 
-nextStageButton = tk.Button(master=master, text='>>', command= lambda intTranslatation=1: changeStageUpDown(intTranslatation) )
-nextStageButton.grid(row=9,column=6, sticky='WE')
+# Previous Stage
+previousStageButton = tk.Button(master=master, text='<<', command=IPTClock.previous_stage)
+previousStageButton.grid(row=8, column=6, sticky='WE')
+
+# Next Stage
+nextStageButton = tk.Button(master=master, text='>>', command=IPTClock.next_stage)
+nextStageButton.grid(row=9, column=6, sticky='WE')
 
 
 #####################
 # layout lines
 ####################
 
-horizontalLine = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth = 0 )
-horizontalLine.grid(row=10,column=2, columnspan=3, sticky='WE')
+horizontalLine = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth=0)
+horizontalLine.grid(row=10, column=2, columnspan=3, sticky='WE')
 
-verticalLineRight = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth = 0 )
-verticalLineRight.grid(row=0,column=5, columnspan=1,rowspan=14, sticky='NS')
+verticalLineRight = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth=0)
+verticalLineRight.grid(row=0, column=5, columnspan=1, rowspan=14, sticky='NS')
 
-
-verticalLineLeft = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth = 0 )
-verticalLineLeft.grid(row=0,column=1, columnspan=1,rowspan=14, sticky='NS')
+verticalLineLeft = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth=0)
+verticalLineLeft.grid(row=0, column=1, columnspan=1, rowspan=14, sticky='NS')
 
 
 ##########################
@@ -654,25 +646,25 @@ menubar.add_cascade(label="File", menu=filemenu)
 
 # drop down menu to chose stage
 stagemenu = tk.Menu(menubar, tearoff=0)
-for stageNumber in range(len(stages)):
-    stagemenu.add_command(label=str(stageNumber+1) + ":" + stages[stageNumber][0],
-                          command=lambda stageNumber=stageNumber: SetStage(stageNumber))
+for i in range(len(stages)):
+    stagemenu.add_command(label=str(i) + ":" + stages[i][0],
+                          command=lambda stage_number=i: IPTClock.set_stage(stage_number))
 
 menubar.add_cascade(label="Stage", menu=stagemenu)
 master.config(menu=menubar)
 
 
 # change column behaviour for scaling
-#master.columnconfigure(0, weight=1)
-#master.columnconfigure(2, weight=1)
-#master.columnconfigure(3, pad=7)
+# master.columnconfigure(0, weight=1)
+# master.columnconfigure(2, weight=1)
+# master.columnconfigure(3, pad=7)
 master.columnconfigure(3, weight=1)
 master.rowconfigure(3, weight=1)
-#master.rowconfigure(0, weight=1)
-#master.rowconfigure(4, pad=7)
+# master.rowconfigure(0, weight=1)
+# master.rowconfigure(4, pad=7)
 
 
-update_countdown()  # update the countdown
+IPTClock.update()  # update the countdown
 
 master.protocol("WM_DELETE_WINDOW", on_closing)  # necessary to cleanly exit the program when using the windows manager
 # start the GUI loop
