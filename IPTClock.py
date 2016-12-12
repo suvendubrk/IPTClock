@@ -240,7 +240,7 @@ class ClockGraphics:
 
         canvas = FigureCanvasTkAgg(fig, master=master)
         canvas.show()
-        canvas.get_tk_widget().grid(row=3, column=1, columnspan=3, rowspan=1)  # , sticky=tk.N)
+        canvas.get_tk_widget().grid(row=3, column=2, columnspan=3, rowspan=1)  # , sticky=tk.N)
         return ax, fig, canvas
 
     def _create_wedge(self, zOrder):
@@ -512,7 +512,7 @@ sponsLabel.grid(row=0, column=0, columnspan=1, rowspan=9)
 # add fields for reporter etc.
 # Reporter
 reporterLabel = tk.Label(master, text="Reporter:", font=('Courier New', 16))
-reporterLabel.grid(row=11, column=1)
+reporterLabel.grid(row=11, column=2)
 reporterLabel.configure(background=defaultBackgroundColor)
 
 reporterStringVar = tk.StringVar()
@@ -522,28 +522,28 @@ reporterNameLabel = tk.Label(master, text= reporterStringVar, font=('Courier New
 
 
 #, u"\xc1".encode("utf-8")
-reporterNameLabel.grid(row=11, column=2)
+reporterNameLabel.grid(row=11, column=3)
 #reporterEntry.grid(row=10, column=2)
 #reporterEntry.configure(background=defaultBackgroundColor)
 
 # Opponent
 opponentLabel = tk.Label(master, text="Opponent:", font=('Courier New', 16))
-opponentLabel.grid(row=12, column=1)
+opponentLabel.grid(row=12, column=2)
 opponentLabel.configure(background=defaultBackgroundColor)
 
 opponentStringVar = tk.StringVar()
 opponentEntry = tk.Entry(master, bd=5, width=24, textvariable=opponentStringVar, font=('Courier New', 16))
-opponentEntry.grid(row=12, column=2)
+opponentEntry.grid(row=12, column=3)
 opponentEntry.configure(background=defaultBackgroundColor)
 
 # Reviewer
 reviewerLabel = tk.Label(master, text="Reviewer:", font=('Courier New', 16))
-reviewerLabel.grid(row=13, column=1)
+reviewerLabel.grid(row=13, column=2)
 reviewerLabel.configure(background=defaultBackgroundColor)
 
 reviewerStringVar = tk.StringVar()
 reviewerEntry = tk.Entry(master, bd=5, width=24, textvariable=reviewerStringVar, font=('Courier New', 16))
-reviewerEntry.grid(row=13, column=2)
+reviewerEntry.grid(row=13, column=3)
 reviewerEntry.configure(background=defaultBackgroundColor)
 
 
@@ -561,7 +561,7 @@ clock = ClockGraphics()
 challengeTimeVar = timer.string()
 challengeTimeLabel = tk.Label(master, text=challengeTimeVar, font=('Courier New', 26))
 
-challengeTimeLabel.grid(row=9, column=1, columnspan=3,rowspan=1)
+challengeTimeLabel.grid(row=9, column=2, columnspan=3,rowspan=1)
 challengeTimeLabel.configure(background=defaultBackgroundColor)
 
 #challengeTimeTextLabel = tk.Label(master, text="ChallengeTime", font=('Courier New', 18))
@@ -572,7 +572,7 @@ challengeTimeLabel.configure(background=defaultBackgroundColor)
 # Digital clock countdown
 digitalCountdownVar = timer.string()
 countdownText = tk.Label(master, text=digitalCountdownVar, font=('Courier New', 46))
-countdownText.grid(row=2, column=1, columnspan=3)
+countdownText.grid(row=2, column=2, columnspan=3)
 countdownText.configure(background=defaultBackgroundColor)
 
 #countdownTextLabel = tk.Label(master, text="Countdown", font=('Courier New', 18))
@@ -582,7 +582,7 @@ countdownText.configure(background=defaultBackgroundColor)
 
 # Presentation of current phase
 presentationTextLabel = tk.Label(master, text=presentationText, font=('Courier New', 32))
-presentationTextLabel.grid(row=7, column=1, columnspan=3)
+presentationTextLabel.grid(row=7, column=2, columnspan=3)
 presentationTextLabel.configure(background=defaultBackgroundColor)
 
 
@@ -591,41 +591,41 @@ presentationTextLabel.configure(background=defaultBackgroundColor)
 ###################
 # StartButton
 startButton = tk.Button(master=master, text='Start', command=StartCountdown)
-startButton.grid(row=4, column=5, sticky='WE' )
+startButton.grid(row=4, column=6, sticky='WE' )
 startButton.configure(background=defaultBackgroundColor)
 
 # PauseButton
 pauseButton = tk.Button(master=master, text='Pause', command=PauseCountdown)
-pauseButton.grid(row=5, column=5, sticky='WE')
+pauseButton.grid(row=5, column=6, sticky='WE')
 pauseButton.configure(background=defaultBackgroundColor)
 
 # Reset button
 resetButton = tk.Button(master=master, text='Reset', command=ResetCountdown)
-resetButton.grid(row=11, column=5, sticky='WE')
+resetButton.grid(row=11, column=6, sticky='WE')
 resetButton.configure(background=defaultBackgroundColor)
 
 # Quit button
 quitButton = tk.Button(master=master, text='Quit', command=_quit)
-quitButton.grid(row=13, column=5, sticky='WE')
+quitButton.grid(row=13, column=6, sticky='WE')
 quitButton.configure(background=defaultBackgroundColor)
 
 # Fullscreen
 fullscreenButton = tk.Button(master=master, text='Fullscreen', command=toogleFullscreenButton)
-fullscreenButton.grid(row=7, column=5, sticky='WE')
+fullscreenButton.grid(row=7, column=6, sticky='WE')
 fullscreenButton.configure(background=defaultBackgroundColor)
 
 
 editReporterButton = tk.Button(master=master, text='Edit', command=EditReporter)
-editReporterButton.grid(row=11, column=3)
+editReporterButton.grid(row=11, column=4)
 editReporterButton.configure(background=defaultBackgroundColor)
 
 
 #control stages
 previousStageButton = tk.Button(master=master, text='<<', command= lambda intTranslatation=-1: changeStageUpDown(intTranslatation) )
-previousStageButton.grid(row=8,column=5, sticky='WE')
+previousStageButton.grid(row=8,column=6, sticky='WE')
 
 nextStageButton = tk.Button(master=master, text='>>', command= lambda intTranslatation=1: changeStageUpDown(intTranslatation) )
-nextStageButton.grid(row=9,column=5, sticky='WE')
+nextStageButton.grid(row=9,column=6, sticky='WE')
 
 
 #####################
@@ -633,10 +633,14 @@ nextStageButton.grid(row=9,column=5, sticky='WE')
 ####################
 
 horizontalLine = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth = 0 )
-horizontalLine.grid(row=10,column=1, columnspan=3, sticky='WE')
+horizontalLine.grid(row=10,column=2, columnspan=3, sticky='WE')
 
 verticalLineRight = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth = 0 )
-verticalLineRight.grid(row=0,column=4, columnspan=1,rowspan=14, sticky='NS')
+verticalLineRight.grid(row=0,column=5, columnspan=1,rowspan=14, sticky='NS')
+
+
+verticalLineLeft = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth = 0 )
+verticalLineLeft.grid(row=0,column=1, columnspan=1,rowspan=14, sticky='NS')
 
 
 ##########################
