@@ -513,10 +513,11 @@ master = tk.Tk()  # define master tk object
 
 # fix icon on window
 if usingWindows:
-    master.iconbitmap(default='./Images/Ico/newIPTlogo_without_text.ico')
+    pass
+#    master.iconbitmap(default='./Images/Ico/newIPTlogo_without_text.ico') #'./Images/Ico/newIPTlogo_without_text.ico')
 
 elif usingLinuxMasterRace:
-    img = tk.PhotoImage(file='./Images/Ico/newIPTlogo_without_text.png')
+    img = tk.PhotoImage(file='./Images/Ico/IPTlogo_color.png') #newIPTlogo_without_text.png')
     master.tk.call('wm', 'iconphoto', master._w, img)
 
 elif usingMac:
@@ -677,7 +678,7 @@ menubar.add_cascade(label="Stage", menu=stagemenu)
 
 
 # help menu
-logo_image = tk.PhotoImage(file='./Images/IPTlogos/newIPTlogo_without_text.gif') # needed outside aboutPopup to avoid garbage collect
+logo_image = tk.PhotoImage(file= './Images/IPTlogos/IPTlogo_Color.gif') #'./Images/IPTlogos/newIPTlogo_without_text.gif') # needed outside aboutPopup to avoid garbage collect
 
 # about this application
 def AboutPopup():
@@ -685,7 +686,7 @@ def AboutPopup():
     top_about = tk.Toplevel()
     top_about.title("About IPTClock")
 
-#    logo_image = tk.PhotoImage(file='./Images/IPTlogos/newIPTlogo_without_text.gif')
+
     about_logo=tk.Label(top_about, image=logo_image)
     about_logo.pack(side='left')
 
