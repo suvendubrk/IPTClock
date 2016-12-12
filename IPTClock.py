@@ -86,6 +86,7 @@ leftSponsImagePath = './ponyAndDuck.gif'
 
 pathToSoundFile = './theDuckSong2.wav'  # 'allahu.wav' #'SaleelSawarimNasheed.wav' # If left empty nothing happens
 
+stagesPath = "./stages.txt"
 
 # To be introduced...:
 # defaultFont = # string deciding the standard font
@@ -96,6 +97,7 @@ pathToSoundFile = './theDuckSong2.wav'  # 'allahu.wav' #'SaleelSawarimNasheed.wa
 # Settings, later to be imported from settings file(s) #
 ########################################################
 # (Stage description, time in seconds)
+"""
 stages = [("IPT 2017 Göteborg", 10),
           ("The Opponent Challenges the Reporter", 1*60),
           ("The Reporter accepts or rejects the challenge", 2*60),
@@ -114,6 +116,25 @@ stages = [("IPT 2017 Göteborg", 10),
           ("Questions of the jury", 6*60),
           ("Putting marks", 1*60),
           ("Jury remarks", 4*60)]
+"""
+
+
+def import_stages():
+    settings = open(stagesPath).read()
+    separator = ' -- '
+    if settings is not '':
+        lines = [line.split(separator) for line in settings.split('\n')]
+        stages = []
+        for lineNbr, line in enumerate(lines):
+            try:
+                stage_time = int(line[0])
+                stage_description = line[1]
+                stages.append((stage_description, stage_time))
+            except ValueError:
+                pass
+            except IndexError:
+                pass
+        return stages
 
 
 #######################
@@ -250,7 +271,7 @@ class Timer:
 ###############
 class Stage:
     def __init__(self):
-        self._stages = stages
+        self._stages = import_stages()
         self._nStages = len(self._stages)
         self._current_stage = 0
 
@@ -273,6 +294,9 @@ class Stage:
     def previous(self):
         if self._current_stage > 0:
             self._current_stage -= 1
+
+    def get_stages(self):
+        return self._stages.copy()
 
 
 ###############
@@ -646,8 +670,8 @@ menubar.add_cascade(label="File", menu=filemenu)
 
 # drop down menu to chose stage
 stagemenu = tk.Menu(menubar, tearoff=0)
-for i in range(len(stages)):
-    stagemenu.add_command(label=str(i) + ":" + stages[i][0],
+for i, stage in enumerate(IPTClock.stage.get_stages()):
+    stagemenu.add_command(label=str(i) + ": " + stage[0],
                           command=lambda stage_number=i: IPTClock.set_stage(stage_number))
 
 menubar.add_cascade(label="Stage", menu=stagemenu)

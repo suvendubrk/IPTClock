@@ -1,0 +1,19 @@
+<Time in seconds> -- <Description>
+10 -- IPT 2017 Göteborg
+60 -- The Opponent Challenges the Reporter
+120 -- The Reporter accepts or rejects the challenge
+300 -- Preparation of the Reporter
+600 -- Presentation of the report
+120 -- Questions from the opponent
+180 -- Preparation for the opponent
+300 -- The opponent's speech
+300 -- Discussion between the reporter and opponent
+120 -- Questions from the reviewer
+60 -- Preparation for the reviewer
+180 -- The reviewer's speech
+240 -- Discussion on stage
+300 -- General discussion between the teams
+60 -- Concluding remarks of the reporter
+360 -- Questions of the jury
+60 -- Putting marks
+240 -- Jury remarks
