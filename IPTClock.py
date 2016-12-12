@@ -709,6 +709,20 @@ master.columnconfigure(3, weight=1)
 master.rowconfigure(3, weight=1)
 
 
+
+# fix initial window size and position
+w = 900 # width for the Tk root
+h = 700 # height for the Tk root
+# get screen width and height
+ws = master.winfo_screenwidth() # width of the screen
+hs = master.winfo_screenheight() # height of the screen
+
+# calculate x and y coordinates for the Tk root window
+x = (ws/2) - (w/2)
+y = (hs/2) - (h/2)
+
+master.geometry('%dx%d+%d+%d' % (w, h, x, y))
+
 IPTClock.update()  # update the countdown
 
 master.protocol("WM_DELETE_WINDOW", on_closing)  # necessary to cleanly exit the program when using the windows manager
