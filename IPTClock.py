@@ -518,7 +518,8 @@ if usingWindows:
     master.iconbitmap(default='./Images/Ico/newIPTlogo_without_text.ico')
 
 elif usingLinuxMasterRace:
-    master.iconbitmap(default='./Images/Ico/newIPTlogo_without_text.png')
+    img = tk.PhotoImage(file='./Images/Ico/newIPTlogo_without_text.png')
+    master.tk.call('wm', 'iconphoto', master._w, img)
 
 elif usingMac:
     print("doesn't change icon")
