@@ -75,7 +75,7 @@ if installedPyaudio:
 ####################
 # Global Variables #
 ####################
-fps = 1
+fps = 24
 
 # Blue: '#7DC7EE'
 # Yellow: '#FED812', '#eded1e'
@@ -83,10 +83,11 @@ fps = 1
 # Purple: '#864da0'
 defaultBackgroundColor = None  # 'blue'    # String, following tkinter naming. color used for background, buttons and labels etc. NOT color behind wedge, use "None" without "" to get system default
 wedgeBackgroundColor = None  # '#13235b' #String, following matplotlib naming.  color of the wedge background (for example to adhere to present year's color scheme. None defaults to Tkinter color from defaultBackgroundColor
-clockColors = ['#7DC7EE', '#eded1e', '#d32c2c', '#864da0']  # List of colors for the clock to cycle through
+clockColors = ['#7DC7EE', '#FED812', '#d32c2c', '#864da0']  # List of colors for the clock to cycle through
 
 # leftSponsImagePath = './Albin-300x286.gif'
 leftSponsImagePath = './ponyAndDuck.gif'
+leftSponsImagePath = './testPicture.gif'
 
 pathToSoundFile = './theDuckSong2.wav'  # 'allahu.wav' #'SaleelSawarimNasheed.wav' # If left empty nothing happens
 
