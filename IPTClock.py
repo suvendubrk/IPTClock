@@ -432,10 +432,18 @@ def endFullscreen():
 
 
 def EditReporter():
-    # reporterString=tk.simpledialog.askstring('Edit Reporter', prompt, initialvalue='Arnold Schwarzenegger')
-    # tkinter.simpledialog
-    reporterString = simpledialog.askstring('Edit Reporter', 'Reporter', initialvalue='Arnold Schwarzenegger')
+    reporterString = simpledialog.askstring('Edit Reporter', 'Reporter', initialvalue=reporterNameLabel.cget('text'))
     reporterNameLabel.configure(text=reporterString)
+
+
+def EditOpponent():
+    opponentString = simpledialog.askstring('Edit Opponent', 'Opponent', initialvalue=opponentNameLabel.cget('text'))
+    opponentNameLabel.configure(text=opponentString)
+
+
+def EditReviewer():
+    reviewerString = simpledialog.askstring('Edit Reviewer', 'Reviewer', initialvalue=reviewerNameLabel.cget('text'))
+    reviewerNameLabel.configure(text=reviewerString)
 
 
 #################
@@ -531,43 +539,26 @@ sponsLabel.grid(row=0, column=0, columnspan=1, rowspan=9)
 ####################
 # Competitor Names #
 ####################
-# add fields for reporter etc.
 # Reporter
 reporterLabel = tk.Label(master, text="Reporter:", font=('Courier New', 16))
 reporterLabel.grid(row=11, column=2)
 reporterLabel.configure(background=defaultBackgroundColor)
-
-reporterStringVar = tk.StringVar()
-# master.insert(Tkinter.END, u"\xc1".encode("utf-8"))
-# reporterEntry = tk.Entry(master, bd=5, width=24, textvariable=reporterStringVar, font=('Courier New', 16))
-reporterNameLabel = tk.Label(master, text=reporterStringVar, font=('Courier New', 16))
-
-
-# , u"\xc1".encode("utf-8")
+reporterNameLabel = tk.Label(master, text='', font=('Courier New', 16))
 reporterNameLabel.grid(row=11, column=3)
-# reporterEntry.grid(row=10, column=2)
-# reporterEntry.configure(background=defaultBackgroundColor)
 
 # Opponent
 opponentLabel = tk.Label(master, text="Opponent:", font=('Courier New', 16))
 opponentLabel.grid(row=12, column=2)
 opponentLabel.configure(background=defaultBackgroundColor)
-
-opponentStringVar = tk.StringVar()
-opponentEntry = tk.Entry(master, bd=5, width=24, textvariable=opponentStringVar, font=('Courier New', 16))
-opponentEntry.grid(row=12, column=3)
-opponentEntry.configure(background=defaultBackgroundColor)
+opponentNameLabel = tk.Label(master, text='', font=('Courier New', 16))
+opponentNameLabel.grid(row=12, column=3)
 
 # Reviewer
 reviewerLabel = tk.Label(master, text="Reviewer:", font=('Courier New', 16))
 reviewerLabel.grid(row=13, column=2)
 reviewerLabel.configure(background=defaultBackgroundColor)
-
-reviewerStringVar = tk.StringVar()
-reviewerEntry = tk.Entry(master, bd=5, width=24, textvariable=reviewerStringVar, font=('Courier New', 16))
-reviewerEntry.grid(row=13, column=3)
-reviewerEntry.configure(background=defaultBackgroundColor)
-
+reviewerNameLabel = tk.Label(master, text='', font=('Courier New', 16))
+reviewerNameLabel.grid(row=13, column=3)
 
 ####################
 # Initialize Clock #
@@ -578,12 +569,12 @@ IPTClock = Clock()
 ###################
 # Control Buttons #
 ###################
-# StartButton
+# Start Button
 startButton = tk.Button(master=master, text='Start', command=IPTClock.start)
 startButton.grid(row=4, column=6, sticky='WE')
 startButton.configure(background=defaultBackgroundColor)
 
-# PauseButton
+# Pause Button
 pauseButton = tk.Button(master=master, text='Pause', command=IPTClock.pause)
 pauseButton.grid(row=5, column=6, sticky='WE')
 pauseButton.configure(background=defaultBackgroundColor)
@@ -603,16 +594,26 @@ fullscreenButton = tk.Button(master=master, text='Fullscreen', command=toogleFul
 fullscreenButton.grid(row=7, column=6, sticky='WE')
 fullscreenButton.configure(background=defaultBackgroundColor)
 
-
+# Edit Reporter
 editReporterButton = tk.Button(master=master, text='Edit', command=EditReporter)
 editReporterButton.grid(row=11, column=4)
 editReporterButton.configure(background=defaultBackgroundColor)
 
+# Edit Opponent
+editOpponentButton = tk.Button(master=master, text='Edit', command=EditOpponent)
+editOpponentButton.grid(row=12, column=4)
+editOpponentButton.configure(background=defaultBackgroundColor)
 
-# control stages
+# Edit Reviewer
+editReviewerButton = tk.Button(master=master, text='Edit', command=EditReviewer)
+editReviewerButton.grid(row=13, column=4)
+editReviewerButton.configure(background=defaultBackgroundColor)
+
+# Previous Stage
 previousStageButton = tk.Button(master=master, text='<<', command=IPTClock.previous_stage)
 previousStageButton.grid(row=8, column=6, sticky='WE')
 
+# Next Stage
 nextStageButton = tk.Button(master=master, text='>>', command=IPTClock.next_stage)
 nextStageButton.grid(row=9, column=6, sticky='WE')
 
@@ -645,9 +646,9 @@ menubar.add_cascade(label="File", menu=filemenu)
 
 # drop down menu to chose stage
 stagemenu = tk.Menu(menubar, tearoff=0)
-for stageNumber in range(len(stages)):
-    stagemenu.add_command(label=str(stageNumber) + ":" + stages[stageNumber][0],
-                          command=lambda stageNumber=stageNumber: IPTClock.set_stage(stageNumber))
+for i in range(len(stages)):
+    stagemenu.add_command(label=str(i) + ":" + stages[i][0],
+                          command=lambda stage_number=i: IPTClock.set_stage(stage_number))
 
 menubar.add_cascade(label="Stage", menu=stagemenu)
 master.config(menu=menubar)
