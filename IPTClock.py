@@ -77,9 +77,13 @@ if installedPyaudio:
 ####################
 fps = 1
 
+# Blue: '#7DC7EE'
+# Yellow: '#FED812', '#eded1e'
+# Red: '#d32c2c'
+# Purple: '#864da0'
 defaultBackgroundColor = None  # 'blue'    # String, following tkinter naming. color used for background, buttons and labels etc. NOT color behind wedge, use "None" without "" to get system default
 wedgeBackgroundColor = None  # '#13235b' #String, following matplotlib naming.  color of the wedge background (for example to adhere to present year's color scheme. None defaults to Tkinter color from defaultBackgroundColor
-clockColors = ['#ffe000', 'red', 'purple']  # List of colors for the clock to cycle through
+clockColors = ['#7DC7EE', '#eded1e', '#d32c2c', '#864da0']  # List of colors for the clock to cycle through
 
 # leftSponsImagePath = './Albin-300x286.gif'
 leftSponsImagePath = './ponyAndDuck.gif'
@@ -93,32 +97,9 @@ stagesPath = "./stages.txt"
 # defaultFontSize =  # integer, fontsize of text
 
 
-########################################################
-# Settings, later to be imported from settings file(s) #
-########################################################
-# (Stage description, time in seconds)
-"""
-stages = [("IPT 2017 Göteborg", 10),
-          ("The Opponent Challenges the Reporter", 1*60),
-          ("The Reporter accepts or rejects the challenge", 2*60),
-          ("Preparation of the Reporter", 5*60),
-          ("Presentation of the report", 10*60),
-          ("Questions from the opponent", 2*60),
-          ("Preparation for the opponent", 3*60),
-          ("The opponent's speech", 5*60),
-          ("Discussion between the reporter and opponent", 5*60),
-          ("Questions from the reviewer", 2*60),
-          ("Preparation for the reviewer", 1*60),
-          ("The reviewer's speech", 3*60),
-          ("Discussion on stage", 4*60),
-          ("General discussion between the teams", 5*60),
-          ("Concluding remarks of the reporter", 1*60),
-          ("Questions of the jury", 6*60),
-          ("Putting marks", 1*60),
-          ("Jury remarks", 4*60)]
-"""
-
-
+###################
+# Import Settings #
+###################
 def import_stages():
     settings = open(stagesPath).read()
     separator = ' -- '
