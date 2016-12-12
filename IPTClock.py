@@ -311,10 +311,7 @@ class Timer:
         minutes = int(abs(math.ceil(self._time - 1e-3)) // 60)
         # fixes the countdown clock when deadline is passed
         if self._time < 0:
-            if minutes > 0:
-                self._string = self._string_pattern.format(-minutes, seconds)
-            else:
-                self._string = self._string_pattern.format(minutes, -seconds)
+                self._string = '-' + self._string_pattern.format(minutes, seconds)
         else:
             self._string = self._string_pattern.format(minutes, seconds)
 
