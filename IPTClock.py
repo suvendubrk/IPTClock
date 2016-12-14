@@ -42,6 +42,8 @@ else:
     import _thread # in order to utilize threads # the threading that is used is written for python 3
     usePython3 = True
 
+import math
+import time as pyTime
 
 # check os
 usingLinuxMasterRace = False
@@ -427,11 +429,10 @@ def on_closing():
 
 # toggling Fullscreen
 def toogleFullscreen():
-    global master, fullscreenButton
-    state = not master.fullscreen
-    master.attributes('-fullscreen', state)
-    master.focus_set()
-    master.fullscreen = state
+    toogleFullscreenButton()
+
+def toogleFullscreenLinux(temp):
+    toogleFullscreenButton() 
 
 
 def toogleFullscreenButton():
@@ -442,16 +443,23 @@ def toogleFullscreenButton():
     master.fullscreen = state
     if (master.fullscreen):
         fullscreenButton.configure(text="Windowed")
+        master.fullscreenSwitch.set(True) # traced variable
     else:
         fullscreenButton.configure(text="Fullscreen")
+        master.fullscreenSwitch.set(False) # traced variable
+
+def endFullscreenLinux(tmp):
+    endFullscreen() # there's some difference between os and input using keyes
 
 
 def endFullscreen():
-    global master
+    global master, fullscreenButton
     master.fullscreen = False
     master.attributes("-fullscreen", False)
+    fullscreenButton.configure(text="Fullscreen")
     master.focus_set()
-
+    SponsImageResize() # needed since it might skip resizing back elsewise
+    master.fullscreenSwitch.set(False) # traced variable
 
 def EditReporter():
     reporterString = simpledialog.askstring('Edit Reporter', 'Reporter', initialvalue=reporterNameLabel.cget('text'))
@@ -505,6 +513,73 @@ def create_clock_canvas():
     return ax, fig, canvas
 
 
+
+
+def SponsImageResizeOnEvent(event):
+    SponsImageResize() # I know but it works
+
+
+
+def SponsImageResize():
+    # checks if the image is larger then the window and rescales. Slow process
+    global master
+    # get screen width and height    
+    ws = master.winfo_width() # width of the screen
+    hs = master.winfo_height() # height of the screen
+    
+    #get size of image
+    hi = master.image.height()
+    wi = master.image.width()
+
+    if ( hi > hs): #check i height of image is bigger then the window
+        scalefactor = hs/hi
+        new_width_pixels = round(ws / scalefactor )
+        new_height_pixels = hs
+
+        # since 
+        if ( math.log(new_height_pixels,10) > 2 ):
+            nlog =  math.log(new_height_pixels,10)
+            new_height_pixels = round( new_height_pixels / (10**( nlog-1) ) )
+            new_hi = round( hi / (10**( nlog-1) ) )            
+        else:
+            new_hi = hi
+
+        # since the only input is integers we need to scale up before we can scale down to reach good size
+        master.newImage = master.image.zoom(new_height_pixels) # Memory problems apears for higher values into zoom
+        master.newImage = master.newImage.subsample(new_hi) # and subsample back to desired size            
+        master.sponsLabel.configure(image = master.newImage)
+
+
+def SponsImageFullscreen(a,b,c):
+    global master
+    ws = master.winfo_screenwidth() # width of the screen
+    hs = master.winfo_screenheight() # height of the screen
+    #get size of image
+    hi = master.image.height()
+    wi = master.image.width()
+    print(hi,hs)
+    if ( hi > hs): #check i height of image is bigger then the window
+        scalefactor = hs/hi
+        new_width_pixels = round(ws / scalefactor )
+        new_height_pixels = hs
+        
+        # since 
+        if ( math.log(new_height_pixels,10) > 2 ):
+            nlog =  math.log(new_height_pixels,10)
+            new_height_pixels = round( new_height_pixels / (10**( nlog-1) ) )
+            new_hi = round( hi / (10**( nlog-1) ) )
+            print('small')
+        else:
+            new_hi = hi
+            # since the only input is integers we need to scale up before we can scale down to reach good size
+        master.newImage = master.image.zoom(new_height_pixels) # Memory problems apears for higher values into zoom            
+        master.newImage = master.newImage.subsample(new_hi) # and subsample back to desired size
+    else:
+        master.newImage = master.image
+    master.sponsLabel.configure(image = master.newImage)
+        
+
+
 ###################
 # GUI Definitions #
 ###################
@@ -532,8 +607,14 @@ master.wm_title("IPTClock")
 # bindings for fullscreen
 master.fullscreen = False
 master.attributes('-fullscreen', False)
-master.bind("<F11>", toogleFullscreen)
-master.bind("<Escape>", endFullscreen)
+
+if ( usingLinuxMasterRace):
+    master.bind("<F11>", toogleFullscreenLinux)
+    master.bind("<Escape>", endFullscreenLinux)
+else:
+    master.bind("<F11>", toogleFullscreen)    
+    master.bind("<Escape>", endFullscreen)
+
 
 # set the background color, given from variable at start
 master.configure(background=defaultBackgroundColor)
@@ -549,15 +630,33 @@ if wedgeBackgroundColor is None:
 # boolean for fullscreen
 master.fullscreen = False
 
-
+######################################################
 #################
 # Sponsor Image #
 #################
 
-sponsImage = tk.PhotoImage(file=leftSponsImagePath)
+master.image = tk.PhotoImage(file=leftSponsImagePath)
+master.sponsLabel = tk.Label(master, image=master.image)
+master.sponsLabel.grid(row=0, column=0, columnspan=1, rowspan=14, sticky='N')
 
-sponsLabel = tk.Label(master, image=sponsImage)
-sponsLabel.grid(row=0, column=0, columnspan=1, rowspan=14)
+
+######## OLD ######
+   #  def draw_image():
+
+#master.sponsImage=sponsImage()
+
+
+#sponsImage = tk.PhotoImage(file=leftSponsImagePath)
+
+#sponsImage2 = sponsImage.zoom(2)
+#sponsLabel = tk.Label(master, image=sponsImage2)
+#sponsLabel.grid(row=0, column=0, columnspan=1, rowspan=14, sticky='N')
+
+#sponsImage2=sponsImage2.subsample(100)
+
+
+#sponsLabel.scale
+###################################################################
 
 
 ####################
@@ -706,6 +805,7 @@ menubar.add_cascade(label="Help", menu=helpmenu) # add helpmenu
 master.config(menu=menubar) # set the final menu
 
 # change column behaviour for scaling
+master.rowconfigure(0, weight=1)
 master.columnconfigure(3, weight=1)
 master.rowconfigure(3, weight=1)
 
@@ -726,6 +826,15 @@ master.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
 IPTClock.update()  # update the countdown
 
+
+# binds resize of master window and execute rescale of spons image
+master.fullscreenSwitch = tk.BooleanVar() # variable to trace
+master.fullscreenSwitch.set(False) # initial value
+
+master.bind('<Configure>', SponsImageResizeOnEvent )
+master.fullscreenSwitch.trace('w', SponsImageFullscreen) # watch the variable master.fullscreenSwitch, when i changes on switching to fullscreen it will execute command SponsImageFullscreen
+
+    
 master.protocol("WM_DELETE_WINDOW", on_closing)  # necessary to cleanly exit the program when using the windows manager
 
 # start the GUI loop
