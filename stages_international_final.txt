@@ -6,10 +6,15 @@
 720 -- Presentation of the report
 120 -- Questions from the Opponent to the Reporter and answers of the Reporter
 180 -- Preparation of the Opponent
-300 -- The Opponent's speech
+300 -- The Opponent’s speech
 300 -- Discussion between the Reporter and the Opponent
+120 -- Questions from the Reviewer to the Reporter and the Opponent
+and their answers
+60 -- Preparation of the Reviewer
+180 -- The Reviewer’s Speech
+240 -- Discussion between the Reviewer, Reporter and the Opponent
 300 -- General discussion between the teams
 60 -- Concluding remarks by the Reporter
 360 -- Questions from the Jury
-120 -- Jury decides marks
-300 -- Jury remarks/comments
+60 -- Jury decides marks
+240 -- Jury remarks/comments

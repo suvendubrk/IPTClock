@@ -104,7 +104,7 @@ defaultBackgroundColor = None  # 'blue'    # String, following tkinter naming. c
 wedgeBackgroundColor = None  # '#13235b' #String, following matplotlib naming.  color of the wedge background (for example to adhere to present year's color scheme. None defaults to Tkinter color from defaultBackgroundColor
 clockColors = ['#7DC7EE', '#FED812', '#d32c2c', '#864da0']  # List of colors for the clock to cycle through
 
-leftSponsImagePath = './testPicture.gif'  # './ponyAndDuck.gif' # './Albin-300x286.gif'
+leftSponsImagePath = './sponsors.gif'  # './testPicture.gif'  # './ponyAndDuck.gif' # './Albin-300x286.gif'
 
 pathToSoundFile = './theDuckSong2.wav'  # If left empty nothing happens
 
@@ -491,7 +491,7 @@ def create_clock_labels():
     countdownText.configure(background=defaultBackgroundColor)
 
     # Presentation of current phase
-    presentationTextLabel = tk.Label(master, text='', font=('Courier New', 32))
+    presentationTextLabel = tk.Label(master, text='', font=('Courier New', 32), wraplength=700)
     presentationTextLabel.grid(row=7, column=2, columnspan=3)
     presentationTextLabel.configure(background=defaultBackgroundColor)
     return challengeTimeLabel, countdownText, presentationTextLabel
@@ -608,7 +608,7 @@ master.wm_title("IPTClock")
 master.fullscreen = False
 master.attributes('-fullscreen', False)
 
-if ( usingLinuxMasterRace):
+if usingLinuxMasterRace or usingMac:
     master.bind("<F11>", toogleFullscreenLinux)
     master.bind("<Escape>", endFullscreenLinux)
 else:
