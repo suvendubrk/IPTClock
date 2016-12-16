@@ -608,7 +608,7 @@ master.wm_title("IPTClock")
 master.fullscreen = False
 master.attributes('-fullscreen', False)
 
-if ( usingLinuxMasterRace):
+if usingLinuxMasterRace or usingMac:
     master.bind("<F11>", toogleFullscreenLinux)
     master.bind("<Escape>", endFullscreenLinux)
 else:
