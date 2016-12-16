@@ -491,7 +491,7 @@ def create_clock_labels():
     countdownText.configure(background=defaultBackgroundColor)
 
     # Presentation of current phase
-    presentationTextLabel = tk.Label(master, text='', font=('Courier New', 32))
+    presentationTextLabel = tk.Label(master, text='', font=('Courier New', 32), wraplength=700)
     presentationTextLabel.grid(row=7, column=2, columnspan=3)
     presentationTextLabel.configure(background=defaultBackgroundColor)
     return challengeTimeLabel, countdownText, presentationTextLabel
