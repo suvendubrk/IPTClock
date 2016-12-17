@@ -491,7 +491,7 @@ def create_clock_labels():
     countdownText.configure(background=defaultBackgroundColor)
 
     # Presentation of current phase
-    presentationTextLabel = tk.Label(master, text='', font=('Courier New', 32), wraplength=700)
+    presentationTextLabel = tk.Label(master, text='', font=('Courier New', 32), wraplength=1400)
     presentationTextLabel.grid(row=9, column=2, columnspan=3, sticky=tk.S)
     presentationTextLabel.configure(background=defaultBackgroundColor)
     return countdownText, presentationTextLabel #, challengeTimeLabel
@@ -557,7 +557,6 @@ def SponsImageFullscreen(a,b,c):
     #get size of image
     hi = master.image.height()
     wi = master.image.width()
-    print(hi,hs)
     if ( hi > hs): #check i height of image is bigger then the window
         scalefactor = hs/hi
         new_width_pixels = round(ws / scalefactor )
@@ -578,6 +577,26 @@ def SponsImageFullscreen(a,b,c):
         master.newImage = master.image
     master.sponsLabel.configure(image = master.newImage)
         
+
+
+
+# about this application
+def AboutPopup():
+    # creates a popup window showing basic info and copywright
+    top_about = tk.Toplevel()
+    top_about.title("About IPTClock")
+
+
+    about_logo=tk.Label(top_about, image=logo_image)
+    about_logo.pack(side='left')
+
+    about_message = "IPTClock is a countdown clock written for use in the International Physicist's Tournament. The program is written using Python 3 with Tkinter and matplotlib.\n\n Copyright (c) 2016-2017 by Albin Jonasson Svärdsby  \n Joel Magnusson"
+    about_msg = tk.Message(top_about, text=about_message)
+    about_msg.pack(side='right')
+
+    about_exit_button = tk.Button(top_about, text="Dismiss", command=top_about.destroy)
+    about_exit_button.pack(side='bottom')
+
 
 
 ###################
@@ -667,7 +686,7 @@ reporterLabel = tk.Label(master, text="Reporter:", font=('Courier New', 16))
 reporterLabel.grid(row=11, column=2)
 reporterLabel.configure(background=defaultBackgroundColor)
 reporterNameLabel = tk.Label(master, text='', font=('Courier New', 16))
-reporterNameLabel.grid(row=11, column=4, sticky=tk.W)
+reporterNameLabel.grid(row=11, column=3, sticky=tk.W)
 
 # Opponent
 opponentLabel = tk.Label(master, text="Opponent:", font=('Courier New', 16))
@@ -681,7 +700,7 @@ reviewerLabel = tk.Label(master, text="Reviewer:", font=('Courier New', 16))
 reviewerLabel.grid(row=13, column=2)
 reviewerLabel.configure(background=defaultBackgroundColor)
 reviewerNameLabel = tk.Label(master, text='', font=('Courier New', 16))
-reviewerNameLabel.grid(row=13, column=3)
+reviewerNameLabel.grid(row=13, column=3, sticky=tk.W)
 
 ####################
 # Initialize Clock #
@@ -779,23 +798,6 @@ menubar.add_cascade(label="Stage", menu=stagemenu)
 # help menu
 logo_image = tk.PhotoImage(file= './Images/IPTlogos/IPTlogo_Color.gif') #'./Images/IPTlogos/newIPTlogo_without_text.gif') # needed outside aboutPopup to avoid garbage collect
 
-# about this application
-def AboutPopup():
-    # creates a popup window showing basic info and copywright
-    top_about = tk.Toplevel()
-    top_about.title("About IPTClock")
-
-
-    about_logo=tk.Label(top_about, image=logo_image)
-    about_logo.pack(side='left')
-
-    about_message = "IPTClock is a countdown clock written for use in the International Physicist's Tournament. The program is written using Python 3 with Tkinter and matplotlib.\n\n Copyright (c) 2016-2017 by Albin Jonasson Svärdsby  \n Joel Magnusson"
-    about_msg = tk.Message(top_about, text=about_message)
-    about_msg.pack(side='right')
-
-    about_exit_button = tk.Button(top_about, text="Dismiss", command=top_about.destroy)
-    about_exit_button.pack(side='bottom')
-
 
 helpmenu = tk.Menu(menubar, tearoff=0) # create helpmenu
 helpmenu.add_command(label="About", command= AboutPopup )
@@ -808,7 +810,7 @@ master.config(menu=menubar) # set the final menu
 master.rowconfigure(0, weight=1)
 master.columnconfigure(3, weight=1)
 master.rowconfigure(3, weight=1)
-master.rowconfigure(9, minsize=250)
+master.rowconfigure(9, minsize=125)
 
 
 # fix initial window size and position
