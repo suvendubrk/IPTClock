@@ -667,21 +667,21 @@ reporterLabel = tk.Label(master, text="Reporter:", font=('Courier New', 16))
 reporterLabel.grid(row=11, column=2)
 reporterLabel.configure(background=defaultBackgroundColor)
 reporterNameLabel = tk.Label(master, text='', font=('Courier New', 16))
-reporterNameLabel.grid(row=11, column=4)
+reporterNameLabel.grid(row=11, column=4, sticky=tk.W)
 
 # Opponent
 opponentLabel = tk.Label(master, text="Opponent:", font=('Courier New', 16))
 opponentLabel.grid(row=12, column=2)
 opponentLabel.configure(background=defaultBackgroundColor)
 opponentNameLabel = tk.Label(master, text='', font=('Courier New', 16))
-opponentNameLabel.grid(row=12, column=4)
+opponentNameLabel.grid(row=12, column=3, sticky=tk.W )
 
 # Reviewer
 reviewerLabel = tk.Label(master, text="Reviewer:", font=('Courier New', 16))
 reviewerLabel.grid(row=13, column=2)
 reviewerLabel.configure(background=defaultBackgroundColor)
 reviewerNameLabel = tk.Label(master, text='', font=('Courier New', 16))
-reviewerNameLabel.grid(row=13, column=4)
+reviewerNameLabel.grid(row=13, column=3)
 
 ####################
 # Initialize Clock #
@@ -694,51 +694,51 @@ IPTClock = Clock()
 ###################
 # Start Button
 startButton = tk.Button(master=master, text='Start', command=IPTClock.start)
-startButton.grid(row=4, column=6, sticky='WE')
+startButton.grid(row=4, column=7, sticky='WE')
 startButton.configure(background=defaultBackgroundColor)
 
 # Pause Button
 pauseButton = tk.Button(master=master, text='Pause', command=IPTClock.pause)
-pauseButton.grid(row=5, column=6, sticky='WE')
+pauseButton.grid(row=5, column=7, sticky='WE')
 pauseButton.configure(background=defaultBackgroundColor)
 
 # Reset button
 resetButton = tk.Button(master=master, text='Reset', command=IPTClock.reset)
-resetButton.grid(row=11, column=6, sticky='WE')
+resetButton.grid(row=11, column=7, sticky='WE')
 resetButton.configure(background=defaultBackgroundColor)
 
 # Quit button
 quitButton = tk.Button(master=master, text='Quit', command=_quit)
-quitButton.grid(row=13, column=6, sticky='WE')
+quitButton.grid(row=13, column=7, sticky='WE')
 quitButton.configure(background=defaultBackgroundColor)
 
 # Fullscreen
 fullscreenButton = tk.Button(master=master, text='Fullscreen', command=toogleFullscreenButton)
-fullscreenButton.grid(row=7, column=6, sticky='WE')
+fullscreenButton.grid(row=7, column=7, sticky='WE')
 fullscreenButton.configure(background=defaultBackgroundColor)
 
 # Edit Reporter
 editReporterButton = tk.Button(master=master, text='Edit', command=EditReporter)
-editReporterButton.grid(row=11, column=4)
+editReporterButton.grid(row=11, column=5)
 editReporterButton.configure(background=defaultBackgroundColor)
 
 # Edit Opponent
 editOpponentButton = tk.Button(master=master, text='Edit', command=EditOpponent)
-editOpponentButton.grid(row=12, column=4)
+editOpponentButton.grid(row=12, column=5)
 editOpponentButton.configure(background=defaultBackgroundColor)
 
 # Edit Reviewer
 editReviewerButton = tk.Button(master=master, text='Edit', command=EditReviewer)
-editReviewerButton.grid(row=13, column=4)
+editReviewerButton.grid(row=13, column=5)
 editReviewerButton.configure(background=defaultBackgroundColor)
 
 # Previous Stage
 previousStageButton = tk.Button(master=master, text='<<', command=IPTClock.previous_stage)
-previousStageButton.grid(row=8, column=6, sticky='WE')
+previousStageButton.grid(row=8, column=7, sticky='WE')
 
 # Next Stage
 nextStageButton = tk.Button(master=master, text='>>', command=IPTClock.next_stage)
-nextStageButton.grid(row=9, column=6, sticky='WE')
+nextStageButton.grid(row=9, column=7, sticky='WE')
 
 
 #####################
@@ -746,10 +746,10 @@ nextStageButton.grid(row=9, column=6, sticky='WE')
 ####################
 
 horizontalLine = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth=0)
-horizontalLine.grid(row=10, column=2, columnspan=3, sticky='WE')
+horizontalLine.grid(row=10, column=2, columnspan=4, sticky='WE')
 
 verticalLineRight = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth=0)
-verticalLineRight.grid(row=0, column=5, columnspan=1, rowspan=14, sticky='NS')
+verticalLineRight.grid(row=0, column=6, columnspan=1, rowspan=14, sticky='NS')
 
 verticalLineLeft = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth=0)
 verticalLineLeft.grid(row=0, column=1, columnspan=1, rowspan=14, sticky='NS')
