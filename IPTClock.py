@@ -308,7 +308,7 @@ class Clock:
         self.clock_graphics = ClockGraphics()
         self.startPlayingSongTime = 55 # time in seconds when death mode sound is played
 
-        self.challengeTimeLabel, self.countdownText, self.presentationTextLabel = create_clock_labels()
+        self.countdownText, self.presentationTextLabel = create_clock_labels()  # orig on LH self.challengeTimeLabel
 
         self._update_stage_dependencies()
 
@@ -371,7 +371,7 @@ class Clock:
         self.timer.set_timer(self.stage.time())
 
         self.countdownText.configure(text=self.timer.string())
-        self.challengeTimeLabel.configure(text=self.timer.string())
+       # self.challengeTimeLabel.configure(text=self.timer.string())
         self.reset()
         self.presentationTextLabel.configure(text=self.stage.description())  # update text presenting stage
 
@@ -481,9 +481,9 @@ def EditReviewer():
 #################
 def create_clock_labels():
     # Digital clock present time
-    challengeTimeLabel = tk.Label(master, text='', font=('Courier New', 26))
-    challengeTimeLabel.grid(row=9, column=2, columnspan=3, rowspan=1)
-    challengeTimeLabel.configure(background=defaultBackgroundColor)
+#    challengeTimeLabel = tk.Label(master, text='', font=('Courier New', 26))
+#    challengeTimeLabel.grid(row=9, column=2, columnspan=3, rowspan=1)
+#    challengeTimeLabel.configure(background=defaultBackgroundColor)
 
     # Digital clock countdown
     countdownText = tk.Label(master, text='', font=('Courier New', 46))
@@ -492,9 +492,9 @@ def create_clock_labels():
 
     # Presentation of current phase
     presentationTextLabel = tk.Label(master, text='', font=('Courier New', 32), wraplength=700)
-    presentationTextLabel.grid(row=7, column=2, columnspan=3)
+    presentationTextLabel.grid(row=9, column=2, columnspan=3, sticky=tk.S)
     presentationTextLabel.configure(background=defaultBackgroundColor)
-    return challengeTimeLabel, countdownText, presentationTextLabel
+    return countdownText, presentationTextLabel #, challengeTimeLabel
 
 
 def create_clock_canvas():
@@ -667,21 +667,21 @@ reporterLabel = tk.Label(master, text="Reporter:", font=('Courier New', 16))
 reporterLabel.grid(row=11, column=2)
 reporterLabel.configure(background=defaultBackgroundColor)
 reporterNameLabel = tk.Label(master, text='', font=('Courier New', 16))
-reporterNameLabel.grid(row=11, column=3)
+reporterNameLabel.grid(row=11, column=4)
 
 # Opponent
 opponentLabel = tk.Label(master, text="Opponent:", font=('Courier New', 16))
 opponentLabel.grid(row=12, column=2)
 opponentLabel.configure(background=defaultBackgroundColor)
 opponentNameLabel = tk.Label(master, text='', font=('Courier New', 16))
-opponentNameLabel.grid(row=12, column=3)
+opponentNameLabel.grid(row=12, column=4)
 
 # Reviewer
 reviewerLabel = tk.Label(master, text="Reviewer:", font=('Courier New', 16))
 reviewerLabel.grid(row=13, column=2)
 reviewerLabel.configure(background=defaultBackgroundColor)
 reviewerNameLabel = tk.Label(master, text='', font=('Courier New', 16))
-reviewerNameLabel.grid(row=13, column=3)
+reviewerNameLabel.grid(row=13, column=4)
 
 ####################
 # Initialize Clock #
@@ -808,7 +808,7 @@ master.config(menu=menubar) # set the final menu
 master.rowconfigure(0, weight=1)
 master.columnconfigure(3, weight=1)
 master.rowconfigure(3, weight=1)
-
+master.rowconfigure(9, minsize=250)
 
 
 # fix initial window size and position
