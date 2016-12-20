@@ -106,7 +106,7 @@ clockColors = ['#7DC7EE', '#FED812', '#d32c2c', '#864da0']  # List of colors for
 
 leftSponsImagePath = './sponsors.gif'  # './testPicture.gif'  # './ponyAndDuck.gif' # './Albin-300x286.gif'
 
-pathToSoundFile = './theDuckSong2.wav'  # If left empty nothing happens
+pathToSoundFile = ''#'./theDuckSong2.wav'  # If left empty nothing happens
 
 stagesPath = "./stages.txt"
 
@@ -375,6 +375,71 @@ class Clock:
         self.reset()
         self.presentationTextLabel.configure(text=self.stage.description())  # update text presenting stage
 
+#################
+# Timeout
+##############
+        
+class TimeoutClass:
+    # Presently it makes calls to IPTClock (which is a clock class), which isn't very nice
+    def __init__(self):
+        self.timeoutTime = 60 # [s]
+        self.timerStopTime = 0
+        self.timeoutState = True
+        self._string_pattern = '{0:02d}:{1:02d}:{2:02d}'
+        self._time = self.timeoutTime * 100 #[centi s]
+        self.timestep = 10 #[ms]
+        self.update_string()
+        self.ongoingTimer = IPTClock.timer._tick_state
+        IPTClock.pause()
+        
+    def setupTimeout(self):
+        # create and positions the pop up frame
+        self.top = tk.Toplevel()
+        self.top.title("TIMEOUT!")
+        self.msg = tk.Label(self.top, text=self.string,  font=('Courier New', 60) )
+        self.msg.pack(fill='x')
+
+        self.button = tk.Button(self.top, text="Dismiss", command=self.top.destroy) # this results in an exception, not breaking the program but ugly.
+        self.button.pack()
+
+    
+    # function updating the time
+    def update(self):
+        if self.timeoutState :
+            self.update_string()       
+            # Update the countdownText Label with the updated time
+            self.msg.configure(text=self.string)
+                
+            master.after(self.timestep, self.update) # tkinter function ,waits ms and executes command
+            self._time = self._time -self.timestep/10
+
+            # check exit criteria
+            if self._time < self.timerStopTime:
+                # terminate countdown and unpause main clock
+                self.timeoutState = False
+                if self.ongoingTimer:
+                    IPTClock.start()
+                self.top.destroy()
+                
+       
+    def update_string(self):
+        # updates the timeoutstring
+        seconds = int( ( abs( math.ceil(self._time - 1e-3) )/100 )  % 60)
+        minutes = int( ( abs(math.ceil(self._time - 1e-3) )/100)  // 60)
+        centiseconds = int(abs(math.ceil(self._time -1e-3) ) % 100  )
+        # fixes the countdown clock when deadline is passed
+        if self._time < 0:
+            self.string = '-' + self._string_pattern.format(minutes, seconds, centiseconds)
+        else:
+            self.string = self._string_pattern.format(minutes, seconds, centiseconds)
+
+        
+# function creating class and running update
+def Timeout():    
+    IPTTimeout = TimeoutClass()
+    IPTTimeout.setupTimeout()
+    IPTTimeout.update()
+    
 
 ###################
 # Sound Functions #
@@ -475,6 +540,10 @@ def EditReviewer():
     reviewerString = simpledialog.askstring('Edit Reviewer', 'Reviewer', initialvalue=reviewerNameLabel.cget('text'))
     reviewerNameLabel.configure(text=reviewerString)
 
+
+
+
+    
 
 #################
 # GUI Functions #
@@ -759,6 +828,10 @@ previousStageButton.grid(row=8, column=7, sticky='WE')
 nextStageButton = tk.Button(master=master, text='>>', command=IPTClock.next_stage)
 nextStageButton.grid(row=9, column=7, sticky='WE')
 
+# timeout
+timeoutButton = tk.Button(master=master, text='Timeout', command=Timeout)
+timeoutButton.grid(row=10,column=7,sticky='WE')
+
 
 #####################
 # layout lines
@@ -827,6 +900,13 @@ y = (hs/2) - (h/2)
 master.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
 IPTClock.update()  # update the countdown
+
+
+
+
+
+
+
 
 
 # binds resize of master window and execute rescale of spons image
