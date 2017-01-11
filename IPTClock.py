@@ -77,6 +77,8 @@ mpl.use('TkAgg')
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+import matplotlib.image as mpimg
+
 import math
 import time
 
@@ -104,9 +106,10 @@ defaultBackgroundColor = None  # 'blue'    # String, following tkinter naming. c
 wedgeBackgroundColor = None  # '#13235b' #String, following matplotlib naming.  color of the wedge background (for example to adhere to present year's color scheme. None defaults to Tkinter color from defaultBackgroundColor
 clockColors = ['#7DC7EE', '#FED812', '#d32c2c', '#864da0']  # List of colors for the clock to cycle through
 
-leftSponsImagePath = './sponsors.gif'  # './testPicture.gif'  # './ponyAndDuck.gif' # './Albin-300x286.gif'
+# Path to sponsor image [Presently PNG!], if using tkinter and label, it has to be in GIF and if we use matplotlib it has to be in PNG.
+leftSponsImagePath = './Images/Sponsors/sponsors.png' # './testPicture.gif'  # './ponyAndDuck.gif'
 
-pathToSoundFile = ''#'./theDuckSong2.wav'  # If left empty nothing happens
+pathToSoundFile = ''#'./Audio/theDuckSong2.wav'  # If left empty nothing happens, requires [.wav]
 
 stagesPath = "./stages.txt"
 
@@ -375,9 +378,9 @@ class Clock:
         self.reset()
         self.presentationTextLabel.configure(text=self.stage.description())  # update text presenting stage
 
-#################
-# Timeout
-##############
+###########
+# Timeout #
+###########
         
 class TimeoutClass:
     # Presently it makes calls to IPTClock (which is a clock class), which isn't very nice
@@ -389,8 +392,10 @@ class TimeoutClass:
         self._time = self.timeoutTime * 100 #[centi s]
         self.timestep = 10 #[ms]
         self.update_string()
-        self.ongoingTimer = IPTClock.timer._tick_state
-        IPTClock.pause()
+
+        # check if clock is running
+        self.tick_state = IPTClock.timer._tick_state             
+        IPTClock.pause() # pause clock
         
     def setupTimeout(self):
         # create and positions the pop up frame
@@ -399,7 +404,7 @@ class TimeoutClass:
         self.msg = tk.Label(self.top, text=self.string,  font=('Courier New', 60) )
         self.msg.pack(fill='x')
 
-        self.button = tk.Button(self.top, text="Dismiss", command=self.top.destroy) # this results in an exception, not breaking the program but ugly.
+        self.button = tk.Button(self.top, text="Dismiss", command=self.exit_timeout)
         self.button.pack()
 
     
@@ -433,6 +438,12 @@ class TimeoutClass:
         else:
             self.string = self._string_pattern.format(minutes, seconds, centiseconds)
 
+    def exit_timeout(self):
+        self.top.destroy() # this results in an exception, not breaking the program but ugly.
+
+        if self.tick_state: # check so that we don't start the clock if it wasn't running before timeout
+            IPTClock.start()
+
         
 # function creating class and running update
 def Timeout():    
@@ -441,6 +452,86 @@ def Timeout():
     IPTTimeout.update()
     
 
+###################
+# SponsImageClass #
+###################
+
+class SponsImage():
+    def __init__(self):
+        self._sponsImage = leftSponsImagePath # must be PNG
+        self.img = mpimg.imread( self._sponsImage )#'./ponyAndDuck.png') # converts/load image
+        self.widthRatioOfImage = 0.3 # how much of the screen that is sponsImage
+        self._determine_pixeldistance()
+        self._fig, self._canvas, self._plt  = self._create_sponsImage_canvas()
+        
+
+    def _updateCanvas(self):
+        # Tkinter need to redraw the canvas to actually show the new updated matplotlib figure
+        self._canvas.draw()
+
+    def _determine_pixeldistance(self):
+        #determines how many mm there is between the pixels
+        widthmm, heightmm, width, height = self.screen_dimensions()
+        self.pixDist_width = widthmm*1.0/width
+        self.pixDist_height = heightmm*1.0/height
+       
+
+    def _create_sponsImage_canvas(self):
+        widthmm, heightmm, width, height = self.screen_dimensions()
+
+        # inch convert
+        widthInch =  widthmm* 0.0393700787 * self.widthRatioOfImage
+        heightInch = heightmm * 0.0393700787
+
+        sponsFig = plt.figure(figsize =(widthInch,heightInch) ,edgecolor=None, facecolor=wedgeBackgroundColor)
+        
+        imgplot = plt.imshow(self.img)
+        plt.axis('off') # removes labels and axis, numbers etc.
+        plt.tight_layout(pad=0, w_pad=0, h_pad=0) # removes padding round figure
+
+        # Create own frame for the canvas
+        self.SponsFrame = tk.Frame(master)
+        sponsCanvas = FigureCanvasTkAgg(sponsFig, master=self.SponsFrame)
+        sponsCanvas.show()
+
+        # align frame and let canvas expand
+        self.SponsFrame.grid(row=0, column=0, columnspan=1, rowspan=14 , sticky='NW') 
+        sponsCanvas.get_tk_widget().grid(row=0, column=0, columnspan=1, rowspan=14 , sticky='NWES')
+        return sponsFig, sponsCanvas, imgplot 
+
+
+    def screen_dimensions(self):
+        #returns size of screen in mm and pixels
+        widthmm = master.winfo_screenmmheight() #returns size of master object in mm
+        heightmm = master.winfo_screenmmwidth()
+
+        width = master.winfo_screenheight() #returns size of master object in mm
+        height = master.winfo_screenwidth()        
+        return widthmm, heightmm, width, height
+
+    def canvas_size(self):
+        widthPix = self._canvas.winfo_width()
+        heightPix = self._canvas.winfo_height()
+        return widthPix, heightPix
+
+
+    def updateFigSize(self):
+#        widthPix, heightPix = master.winfo_width(), master.winfo_height()
+#        widthPix, heightPix = self._canvas.winfo_width(), self._canvas.winfo_height()
+        widthPix, heightPix =  self.SponsFrame.winfo_width(), self.SponsFrame.winfo_height()
+ 
+        widthmm = widthPix * self.pixDist_width
+        heightmm = heightPix * self.pixDist_height
+               
+        # inch convert
+        widthInch =  widthmm* 0.0393700787 # * self.widthRatioOfImage
+        heightInch = heightmm * 0.0393700787
+        self._fig.set_size_inches( widthInch,heightInch, forward=True)
+        #self._canvas.show()
+        self._updateCanvas()
+
+
+        
 ###################
 # Sound Functions #
 ###################
@@ -472,10 +563,6 @@ def PlayASoundFile(pathToSoundFile):
     # close PyAudio (5)
     p.terminate()
 
-
-###########################
-# Animated GIFs Functions #
-###########################
 
 
 ###################
@@ -570,7 +657,8 @@ def create_clock_canvas():
     fig = plt.figure(figsize=(16, 16), edgecolor=None, facecolor=wedgeBackgroundColor)
 
     ax = fig.add_subplot(111)
-    ax.set_axis_bgcolor(None)
+#    ax.set_axis_bgcolor(None)
+    ax.set_facecolor(None)
     ax.set_xlim(-1, 1)
     ax.set_ylim(-1, 1)
     ax.set_aspect(1)  # similar to "axis('equal')", but better.
@@ -584,68 +672,72 @@ def create_clock_canvas():
 
 
 
+
 def SponsImageResizeOnEvent(event):
     SponsImageResize() # I know but it works
 
 
 
 def SponsImageResize():
-    # checks if the image is larger then the window and rescales. Slow process
-    global master
-    # get screen width and height    
-    ws = master.winfo_width() # width of the screen
-    hs = master.winfo_height() # height of the screen
-    
-    #get size of image
-    hi = master.image.height()
-    wi = master.image.width()
 
-    if ( hi > hs): #check i height of image is bigger then the window
-        scalefactor = hs/hi
-        new_width_pixels = round(ws / scalefactor )
-        new_height_pixels = hs
+######## OLD image presentation using just tkinter###########
+#    # checks if the image is larger then the window and rescales. Slow process
+#    global master
+#    # get screen width and height    
+#    ws = master.winfo_width() # width of the screen
+#    hs = master.winfo_height() # height of the screen
+#    
+#    #get size of image
+#    hi = master.image.height()
+#    wi = master.image.width()
 
-        # since 
-        if ( math.log(new_height_pixels,10) > 2 ):
-            nlog =  math.log(new_height_pixels,10)
-            new_height_pixels = round( new_height_pixels / (10**( nlog-1) ) )
-            new_hi = round( hi / (10**( nlog-1) ) )            
-        else:
-            new_hi = hi
-
-        # since the only input is integers we need to scale up before we can scale down to reach good size
-        master.newImage = master.image.zoom(new_height_pixels) # Memory problems apears for higher values into zoom
-        master.newImage = master.newImage.subsample(new_hi) # and subsample back to desired size            
-        master.sponsLabel.configure(image = master.newImage)
-
+#    if ( hi > hs): #check i height of image is bigger then the window
+#        scalefactor = hs/hi
+#        new_width_pixels = round(ws / scalefactor )
+#        new_height_pixels = hs
+#
+#        # since 
+#        if ( math.log(new_height_pixels,10) > 2 ):
+#            nlog =  math.log(new_height_pixels,10)
+#            new_height_pixels = round( new_height_pixels / (10**( nlog-1) ) )
+#            new_hi = round( hi / (10**( nlog-1) ) )            
+#        else:
+#            new_hi = hi
+#
+#        # since the only input is integers we need to scale up before we can scale down to reach good size
+#        master.newImage = master.image.zoom(new_height_pixels) # Memory problems apears for higher values into zoom
+#        master.newImage = master.newImage.subsample(new_hi) # and subsample back to desired size            
+#        master.sponsLabel.configure(image = master.newImage)
+    IPTSpons.updateFigSize()
 
 def SponsImageFullscreen(a,b,c):
-    global master
-    ws = master.winfo_screenwidth() # width of the screen
-    hs = master.winfo_screenheight() # height of the screen
-    #get size of image
-    hi = master.image.height()
-    wi = master.image.width()
-    if ( hi > hs): #check i height of image is bigger then the window
-        scalefactor = hs/hi
-        new_width_pixels = round(ws / scalefactor )
-        new_height_pixels = hs
-        
-        # since 
-        if ( math.log(new_height_pixels,10) > 2 ):
-            nlog =  math.log(new_height_pixels,10)
-            new_height_pixels = round( new_height_pixels / (10**( nlog-1) ) )
-            new_hi = round( hi / (10**( nlog-1) ) )
-            print('small')
-        else:
-            new_hi = hi
-            # since the only input is integers we need to scale up before we can scale down to reach good size
-        master.newImage = master.image.zoom(new_height_pixels) # Memory problems apears for higher values into zoom            
-        master.newImage = master.newImage.subsample(new_hi) # and subsample back to desired size
-    else:
-        master.newImage = master.image
-    master.sponsLabel.configure(image = master.newImage)
-        
+######## OLD image presentation using just tkinter###########
+ #   global master
+ #   ws = master.winfo_screenwidth() # width of the screen
+ #   hs = master.winfo_screenheight() # height of the screen
+ #   #get size of image
+ #   hi = master.image.height()
+ #   wi = master.image.width()
+ #   if ( hi > hs): #check i height of image is bigger then the window
+ #       scalefactor = hs/hi
+ #       new_width_pixels = round(ws / scalefactor )
+ #       new_height_pixels = hs
+ #       
+ #       # since 
+ #       if ( math.log(new_height_pixels,10) > 2 ):
+ #           nlog =  math.log(new_height_pixels,10)
+ #           new_height_pixels = round( new_height_pixels / (10**( nlog-1) ) )
+ #           new_hi = round( hi / (10**( nlog-1) ) )
+ #           print('small')
+ #       else:
+ #           new_hi = hi
+ #           # since the only input is integers we need to scale up before we can scale down to reach good size
+ #       master.newImage = master.image.zoom(new_height_pixels) # Memory problems apears for higher values into zoom            
+ #       master.newImage = master.newImage.subsample(new_hi) # and subsample back to desired size
+ #   else:
+ #       master.newImage = master.image
+ #   master.sponsLabel.configure(image = master.newImage)
+    IPTSpons.updateFigSize()
 
 
 
@@ -723,28 +815,17 @@ master.fullscreen = False
 # Sponsor Image #
 #################
 
-master.image = tk.PhotoImage(file=leftSponsImagePath)
-master.sponsLabel = tk.Label(master, image=master.image)
-master.sponsLabel.grid(row=0, column=0, columnspan=1, rowspan=14, sticky='N')
+IPTSpons = SponsImage()
+
+### OLD image presentation using just tkinter###########
+#master.image = tk.PhotoImage(file=leftSponsImagePath)
+#master.sponsLabel = tk.Label(master, image=master.image)
+#master.sponsLabel.grid(row=0, column=0, columnspan=1, rowspan=14, sticky='N')
+#####################################################
 
 
-######## OLD ######
-   #  def draw_image():
 
-#master.sponsImage=sponsImage()
-
-
-#sponsImage = tk.PhotoImage(file=leftSponsImagePath)
-
-#sponsImage2 = sponsImage.zoom(2)
-#sponsLabel = tk.Label(master, image=sponsImage2)
-#sponsLabel.grid(row=0, column=0, columnspan=1, rowspan=14, sticky='N')
-
-#sponsImage2=sponsImage2.subsample(100)
-
-
-#sponsLabel.scale
-###################################################################
+##################################################################
 
 
 ####################
@@ -887,10 +968,10 @@ master.rowconfigure(9, minsize=125)
 
 
 # fix initial window size and position
-w = 900 # width for the Tk root
+w = 900 # width for the Tk root [pixels]
 h = 700 # height for the Tk root
 # get screen width and height
-ws = master.winfo_screenwidth() # width of the screen
+ws = master.winfo_screenwidth() # width of the screen [pixels]
 hs = master.winfo_screenheight() # height of the screen
 
 # calculate x and y coordinates for the Tk root window
@@ -900,11 +981,6 @@ y = (hs/2) - (h/2)
 master.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
 IPTClock.update()  # update the countdown
-
-
-
-
-
 
 
 
