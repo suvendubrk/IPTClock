@@ -28,7 +28,9 @@ GUI control and matplotlib for image and graphics tweaking.
 IPTClock has the following dependencies:
 
 Python3 or higher
+
 matplotlib
+
 tkinter
 
 (for a smaller breakdown if you want
@@ -38,6 +40,7 @@ IPTClock.py and Classes/iptclock_classes.py)
 
 ## (Optional) Dependencies ##
 pyaudio
+
 cx_Freeze  (for creating pre built packages: https://anthony-tuininga.github.io/cx_Freeze/)
 
 
