@@ -1,0 +1,15 @@
+<Time in seconds> -- <Description>
+120 -- Captains' Fight
+60 -- The Opponent challenges the Reporter to present a problem
+60 -- The Reporter accepts or rejects the challenge
+300 -- Preparation of the Reporter
+720 -- Presentation of the report
+120 -- Questions from the Opponent to the Reporter and answers of the Reporter
+180 -- Preparation of the Opponent
+300 -- The Opponent's speech
+300 -- Discussion between the Reporter and the Opponent
+300 -- General discussion between the teams
+60 -- Concluding remarks by the Reporter
+360 -- Questions from the Jury
+120 -- Jury decides marks
+300 -- Jury remarks/comments
