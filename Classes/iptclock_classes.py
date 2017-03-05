@@ -1,12 +1,17 @@
 from Config.config import * # imports configuration variables
 import math
+
+import matplotlib as mpl
+mpl.use('TkAgg') # needs to be called before plt
+import tkinter as tk
+
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
-import matplotlib as mpl
-mpl.use('TkAgg')
-import tkinter as tk
 import time
+
+import _thread # in order to utilize threads # the threading that is used is written for python 3
+
 
 
 ###############
