@@ -284,20 +284,11 @@ else:
 # change window title
 master.wm_title("IPTClock")
 
-# bindings for fullscreen
-master.fullscreen = False
-master.attributes('-fullscreen', False)
-
-if usingLinuxMasterRace or usingMac:
-    master.bind("<F11>", toogleFullscreenLinux)
-    master.bind("<Escape>", endFullscreenLinux)
-else:
-    master.bind("<F11>", toogleFullscreen)    
-    master.bind("<Escape>", endFullscreen)
 
 
 # set the background color, given from variable at start
 master.configure(background=defaultBackgroundColor)
+
 
 # Find default background color and check in case we use it
 defaultbgColor = master.cget('bg')  # find system window default color
@@ -488,11 +479,39 @@ master.geometry('%dx%d+%d+%d' % (w, h, x, y))
 master.fullscreenSwitch = tk.BooleanVar() # variable to trace
 master.fullscreenSwitch.set(False) # initial value
 
-master.bind('<Configure>', SponsImageResizeOnEvent )
 master.fullscreenSwitch.trace('w', SponsImageFullscreen) # watch the variable master.fullscreenSwitch, when i changes on switching to fullscreen it will execute command SponsImageFullscreen
 
 # if close using window manager    
 master.protocol("WM_DELETE_WINDOW", on_closing)  # necessary to cleanly exit the program when using the windows manager
+
+
+
+#####################
+# Keyboard bindings #
+#####################
+
+# Binding for fullscreen
+master.bind('<Configure>', SponsImageResizeOnEvent )
+
+# bindings for fullscreen
+master.fullscreen = False
+master.attributes('-fullscreen', False)
+
+if usingLinuxMasterRace or usingMac:
+    master.bind("<F11>", toogleFullscreenLinux)
+    master.bind("<Escape>", endFullscreenLinux)
+else:
+    master.bind("<F11>", toogleFullscreen)    
+    master.bind("<Escape>", endFullscreen)
+
+# bindings for changing stage
+def KeyNextStage(event):
+    IPTClock.next_stage()    
+master.bind("<Control-Right>", KeyNextStage )
+
+def KeyPreviousStage(event):
+    IPTClock.previous_stage()    
+master.bind("<Control-Left>", KeyPreviousStage )
 
 
 #######################
