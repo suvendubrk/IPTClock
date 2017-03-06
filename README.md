@@ -61,9 +61,9 @@ Ctrl+Left : Switch to previous stage
 
 Ctrl+Right : Switch to next stage
 
-"<F11>" : Toggle fullscreen
+\<F11\> : Toggle fullscreen
 
-"<Escape>" : Exit fullscreen
+\<Escape\> : Exit fullscreen
 
 Ctrl + + : Increase fontsize
 
