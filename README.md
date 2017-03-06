@@ -54,6 +54,21 @@ For instance in the case of windows use the exe file IPTClock.exe found in
 build/exe.win-ARCHITECHURE-PYTHONVER/IPTClock.exe
 
 
+## Key bindings ##
+Key bindings used by IPTClock is
+
+Ctrl+Left : Switch to previous stage
+
+Ctrl+Right : Switch to next stage
+
+<F11> : Toggle fullscreen
+
+<Escape> : Exit fullscreen
+
+Ctrl + + : Increase fontsize
+
+Ctrl + - : Decrease fontsize
+
 
 ## configuration ##
 Variables used to change the IPTClock is positioned in Config/config.py
@@ -85,3 +100,7 @@ to position relative the executable file in the build folder.
 I encountered a problem where the linking was broken while using cx_Freeze and
 python 3.5, using python 3.4 solved this issue.
 
+
+Crashes on Mac OS X 10.10.5 when using dead keys. For details see issue #1 https://github.com/AlbinJS/IPTClock/issues/1
+
+Present solution: Don't push dead keys on Mac OSX.

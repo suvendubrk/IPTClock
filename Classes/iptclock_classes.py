@@ -137,15 +137,19 @@ def create_clock_labels(tkLabel):
     # Digital clock present time
 
     # Digital clock countdown
-    countdownText = tk.Label(tkLabel, text='', font=('Courier New', 46))
+    countdownText = tk.Label(tkLabel, text='', font= ('Courier New', 46))
     countdownText.grid(row=2, column=2, columnspan=3)
     countdownText.configure(background=defaultBackgroundColor)
 
     # Presentation of current phase
-    presentationTextLabel = tk.Label(tkLabel, text='', font=('Courier New', 32), wraplength=1400)
+#    presentationTextLabel = tk.Label(tkLabel, text='', font=('Courier New', 32), wraplength=1400)
+#    tkLabel.origWrapLength = 400
+    wrapLength = 400
+    presentationTextLabel = tk.Label(tkLabel, text='', font=('Courier New', 32), wraplength= wrapLength) # This should probably be scaled with windowssize.
     presentationTextLabel.grid(row=9, column=2, columnspan=3, sticky=tk.S)
     presentationTextLabel.configure(background=defaultBackgroundColor)
-    return countdownText, presentationTextLabel #, challengeTimeLabel
+
+    return countdownText, presentationTextLabel, wrapLength
 
 
 def create_clock_canvas(tkHandle,wedgeBgColour):
@@ -182,7 +186,7 @@ class Clock:
         self.clock_graphics = ClockGraphics(self._tkHandle)
         self.startPlayingSongTime = 55 # time in seconds when death mode sound is played
 
-        self.countdownText, self.presentationTextLabel = create_clock_labels(self._tkHandle)  # orig on LH self.challengeTimeLabel
+        self.countdownText, self.presentationTextLabel, self.wrapLength = create_clock_labels(self._tkHandle)  # orig on LH self.challengeTimeLabel
 
         self._update_stage_dependencies()
 
