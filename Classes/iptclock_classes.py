@@ -12,8 +12,17 @@ import time
 
 import _thread # in order to utilize threads # the threading that is used is written for python 3
 
+# check if we use audio or not (.wave format)
+try:
+    import pyaudio
+    installedPyaudio = True
+except ImportError:
+    installedPyaudio = False
 
+if installedPyaudio:
+    import wave
 
+    
 ###############
 # Timer Class #
 ###############
@@ -156,7 +165,7 @@ def create_clock_canvas(tkHandle,wedgeBgColour):
     fig = plt.figure(figsize=(16, 16), edgecolor=None, facecolor=wedgeBgColour)
     ax = fig.add_subplot(111)
     #    ax.set_axis_bgcolor(None)
-    ax.set_facecolor(None)
+#    ax.set_facecolor(None)
     ax.set_xlim(-1, 1)
     ax.set_ylim(-1, 1)
     ax.set_aspect(1)  # similar to "axis('equal')", but better.
@@ -209,6 +218,38 @@ class Clock:
         # reset the clock graphics
         self.clock_graphics.reset()
 
+    
+    # Function playing song at time    
+    def PlayASoundFile(self, pathToSoundFile):
+        if ( installedPyaudio ):
+            CHUNK = 64  # 1024
+            wf = wave.open(pathToSoundFile, 'rb')
+            
+            # instantiate PyAudio (1)
+            p = pyaudio.PyAudio()
+            
+            # open stream (2)
+            stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+                            channels=wf.getnchannels(),
+                            rate=wf.getframerate(),
+                            output=True)
+
+            # read data
+            data = wf.readframes(CHUNK)
+            
+            # play stream (3)
+            while len(data) > 0:
+                stream.write(data)
+                data = wf.readframes(CHUNK)
+
+                # stop stream (4)
+                stream.stop_stream()
+                stream.close()
+                
+                # close PyAudio (5)
+                p.terminate()
+
+        
     # function updating the time
     def update(self):
         # Every time this function is called,
@@ -226,7 +267,7 @@ class Clock:
 
             # check for countdown time for activating "low health mode"
             if self.timer.time() == self.startPlayingSongTime:
-                _thread.start_new_thread(PlayASoundFile, (pathToSoundFile,))
+                _thread.start_new_thread(self.PlayASoundFile, (pathToSoundFile,))
 
         # Call the update() function after 1/fps seconds
         dt = (time.time() - t0) * 1000

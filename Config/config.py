@@ -20,5 +20,5 @@ stagesPath = "./Stages/stages.txt"  # Stages config path
 
 # To be introduced...:
 # defaultFont = # string deciding the standard font
-# defaultFontSize =  # integer, fontsize of text
+
 

@@ -65,17 +65,6 @@ elif _platform == "win32":
    # Windows
     usingWindows = True
 
-
-# check if we use audio or not (.wave format)
-try:
-    import pyaudio
-    installedPyaudio = True
-except ImportError:
-    installedPyaudio = False
-
-if installedPyaudio:
-    import wave
-
 # configuration variables
 from Config.config import *
 
@@ -88,42 +77,6 @@ def Timeout(clockHandle):
     IPTTimeout = TimeoutClass(clockHandle)
     IPTTimeout.setupTimeout()
     IPTTimeout.update()
-
-
-
-
-    
-###################
-# Sound Functions #
-###################
-def PlayASoundFile(pathToSoundFile):
-    CHUNK = 64  # 1024
-    wf = wave.open(pathToSoundFile, 'rb')
-
-    # instantiate PyAudio (1)
-    p = pyaudio.PyAudio()
-
-    # open stream (2)
-    stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
-                    channels=wf.getnchannels(),
-                    rate=wf.getframerate(),
-                    output=True)
-
-    # read data
-    data = wf.readframes(CHUNK)
-
-    # play stream (3)
-    while len(data) > 0:
-        stream.write(data)
-        data = wf.readframes(CHUNK)
-
-    # stop stream (4)
-    stream.stop_stream()
-    stream.close()
-
-    # close PyAudio (5)
-    p.terminate()
-
 
 
 ###################
