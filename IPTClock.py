@@ -326,7 +326,7 @@ master.customFontStage_orig = master.customFontStage.cget('size')
 # functions for changing font size
 def IncreaseFontSize(event):
     # Funny wraparound might create strange things...
-    fontSize = master.customFontCompetitors.cget('size')
+    fontSize = master.customFontCompetitors.cget('size') # save as variable in master object.
     fontSize = fontSize + 1    
     master.customFontCompetitors.configure(size=fontSize)
 
@@ -465,7 +465,11 @@ nextStageButton = tk.Button(master=master, text='>>', command=IPTClock.next_stag
 nextStageButton.grid(row=9, column=7, sticky='WE')
 
 # timeout
-timeoutButton = tk.Button(master=master, text='Timeout', command=lambda clockHandle = IPTClock: Timeout(clockHandle) , font= master.customFontButtons) 
+def HandleReturn():
+    return IPTClock, master
+
+timeoutButton = tk.Button(master=master, text='Timeout', command=lambda clockHandle = IPTClock: Timeout(clockHandle) , font= master.customFontButtons)
+#timeoutButton = tk.Button(master=master, text='Timeout', command=lambda clockHandle, masterHandle = HandleReturn(): Timeout(clockHandle, masterHandle) , font= master.customFontButtons) 
 timeoutButton.grid(row=10,column=7,sticky='WE')
 
 

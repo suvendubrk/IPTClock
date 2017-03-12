@@ -383,18 +383,93 @@ class ClockGraphics:
 ###########
 # Timeout #
 ###########
-        
+
+#####################
+# TimoutTimer Class #
+#####################
+
+class TimeoutTimer():
+    # A slighly modded version of Timer class.
+    def __init__(self):
+        self._tick_state = False
+        self._start_time = 0
+        self._time = 0
+        self._string = ''
+
+        self._string_pattern = '{0:02d}:{1:02d}:{2:02d}'  # the pattern format for the timer to ensure 2 digits
+        self._time_step = 1/10 #1/fps # 
+
+        self.set_timer(self._start_time)
+
+    def _update_string(self):
+        print( self._time)
+        seconds = int(abs(math.ceil(self._time - 1e-3)) % 60)
+        minutes = int(abs(math.ceil(self._time - 1e-3 ) ) // 60)
+        centiseconds = int(abs(math.ceil(self._time*100-1e-3 ) ) % 100  )
+        print('centi:', centiseconds)
+        # fixes the countdown clock when deadline is passed
+        if self._time < 0:
+                self._string = '-' + self._string_pattern.format(minutes, seconds, centiseconds)
+        else:
+            self._string = self._string_pattern.format(minutes, seconds, centiseconds)
+
+    def _set_time(self, time):
+        self._time = time
+        self._update_string()
+
+    def start_time(self):
+        return self._start_time
+
+    def time(self):
+        return self._time
+
+    def string(self):
+        print('String:', self._string)
+        return self._string
+    
+
+    def set_timer(self, start_time):
+        self._start_time = start_time -1 # minus 1 to balance the start of centiseconds...
+        self.reset()
+
+    def tick(self):
+        self._set_time(self._time-self._time_step)
+
+    def isTicking(self):
+        return self._tick_state
+
+    def start(self):
+        self._tick_state = True
+        print('Starting')
+
+    def pause(self):
+        self._tick_state = False
+
+    def reset(self):
+        self._tick_state = False
+        self._set_time(self._start_time)
+
+    def set_time_step(self, fps):
+        self._time_step = 1/fps
+
+#################        
+# Timeout Class #
+#################
+
 class TimeoutClass:
     # Presently it makes calls to IPTClock (which is a clock class), which isn't very nice
     def __init__(self, clockHandle):
-        self._clock_handle = clockHandle        
-        self.timeoutTime = 60 # [s]
+        self._clock_handle = clockHandle
+        self._master_handle  = self._clock_handle._tkHandle
+        self.fps = 10
+        
+
+        self.timeoutTime = 7 # [s]
         self.timerStopTime = 0
+        self.timer = TimeoutTimer()
+        self.timer.set_timer(self.timeoutTime)
         self.timeoutState = True
-        self._string_pattern = '{0:02d}:{1:02d}:{2:02d}'
-        self._time = self.timeoutTime * 100 #[centi s]
-        self.timestep = 10 #[ms]
-        self.update_string()
+        self.timer.start()
 
         # check if clock is running
         self.tick_state = self._clock_handle.timer._tick_state             
@@ -404,43 +479,41 @@ class TimeoutClass:
         # create and positions the pop up frame
         self.top = tk.Toplevel()
         self.top.title("TIMEOUT!")
-        self.msg = tk.Label(self.top, text=self.string,  font=('Courier New', 60) )
+        self.msg = tk.Label(self.top, text=self.timer.string,  font=('Courier New', 60) )
         self.msg.pack(fill='x')
 
         self.button = tk.Button(self.top, text="Dismiss", command=self.exit_timeout)
         self.button.pack()
         self.top.protocol("WM_DELETE_WINDOW", self.exit_timeout) # if push x on border
 
-        
-    # function updating the time
-    def update(self):
-        if self.timeoutState :
-            self.update_string()       
-            # Update the countdownText Label with the updated time
-            self.msg.configure(text=self.string)
-                
-            self._clock_handle._tkHandle.after(self.timestep, self.update) # tkinter function ,waits ms and executes command
-            self._time = self._time -self.timestep/10
 
-            # check exit criteria
-            if self._time < self.timerStopTime:
-                # terminate countdown and unpause main clock
-                self.timeoutState = False
-                if self.ongoingTimer:
-                    self._clock_handle.start()
-                self.top.destroy()
-                
+  # function updating the time
+    def update(self):
        
-    def update_string(self):
-        # updates the timeoutstring
-        seconds = int( ( abs( math.ceil(self._time - 1e-3) )/100 )  % 60)
-        minutes = int( ( abs(math.ceil(self._time - 1e-3) )/100)  // 60)
-        centiseconds = int(abs(math.ceil(self._time -1e-3) ) % 100  )
-        # fixes the countdown clock when deadline is passed
-        if self._time < 0:
-            self.string = '-' + self._string_pattern.format(minutes, seconds, centiseconds)
-        else:
-            self.string = self._string_pattern.format(minutes, seconds, centiseconds)
+        # Every time this function is called,
+        # decrease timer with one second
+        t0 = time.time()
+        if self.timer.isTicking():
+
+            # Update the countdownText Label with the updated time
+            self.msg.configure(text=self.timer.string())
+
+            self.timer.tick()
+           
+
+        # Call the update() function after 1/fps seconds
+        dt = (time.time() - t0) * 1000
+        time_left = max(0, int(1000 / self.fps - dt))
+        self._master_handle.after(time_left, self.update)
+
+        # check exit criteria
+        if self.timer._time < self.timerStopTime:
+            # terminate countdown and unpause main clock
+            self.timeoutState = False
+            if self.timer.isTicking: #self.ongoingTimer:
+                self._clock_handle.start()
+            self.top.destroy()
+
 
     def exit_timeout(self):
         self.top.destroy() # this results in an exception, not breaking the program but ugly.
