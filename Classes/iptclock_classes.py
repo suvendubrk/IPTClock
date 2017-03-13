@@ -148,7 +148,7 @@ def create_clock_labels(tkLabel):
     # Digital clock countdown
     countdownText = tk.Label(tkLabel, text='', font= ('Courier New', 46))
     countdownText.grid(row=2, column=2, columnspan=3)
-    countdownText.configure(background=defaultBackgroundColor)
+    countdownText.configure(background=defaultBackgroundColour, fg= textColour)
 
     # Presentation of current phase
 #    presentationTextLabel = tk.Label(tkLabel, text='', font=('Courier New', 32), wraplength=1400)
@@ -156,7 +156,7 @@ def create_clock_labels(tkLabel):
     wrapLength = 400
     presentationTextLabel = tk.Label(tkLabel, text='', font=('Courier New', 32), wraplength= wrapLength) # This should probably be scaled with windowssize.
     presentationTextLabel.grid(row=9, column=2, columnspan=3, sticky=tk.S)
-    presentationTextLabel.configure(background=defaultBackgroundColor)
+    presentationTextLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
     return countdownText, presentationTextLabel, wrapLength
 
@@ -178,13 +178,13 @@ def create_clock_canvas(tkHandle,wedgeBgColour):
 
 
 def get_backgroundColour():        
-        # Find default background color and check in case we use it
-        defaultbgColor = self._tkHandle.cget('bg')  # find system window default color
-        bgRGB = self._tkHandle.winfo_rgb(self.defaultbgColor)
+        # Find default background colour and check in case we use it
+        defaultbgColour = self._tkHandle.cget('bg')  # find system window default colour
+        bgRGB = self._tkHandle.winfo_rgb(self.defaultbgColour)
         bgRGB = (bgRGB[0]/(256**2), bgRGB[1]/(256**2), bgRGB[2]/(256**2))
 
-        if wedgeBackgroundColor is None:
-            self.wedgeBackgroundColor = bgRGB      
+        if wedgeBackgroundColour is None:
+            self.wedgeBackgroundColour = bgRGB      
 
 
 class Clock:
@@ -312,13 +312,13 @@ class ClockGraphics:
         self._set_backgroundColour()
         
         # Creation of clock graphical elements
-        self._ax, self._fig, self._canvas = create_clock_canvas(self._tkHandle, self.wedgeBackgroundColor)
+        self._ax, self._fig, self._canvas = create_clock_canvas(self._tkHandle, self.wedgeBackgroundColour)
         self._wedge = self._create_wedge(2)
         self._backgroundDisc = self._create_circle(1, True)
         self._perimiterCircle = self._create_circle(3, False)
 
         # set colours
-        self._colors = [self.wedgeBackgroundColor] + clockColors  # [wedgeBackgroundColor, wedgeColor, 'red', 'purple']
+        self._colours = [self.wedgeBackgroundColour] + clockColours  # [wedgeBackgroundColour, wedgeColour, 'red', 'purple']
 
         # Reset the clock
         self.reset()
@@ -346,16 +346,16 @@ class ClockGraphics:
         # Tkinter need to redraw the canvas to actually show the new updated matplotlib figure
         self._canvas.draw()
 
-    def _switch_colors(self):
+    def _switch_colours(self):
         lap = int(abs(self._angle - 1e-3)/360)
-        if lap < len(self._colors)-1:
-            wedge_color = self._colors[lap+1]
-            background_color = self._colors[lap]
+        if lap < len(self._colours)-1:
+            wedge_colour = self._colours[lap+1]
+            background_colour = self._colours[lap]
         else:
-            wedge_color = self._backgroundDisc.get_facecolor()
-            background_color = self._wedge.get_facecolor()
-        self._wedge.set_facecolor(wedge_color)
-        self._backgroundDisc.set_facecolor(background_color)
+            wedge_colour = self._backgroundDisc.get_facecolour()
+            background_colour = self._wedge.get_facecolour()
+        self._wedge.set_facecolor(wedge_colour)
+        self._backgroundDisc.set_facecolor(background_colour)
 
     def set_angle(self, new_angle):
         self._angle = new_angle
@@ -363,7 +363,7 @@ class ClockGraphics:
 
     def update(self):
         if self._isTwelve():
-            self._switch_colors()
+            self._switch_colours()
         self._update_wedge()
         self._updateCanvas()
 
@@ -371,13 +371,13 @@ class ClockGraphics:
         self.set_angle(0)
 
     def _set_backgroundColour(self):        
-        # Find default background color and check in case we use it
-        self.defaultbgColor = self._tkHandle.cget('bg')  # find system window default color
-        bgRGB = self._tkHandle.winfo_rgb(self.defaultbgColor)
+        # Find default background colour and check in case we use it
+        self.defaultbgColour = self._tkHandle.cget('bg')  # find system window default colour
+        bgRGB = self._tkHandle.winfo_rgb(self.defaultbgColour)
         bgRGB = (bgRGB[0]/(256**2), bgRGB[1]/(256**2), bgRGB[2]/(256**2))
 
-        if wedgeBackgroundColor is None:
-            self.wedgeBackgroundColor = bgRGB
+        if wedgeBackgroundColour is None:
+            self.wedgeBackgroundColour = bgRGB
 
         
 ###########
@@ -402,11 +402,10 @@ class TimeoutTimer():
         self.set_timer(self._start_time)
 
     def _update_string(self):
-        print( self._time)
         seconds = int(abs(math.ceil(self._time - 1e-3)) % 60)
         minutes = int(abs(math.ceil(self._time - 1e-3 ) ) // 60)
         centiseconds = int(abs(math.ceil(self._time*100-1e-3 ) ) % 100  )
-        print('centi:', centiseconds)
+
         # fixes the countdown clock when deadline is passed
         if self._time < 0:
                 self._string = '-' + self._string_pattern.format(minutes, seconds, centiseconds)
@@ -479,10 +478,13 @@ class TimeoutClass:
         # create and positions the pop up frame
         self.top = tk.Toplevel()
         self.top.title("TIMEOUT!")
+        self.top.configure(bg= defaultBackgroundColour)
         self.msg = tk.Label(self.top, text=self.timer.string,  font=('Courier New', 60) )
         self.msg.pack(fill='x')
+        self.msg.configure(bg=defaultBackgroundColour, fg= textColour)
 
         self.button = tk.Button(self.top, text="Dismiss", command=self.exit_timeout)
+        self.button.configure(bg = defaultBackgroundColour, fg= textColour )
         self.button.pack()
         self.top.protocol("WM_DELETE_WINDOW", self.exit_timeout) # if push x on border
 
@@ -556,7 +558,7 @@ class SponsImage():
         widthInch =  widthmm* 0.0393700787 * self.widthRatioOfImage
         heightInch = heightmm * 0.0393700787
 
-        sponsFig = plt.figure(figsize =(widthInch,heightInch) ,edgecolor=None, facecolor=wedgeBackgroundColor)
+        sponsFig = plt.figure(figsize =(widthInch,heightInch) ,edgecolor=None, facecolor = defaultBackgroundColour )#facecolor=wedgeBackgroundColour)
         
         imgplot = plt.imshow(self.img)
         plt.axis('off') # removes labels and axis, numbers etc.
@@ -565,7 +567,9 @@ class SponsImage():
         # Create own frame for the canvas
        # self.SponsFrame = tk.Frame(master)
         self.SponsFrame = tk.Frame(self._tkHandle)
+        self.SponsFrame.config(bg= defaultBackgroundColour)
         sponsCanvas = FigureCanvasTkAgg(sponsFig, master=self.SponsFrame)
+        sponsCanvas.get_tk_widget().configure(background= defaultBackgroundColour)
         sponsCanvas.show()
 
         # align frame and let canvas expand

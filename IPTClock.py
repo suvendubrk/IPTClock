@@ -253,16 +253,25 @@ def AboutPopup():
     # creates a popup window showing basic info and copywright
     top_about = tk.Toplevel()
     top_about.title("About IPTClock")
+    top_about.configure(bg = defaultBackgroundColour)
 
-    about_logo=tk.Label(top_about, image=logo_image)
+    about_frame = tk.Frame(top_about)
+    about_frame.configure(bg = defaultBackgroundColour)
+#    about_logo=tk.Label(top_about, image=logo_image)
+    about_logo=tk.Label(about_frame, image=logo_image)
     about_logo.pack(side='left')
+    about_logo.configure( bg = defaultBackgroundColour )
 
     about_message = "IPTClock is a countdown clock written for use in the International Physicist's Tournament. The program is written using Python 3 with Tkinter and matplotlib.\n\n Copyright (c) 2016-2017 by Albin Jonasson Svärdsby  \n Joel Magnusson"
-    about_msg = tk.Message(top_about, text=about_message)
+#    about_msg = tk.Message(top_about, text=about_message)
+    about_msg = tk.Message(about_frame, text=about_message)
     about_msg.pack(side='right')
+    about_msg.configure(bg = defaultBackgroundColour, fg=textColour)
 
+    about_frame.pack(side='top')
     about_exit_button = tk.Button(top_about, text="Dismiss", command=top_about.destroy)
     about_exit_button.pack(side='bottom')
+    about_exit_button.configure(bg = defaultBackgroundColour, fg=textColour)
 
 ###################
 # GUI Definitions #
@@ -287,17 +296,17 @@ else:
 master.wm_title("IPTClock")
 
 
-# set the background color, given from variable at start
-master.configure(background=defaultBackgroundColor)
+# set the background colour, given from variable at start
+master.configure(background=defaultBackgroundColour)
 
 
-# Find default background color and check in case we use it
-defaultbgColor = master.cget('bg')  # find system window default color
-bgRGB = master.winfo_rgb(defaultbgColor)
+# Find default background colour and check in case we use it
+defaultbgColour = master.cget('bg')  # find system window default colour
+bgRGB = master.winfo_rgb(defaultbgColour)
 bgRGB = (bgRGB[0]/(256**2), bgRGB[1]/(256**2), bgRGB[2]/(256**2))
 
-if wedgeBackgroundColor is None:
-    wedgeBackgroundColor = bgRGB
+if wedgeBackgroundColour is None:
+    wedgeBackgroundColour = bgRGB
 
 # boolean for fullscreen
 master.fullscreen = False
@@ -312,7 +321,7 @@ master.fullscreen = False
 
 master.customFontButtons = tkFont.Font(family='Courier New', size=7)
 master.customFontCompetitors = tkFont.Font(family='Courier New', size=12)
-master.customFontDigitalClock = tkFont.Font(family='Courier New', size=30)
+master.customFontDigitalClock = tkFont.Font(family='Courier New', size=48)
 master.customFontStage = tkFont.Font(family='Courier New', size=16)
 
 # save the original for use in scaling
@@ -381,27 +390,29 @@ IPTSpons = SponsImage(master) # takes tk handle
 # Reporter
 reporterLabel = tk.Label(master, text="Reporter:", font= master.customFontCompetitors)
 reporterLabel.grid(row=11, column=2)
-reporterLabel.configure(background=defaultBackgroundColor)
+reporterLabel.configure(background=defaultBackgroundColour, fg= textColour)
 reporterNameLabel = tk.Label(master, text='Arnold Schwarzenegger', font= master.customFontCompetitors )
 #reporterNameLabel = tk.Label(master, text='Starlight Glimmer', font=('Courier New', 16))
 reporterNameLabel.grid(row=11, column=3, sticky=tk.W)
+reporterNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
 # Opponent
 opponentLabel = tk.Label(master, text="Opponent:",font= master.customFontCompetitors)
 opponentLabel.grid(row=12, column=2)
-opponentLabel.configure(background=defaultBackgroundColor)
+opponentLabel.configure(background=defaultBackgroundColour, fg= textColour)
 opponentNameLabel = tk.Label(master, text='Dwayne "The Rock" Johnson', font= master.customFontCompetitors)
 #opponentNameLabel = tk.Label(master, text='Princess Twilight Sparkle', font=master.customFontCompetitors)
 opponentNameLabel.grid(row=12, column=3, sticky=tk.W )
+opponentNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
 # Reviewer
 reviewerLabel = tk.Label(master, text="Reviewer:", font=master.customFontCompetitors)
 reviewerLabel.grid(row=13, column=2)
-reviewerLabel.configure(background=defaultBackgroundColor)
+reviewerLabel.configure(background=defaultBackgroundColour, fg= textColour)
 reviewerNameLabel = tk.Label(master, text='Chuck Norris', font=master.customFontCompetitors)
 #reviewerNameLabel = tk.Label(master, text='Shining Armor', font=master.customFontCompetitors)
 reviewerNameLabel.grid(row=13, column=3, sticky=tk.W)
-
+reviewerNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
 ####################
 # Initialize Clock #
 ####################
@@ -419,50 +430,52 @@ IPTClock.countdownText.configure(font = master.customFontStage)
 # Start Button
 startButton = tk.Button(master=master, text='Start', command=IPTClock.start, font= master.customFontButtons)
 startButton.grid(row=4, column=7, sticky='WE')
-startButton.configure(background=defaultBackgroundColor)
+startButton.configure(background=defaultBackgroundColour, fg= textColour)
 
 # Pause Button
 pauseButton = tk.Button(master=master, text='Pause', command=IPTClock.pause, font= master.customFontButtons)
 pauseButton.grid(row=5, column=7, sticky='WE')
-pauseButton.configure(background=defaultBackgroundColor)
+pauseButton.configure(background=defaultBackgroundColour, fg= textColour)
 
 # Reset button
 resetButton = tk.Button(master=master, text='Reset', command=IPTClock.reset, font= master.customFontButtons)
 resetButton.grid(row=11, column=7, sticky='WE')
-resetButton.configure(background=defaultBackgroundColor)
+resetButton.configure(background=defaultBackgroundColour, fg= textColour)
 
 # Quit button
 quitButton = tk.Button(master=master, text='Quit', command=_quit, font= master.customFontButtons)
 quitButton.grid(row=13, column=7, sticky='WE')
-quitButton.configure(background=defaultBackgroundColor)
+quitButton.configure(background=defaultBackgroundColour, fg= textColour)
 
 # Fullscreen
 fullscreenButton = tk.Button(master=master, text='Fullscreen', command=toogleFullscreenButton, font= master.customFontButtons)
 fullscreenButton.grid(row=7, column=7, sticky='WE')
-fullscreenButton.configure(background=defaultBackgroundColor)
+fullscreenButton.configure(background=defaultBackgroundColour, fg= textColour)
 
 # Edit Reporter
 editReporterButton = tk.Button(master=master, text='Edit', command=EditReporter, font= master.customFontButtons)
 editReporterButton.grid(row=11, column=5)
-editReporterButton.configure(background=defaultBackgroundColor)
+editReporterButton.configure(background=defaultBackgroundColour, fg= textColour)
 
 # Edit Opponent
 editOpponentButton = tk.Button(master=master, text='Edit', command=EditOpponent, font= master.customFontButtons)
 editOpponentButton.grid(row=12, column=5)
-editOpponentButton.configure(background=defaultBackgroundColor)
+editOpponentButton.configure(background=defaultBackgroundColour, fg= textColour)
 
 # Edit Reviewer
 editReviewerButton = tk.Button(master=master, text='Edit', command=EditReviewer, font= master.customFontButtons)
 editReviewerButton.grid(row=13, column=5)
-editReviewerButton.configure(background=defaultBackgroundColor)
+editReviewerButton.configure(background=defaultBackgroundColour, fg= textColour)
 
 # Previous Stage
 previousStageButton = tk.Button(master=master, text='<<', command=IPTClock.previous_stage, font= master.customFontButtons)
 previousStageButton.grid(row=8, column=7, sticky='WE')
+previousStageButton.configure(background=defaultBackgroundColour, fg= textColour)
 
 # Next Stage
 nextStageButton = tk.Button(master=master, text='>>', command=IPTClock.next_stage, font= master.customFontButtons)
 nextStageButton.grid(row=9, column=7, sticky='WE')
+nextStageButton.configure(background=defaultBackgroundColour, fg= textColour)
 
 # timeout
 def HandleReturn():
@@ -471,7 +484,7 @@ def HandleReturn():
 timeoutButton = tk.Button(master=master, text='Timeout', command=lambda clockHandle = IPTClock: Timeout(clockHandle) , font= master.customFontButtons)
 #timeoutButton = tk.Button(master=master, text='Timeout', command=lambda clockHandle, masterHandle = HandleReturn(): Timeout(clockHandle, masterHandle) , font= master.customFontButtons) 
 timeoutButton.grid(row=10,column=7,sticky='WE')
-
+timeoutButton.configure(background=defaultBackgroundColour, fg= textColour)
 
 #####################
 # layout lines
@@ -505,10 +518,10 @@ for i, stage in enumerate(IPTClock.stage.get_stages()):
 menubar.add_cascade(label="Stage", menu=stagemenu)
 
 ## help menu ##
-logo_image = tk.PhotoImage(file= './Images/IPTlogos/IPTlogo_Color.gif') #'./Images/IPTlogos/newIPTlogo_without_text.gif') # needed outside aboutPopup to avoid garbage collect
+logo_image = tk.PhotoImage(file= './Images/IPTlogos/IPTlogo_color_small.gif') #'./Images/IPTlogos/newIPTlogo_without_text.gif') # needed outside aboutPopup to avoid garbage collect
 
 helpmenu = tk.Menu(menubar, tearoff=0) # create helpmenu
-helpmenu.add_command(label="About", command= AboutPopup )
+helpmenu.add_command(label="About",  command= AboutPopup )
 
 menubar.add_cascade(label="Help", menu=helpmenu) # add helpmenu
 master.config(menu=menubar) # set the final menu
