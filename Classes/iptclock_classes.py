@@ -146,16 +146,16 @@ def create_clock_labels(tkLabel):
     # Digital clock present time
 
     # Digital clock countdown
-    countdownText = tk.Label(tkLabel, text='', font= ('Courier New', 46))
-    countdownText.grid(row=2, column=2, columnspan=3)
+    countdownText = tk.Label(tkLabel, text='', font= tkLabel.customFontDigitalClock)
+    countdownText.grid(row=1, column=2, columnspan=3)
     countdownText.configure(background=defaultBackgroundColour, fg= textColour)
 
     # Presentation of current phase
 #    presentationTextLabel = tk.Label(tkLabel, text='', font=('Courier New', 32), wraplength=1400)
 #    tkLabel.origWrapLength = 400
     wrapLength = 400
-    presentationTextLabel = tk.Label(tkLabel, text='', font=('Courier New', 32), wraplength= wrapLength) # This should probably be scaled with windowssize.
-    presentationTextLabel.grid(row=9, column=2, columnspan=3, sticky=tk.S)
+    presentationTextLabel = tk.Label(tkLabel, text='', font=tkLabel.customFontStage, wraplength= wrapLength) # This should probably be scaled with windowssize.
+    presentationTextLabel.grid(row=9, column=2, columnspan=3, sticky="EWS")
     presentationTextLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
     return countdownText, presentationTextLabel, wrapLength
@@ -173,7 +173,7 @@ def create_clock_canvas(tkHandle,wedgeBgColour):
 
     canvas = FigureCanvasTkAgg(fig, master=tkHandle)
     canvas.show()
-    canvas.get_tk_widget().grid(row=3, column=2, columnspan=3, rowspan=1)  # , sticky=tk.N)
+    canvas.get_tk_widget().grid(row=2, column=2, columnspan=3, rowspan=7)  # , sticky=tk.N)
     return ax, fig, canvas
 
 

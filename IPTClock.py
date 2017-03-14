@@ -174,7 +174,7 @@ def FontResize(screenWidthPixels):
     master.customFontStage.configure(size=fontSize)
     
     # scales the text wrap in stage presentation    
-    wrapLength = math.floor( IPTClock.wrapLength * widthRatio )
+    wrapLength = math.floor( IPTClock.wrapLength * widthRatio  )
     IPTClock.presentationTextLabel.configure(wraplength= wrapLength)
 
     
@@ -370,6 +370,11 @@ def DecreaseFontSize(event):
     master.customFontStage.configure(size=fontSize)
 
 
+def SetToDefaultFontSize(event):
+    master.customFontButtons.configure(size= master.customFontButtons_orig)
+    master.customFontCompetitors.configure(size= master.customFontCompetitors_orig)
+    master.customFontDigitalClock.configure(size= master.customFontDigitalClock_orig)
+    master.customFontStage.configure(size= master.customFontStage_orig)
 
 #################
 # Sponsor Image #
@@ -427,64 +432,74 @@ IPTClock.countdownText.configure(font = master.customFontStage)
 ###################
 # Control Buttons #
 ###################
-# Start Button
-startButton = tk.Button(master=master, text='Start', command=IPTClock.start, font= master.customFontButtons)
-startButton.grid(row=4, column=7, sticky='WE')
+
+# Create frame for top buttons
+
+controlButton_frame = tk.Frame(master)
+controlButton_frame.grid(row=3, column=7, rowspan=7, sticky="WES", pady=20)
+
+startButton = tk.Button(master=controlButton_frame, text='Start', command=IPTClock.start, font= master.customFontButtons)
 startButton.configure(background=defaultBackgroundColour, fg= textColour)
+startButton.grid(row=0, sticky="WE")
 
 # Pause Button
-pauseButton = tk.Button(master=master, text='Pause', command=IPTClock.pause, font= master.customFontButtons)
-pauseButton.grid(row=5, column=7, sticky='WE')
+pauseButton = tk.Button(master=controlButton_frame, text='Pause', command=IPTClock.pause, font= master.customFontButtons)
 pauseButton.configure(background=defaultBackgroundColour, fg= textColour)
-
-# Reset button
-resetButton = tk.Button(master=master, text='Reset', command=IPTClock.reset, font= master.customFontButtons)
-resetButton.grid(row=11, column=7, sticky='WE')
-resetButton.configure(background=defaultBackgroundColour, fg= textColour)
-
-# Quit button
-quitButton = tk.Button(master=master, text='Quit', command=_quit, font= master.customFontButtons)
-quitButton.grid(row=13, column=7, sticky='WE')
-quitButton.configure(background=defaultBackgroundColour, fg= textColour)
+pauseButton.grid(row=1, sticky="WE")
 
 # Fullscreen
-fullscreenButton = tk.Button(master=master, text='Fullscreen', command=toogleFullscreenButton, font= master.customFontButtons)
-fullscreenButton.grid(row=7, column=7, sticky='WE')
+fullscreenButton = tk.Button(master=controlButton_frame, text='Fullscreen', command=toogleFullscreenButton, font= master.customFontButtons)
 fullscreenButton.configure(background=defaultBackgroundColour, fg= textColour)
-
-# Edit Reporter
-editReporterButton = tk.Button(master=master, text='Edit', command=EditReporter, font= master.customFontButtons)
-editReporterButton.grid(row=11, column=5)
-editReporterButton.configure(background=defaultBackgroundColour, fg= textColour)
-
-# Edit Opponent
-editOpponentButton = tk.Button(master=master, text='Edit', command=EditOpponent, font= master.customFontButtons)
-editOpponentButton.grid(row=12, column=5)
-editOpponentButton.configure(background=defaultBackgroundColour, fg= textColour)
-
-# Edit Reviewer
-editReviewerButton = tk.Button(master=master, text='Edit', command=EditReviewer, font= master.customFontButtons)
-editReviewerButton.grid(row=13, column=5)
-editReviewerButton.configure(background=defaultBackgroundColour, fg= textColour)
+fullscreenButton.grid(row=2, sticky="WE")
 
 # Previous Stage
-previousStageButton = tk.Button(master=master, text='<<', command=IPTClock.previous_stage, font= master.customFontButtons)
-previousStageButton.grid(row=8, column=7, sticky='WE')
+previousStageButton = tk.Button(master=controlButton_frame, text='<<', command=IPTClock.previous_stage, font= master.customFontButtons)
 previousStageButton.configure(background=defaultBackgroundColour, fg= textColour)
+previousStageButton.grid(row=3, sticky="WE")
 
 # Next Stage
-nextStageButton = tk.Button(master=master, text='>>', command=IPTClock.next_stage, font= master.customFontButtons)
-nextStageButton.grid(row=9, column=7, sticky='WE')
+nextStageButton = tk.Button(master=controlButton_frame, text='>>', command=IPTClock.next_stage, font= master.customFontButtons)
 nextStageButton.configure(background=defaultBackgroundColour, fg= textColour)
+nextStageButton.grid(row=4, sticky="WE")
 
 # timeout
 def HandleReturn():
     return IPTClock, master
 
+# Timeout button
 timeoutButton = tk.Button(master=master, text='Timeout', command=lambda clockHandle = IPTClock: Timeout(clockHandle) , font= master.customFontButtons)
 #timeoutButton = tk.Button(master=master, text='Timeout', command=lambda clockHandle, masterHandle = HandleReturn(): Timeout(clockHandle, masterHandle) , font= master.customFontButtons) 
-timeoutButton.grid(row=10,column=7,sticky='WE')
 timeoutButton.configure(background=defaultBackgroundColour, fg= textColour)
+timeoutButton.grid(row=10,column=7,sticky='WE')
+
+
+# Reset button
+resetButton = tk.Button(master=master, text='Reset', command=IPTClock.reset, font= master.customFontButtons)
+resetButton.configure(background=defaultBackgroundColour, fg= textColour)
+resetButton.grid(row=11, column=7, sticky='WEN')
+
+# Quit button
+quitButton = tk.Button(master=master, text='Quit', command=_quit, font= master.customFontButtons)
+quitButton.configure(background=defaultBackgroundColour, fg= textColour)
+quitButton.grid(row=13, column=7, sticky='WE')
+
+
+# Edit Reporter
+editReporterButton = tk.Button(master=master, text='Edit', command=EditReporter, font= master.customFontButtons)
+editReporterButton.configure(background=defaultBackgroundColour, fg= textColour)
+editReporterButton.grid(row=11, column=5)
+
+# Edit Opponent
+editOpponentButton = tk.Button(master=master, text='Edit', command=EditOpponent, font= master.customFontButtons)
+editOpponentButton.configure(background=defaultBackgroundColour, fg= textColour)
+editOpponentButton.grid(row=12, column=5)
+
+# Edit Reviewer
+editReviewerButton = tk.Button(master=master, text='Edit', command=EditReviewer, font= master.customFontButtons)
+editReviewerButton.configure(background=defaultBackgroundColour, fg= textColour)
+editReviewerButton.grid(row=13, column=5)
+
+
 
 #####################
 # layout lines
@@ -530,7 +545,7 @@ master.config(menu=menubar) # set the final menu
 #######################################
 # change column behaviour for scaling #
 #######################################
-master.rowconfigure(0, weight=1)
+#master.rowconfigure(0, weight=1)
 #master.rowconfigure(1, weight=1)
 #master.rowconfigure(2, weight=1)#, minsize = 200)
 master.rowconfigure(3, weight=2)
@@ -595,21 +610,36 @@ else:
     master.bind("<Escape>", endFullscreen)
 
 # bindings for changing stage
+
 def KeyNextStage(event):
-    IPTClock.next_stage()    
-master.bind("<Control-Right>", KeyNextStage )
+    IPTClock.next_stage()
+if usingMac:
+    master.bind("<Command-Right>", KeyNextStage )
+else:
+    master.bind("<Control-Right>", KeyNextStage )
 
 def KeyPreviousStage(event):
-    IPTClock.previous_stage()    
-master.bind("<Control-Left>", KeyPreviousStage )
+    IPTClock.previous_stage()
+if usingMac:
+    master.bind("<Command-Left>", KeyPreviousStage )
+else:
+    master.bind("<Control-Left>", KeyPreviousStage )
 
 
-# change font size    
+## change font size ##
+
+# increase
 master.bind("<Control-plus>", IncreaseFontSize)
-master.bind("<Control-KP_Add>", IncreaseFontSize)
+master.bind("<Control-KP_Add>", IncreaseFontSize) #keypad +
 
+# decrease
 master.bind("<Control-minus>", DecreaseFontSize)
-master.bind("<Control-KP_Subtract>", DecreaseFontSize)    
+master.bind("<Control-KP_Subtract>", DecreaseFontSize) #keypad -
+
+# default size
+master.bind("<Control-KP_0>", SetToDefaultFontSize)
+master.bind("<Control-0>", SetToDefaultFontSize) #keypad 0
+
 #######################
 # Final loop commands #
 #######################

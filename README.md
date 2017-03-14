@@ -57,6 +57,8 @@ build/exe.win-ARCHITECHURE-PYTHONVER/IPTClock.exe
 ## Key bindings ##
 Key bindings used by IPTClock is
 
+-- For Linux and Window --
+
 Ctrl+Left : Switch to previous stage
 
 Ctrl+Right : Switch to next stage
@@ -65,10 +67,27 @@ Ctrl+Right : Switch to next stage
 
 \<Escape\> : Exit fullscreen
 
-Ctrl + + : Increase fontsize
+Ctrl + + : Increase font size
 
-Ctrl + - : Decrease fontsize
+Ctrl + - : Decrease font size
 
+Ctrl + 0 : Revert to default font size
+
+--For Mac--
+
+Command+Left : Switch to previous stage
+
+Command+Right : Switch to next stage
+
+\<F11\> : Toggle fullscreen
+
+\<Escape\> : Exit fullscreen
+
+Ctrl + + : Increase font size
+
+Ctrl + - : Decrease font size
+
+Ctrl + 0 : Revert to default font size
 
 ## configuration ##
 Variables used to change the IPTClock is positioned in Config/config.py
