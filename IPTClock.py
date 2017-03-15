@@ -85,10 +85,17 @@ def Timeout(clockHandle):
 # emphasise quit()
 def _quit():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        if usingWindows:
+            master.destroy()
+            #exit()
         sys.exit(0)
+
 
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        if usingWindows:
+            master.destroy()
+            #exit()
         sys.exit(0)
 
 # toggling Fullscreen
@@ -606,8 +613,10 @@ if usingLinuxMasterRace or usingMac:
     master.bind("<F11>", toogleFullscreenLinux)
     master.bind("<Escape>", endFullscreenLinux)
 else:
-    master.bind("<F11>", toogleFullscreen)    
-    master.bind("<Escape>", endFullscreen)
+    master.bind("<F11>", toogleFullscreenLinux)
+    master.bind("<Escape>", endFullscreenLinux)
+#    master.bind("<F11>", toogleFullscreen)    
+#    master.bind("<Escape>", endFullscreen)
 
 # bindings for changing stage
 
