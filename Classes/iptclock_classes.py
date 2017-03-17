@@ -402,10 +402,10 @@ class TimeoutTimer():
         self.set_timer(self._start_time)
 
     def _update_string(self):
-        seconds = int(abs(math.ceil(self._time - 1e-3)) % 60)
-        minutes = int(abs(math.ceil(self._time - 1e-3 ) ) // 60)
-        centiseconds = int(abs(math.ceil(self._time*100-1e-3 ) ) % 100  )
-
+        seconds = int(abs((self._time + 1e-3)) % 60)
+        minutes = int(abs((self._time + 1e-3 ) ) // 60)
+        centiseconds = int(math.ceil(abs(self._time*100-1e-3 ) ) % 100  )
+        
         # fixes the countdown clock when deadline is passed
         if self._time < 0:
                 self._string = '-' + self._string_pattern.format(minutes, seconds, centiseconds)
@@ -423,12 +423,11 @@ class TimeoutTimer():
         return self._time
 
     def string(self):
-        print('String:', self._string)
         return self._string
     
 
     def set_timer(self, start_time):
-        self._start_time = start_time -1 # minus 1 to balance the start of centiseconds...
+        self._start_time = start_time
         self.reset()
 
     def tick(self):
@@ -439,7 +438,6 @@ class TimeoutTimer():
 
     def start(self):
         self._tick_state = True
-        print('Starting')
 
     def pause(self):
         self._tick_state = False
@@ -463,7 +461,7 @@ class TimeoutClass:
         self.fps = 10
         
 
-        self.timeoutTime = 7 # [s]
+        self.timeoutTime = 4 # [s]
         self.timerStopTime = 0
         self.timer = TimeoutTimer()
         self.timer.set_timer(self.timeoutTime)
@@ -490,14 +488,14 @@ class TimeoutClass:
 
 
   # function updating the time
-    def update(self):
-       
+    def update(self):       
         # Every time this function is called,
         # decrease timer with one second
         t0 = time.time()
         if self.timer.isTicking():
 
             # Update the countdownText Label with the updated time
+
             self.msg.configure(text=self.timer.string())
 
             self.timer.tick()
@@ -514,6 +512,7 @@ class TimeoutClass:
             self.timeoutState = False
             if self.timer.isTicking: #self.ongoingTimer:
                 self._clock_handle.start()
+            self.top.quit()
             self.top.destroy()
 
 
@@ -522,7 +521,6 @@ class TimeoutClass:
 
         if self.tick_state: # check so that we don't start the clock if it wasn't running before timeout
             self._clock_handle.start()
-
 
 
 
@@ -560,7 +558,7 @@ class SponsImage():
 
         sponsFig = plt.figure(figsize =(widthInch,heightInch) ,edgecolor=None, facecolor = defaultBackgroundColour )#facecolor=wedgeBackgroundColour)
         
-        imgplot = plt.imshow(self.img)
+        imgplot = plt.imshow(self.img, interpolation="none")
         plt.axis('off') # removes labels and axis, numbers etc.
         plt.tight_layout(pad=0, w_pad=0, h_pad=0) # removes padding round figure
 
@@ -574,7 +572,9 @@ class SponsImage():
 
         # align frame and let canvas expand
         self.SponsFrame.grid(row=0, column=0, columnspan=1, rowspan=14 , sticky='NW') 
-        sponsCanvas.get_tk_widget().grid(row=0, column=0, columnspan=1, rowspan=14 , sticky='NWES')
+   #     sponsCanvas.get_tk_widget().grid(row=0, column=0, columnspan=1, rowspan=14 , sticky='NWES')
+        sponsCanvas.get_tk_widget().pack(expand=True)
+        plt.gca().set_position([0,0,1,1])
         return sponsFig, sponsCanvas, imgplot 
 
 

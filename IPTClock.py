@@ -328,7 +328,7 @@ master.fullscreen = False
 
 master.customFontButtons = tkFont.Font(family='Courier New', size=7)
 master.customFontCompetitors = tkFont.Font(family='Courier New', size=12)
-master.customFontDigitalClock = tkFont.Font(family='Courier New', size=48)
+master.customFontDigitalClock = tkFont.Font(family='Courier New', size=36)
 master.customFontStage = tkFont.Font(family='Courier New', size=16)
 
 # save the original for use in scaling
@@ -432,7 +432,7 @@ IPTClock = Clock(master) # takes tkHandle,
 
 # fix some font setup.
 IPTClock.presentationTextLabel.configure(font = master.customFontStage) # updates the font and size of using defined font
-IPTClock.countdownText.configure(font = master.customFontStage)
+IPTClock.countdownText.configure(font = master.customFontDigitalClock)
 
 
 
@@ -635,6 +635,227 @@ else:
     master.bind("<Control-Left>", KeyPreviousStage )
 
 
+
+
+###################
+# Control Buttons #
+###################
+
+# Create frame for top buttons
+
+controlButton_frame = tk.Frame(master)
+controlButton_frame.grid(row=3, column=7, rowspan=7, sticky="WES", pady=20)
+
+startButton = tk.Button(master=controlButton_frame, text='Start', command=IPTClock.start, font= master.customFontButtons)
+startButton.configure(background=defaultBackgroundColour, fg= textColour)
+startButton.grid(row=0, sticky="WE")
+
+# Pause Button
+pauseButton = tk.Button(master=controlButton_frame, text='Pause', command=IPTClock.pause, font= master.customFontButtons)
+pauseButton.configure(background=defaultBackgroundColour, fg= textColour)
+pauseButton.grid(row=1, sticky="WE")
+
+# Fullscreen
+fullscreenButton = tk.Button(master=controlButton_frame, text='Fullscreen', command=toogleFullscreenButton, font= master.customFontButtons)
+fullscreenButton.configure(background=defaultBackgroundColour, fg= textColour)
+fullscreenButton.grid(row=2, sticky="WE")
+
+# Previous Stage
+previousStageButton = tk.Button(master=controlButton_frame, text='<<', command=IPTClock.previous_stage, font= master.customFontButtons)
+previousStageButton.configure(background=defaultBackgroundColour, fg= textColour)
+previousStageButton.grid(row=3, sticky="WE")
+
+# Next Stage
+nextStageButton = tk.Button(master=controlButton_frame, text='>>', command=IPTClock.next_stage, font= master.customFontButtons)
+nextStageButton.configure(background=defaultBackgroundColour, fg= textColour)
+nextStageButton.grid(row=4, sticky="WE")
+
+# timeout
+def HandleReturn():
+    return IPTClock, master
+
+# Timeout button
+timeoutButton = tk.Button(master=master, text='Timeout', command=lambda clockHandle = IPTClock: Timeout(clockHandle) , font= master.customFontButtons)
+#timeoutButton = tk.Button(master=master, text='Timeout', command=lambda clockHandle, masterHandle = HandleReturn(): Timeout(clockHandle, masterHandle) , font= master.customFontButtons) 
+timeoutButton.configure(background=defaultBackgroundColour, fg= textColour)
+timeoutButton.grid(row=10,column=7,sticky='WE')
+
+
+# Reset button
+resetButton = tk.Button(master=master, text='Reset', command=IPTClock.reset, font= master.customFontButtons)
+resetButton.configure(background=defaultBackgroundColour, fg= textColour)
+resetButton.grid(row=11, column=7, sticky='WEN')
+
+# Quit button
+quitButton = tk.Button(master=master, text='Quit', command=_quit, font= master.customFontButtons)
+quitButton.configure(background=defaultBackgroundColour, fg= textColour)
+quitButton.grid(row=13, column=7, sticky='WE')
+
+
+# Edit Reporter
+editReporterButton = tk.Button(master=master, text='Edit', command=EditReporter, font= master.customFontButtons)
+editReporterButton.configure(background=defaultBackgroundColour, fg= textColour)
+editReporterButton.grid(row=11, column=5)
+
+# Edit Opponent
+editOpponentButton = tk.Button(master=master, text='Edit', command=EditOpponent, font= master.customFontButtons)
+editOpponentButton.configure(background=defaultBackgroundColour, fg= textColour)
+editOpponentButton.grid(row=12, column=5)
+
+# Edit Reviewer
+editReviewerButton = tk.Button(master=master, text='Edit', command=EditReviewer, font= master.customFontButtons)
+editReviewerButton.configure(background=defaultBackgroundColour, fg= textColour)
+editReviewerButton.grid(row=13, column=5)
+
+
+
+#####################
+# layout lines
+####################
+horizontalLine = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth=0)
+horizontalLine.grid(row=10, column=2, columnspan=4, sticky='WE')
+
+verticalLineRight = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth=0)
+verticalLineRight.grid(row=0, column=6, columnspan=1, rowspan=14, sticky='NS')
+
+verticalLineLeft = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth=0)
+verticalLineLeft.grid(row=0, column=1, columnspan=1, rowspan=14, sticky='NS')
+
+
+##########################
+# Top menu configuration #
+##########################
+menubar = tk.Menu(master)
+filemenu = tk.Menu(menubar, tearoff=0)
+filemenu.add_separator()
+
+filemenu.add_command(label="Exit", command=_quit)
+menubar.add_cascade(label="File", menu=filemenu)
+
+# drop down menu to chose stage
+stagemenu = tk.Menu(menubar, tearoff=0)
+for i, stage in enumerate(IPTClock.stage.get_stages()):
+    stagemenu.add_command(label=str(i) + ": " + stage[0],
+                          command=lambda stage_number=i: IPTClock.set_stage(stage_number))
+
+menubar.add_cascade(label="Stage", menu=stagemenu)
+
+## help menu ##
+logo_image = tk.PhotoImage(file= './Images/IPTlogos/IPTlogo_color_small.gif') #'./Images/IPTlogos/newIPTlogo_without_text.gif') # needed outside aboutPopup to avoid garbage collect
+
+helpmenu = tk.Menu(menubar, tearoff=0) # create helpmenu
+helpmenu.add_command(label="About",  command= AboutPopup )
+
+menubar.add_cascade(label="Help", menu=helpmenu) # add helpmenu
+master.config(menu=menubar) # set the final menu
+
+
+#######################################
+# change column behaviour for scaling #
+#######################################
+#master.rowconfigure(0, weight=1)
+#master.rowconfigure(1, weight=1)
+#master.rowconfigure(2, weight=1)#, minsize = 200)
+master.rowconfigure(3, weight=2)
+master.rowconfigure(9, minsize=125)
+
+master.columnconfigure(0, weight=1, minsize = 100) # minsize to ensure that sponsor logo is visible
+#master.columnconfigure(1, weight=1)
+master.columnconfigure(3, weight=1)
+#master.columnconfigure(7, minsize=240)
+#master.columnconfigure(7, weight=1)
+
+
+#######################
+# Initial window size #
+#######################
+
+# fix initial window size and position
+w = 640 #900 # width for the Tk root [pixels]
+h = 480 #700 # height for the Tk root
+# get screen width and height
+ws = master.winfo_screenwidth() # width of the screen [pixels]
+hs = master.winfo_screenheight() # height of the screen
+
+# calculate x and y coordinates for the Tk root window
+x = (ws/2) - (w/2)
+y = (hs/2) - (h/2)
+
+master.geometry('%dx%d+%d+%d' % (w, h, x, y))
+
+####################
+# Window rescaling #
+####################
+
+# binds resize of master window and execute rescale of spons image
+master.fullscreenSwitch = tk.BooleanVar() # variable to trace
+master.fullscreenSwitch.set(False) # initial value
+
+master.fullscreenSwitch.trace('w', SponsImageFullscreen) # watch the variable master.fullscreenSwitch, when i changes on switching to fullscreen it will execute command SponsImageFullscreen
+
+# if close using window manager    
+master.protocol("WM_DELETE_WINDOW", on_closing)  # necessary to cleanly exit the program when using the windows manager
+
+# resize by dragging window
+master.bind('<Configure>', ResizeObjectsOnEvent )
+
+
+#####################
+# Keyboard bindings #
+#####################
+
+
+
+# bindings for fullscreen
+master.fullscreen = False
+master.attributes('-fullscreen', False)
+
+if usingLinuxMasterRace or usingMac:
+    master.bind("<F11>", toogleFullscreenLinux)
+    master.bind("<Escape>", endFullscreenLinux)
+else:
+    master.bind("<F11>", toogleFullscreenLinux)
+    master.bind("<Escape>", endFullscreenLinux)
+#    master.bind("<F11>", toogleFullscreen)    
+#    master.bind("<Escape>", endFullscreen)
+
+# bindings for changing stage
+
+def KeyNextStage(event):
+    IPTClock.next_stage()
+if usingMac:
+    master.bind("<Command-Right>", KeyNextStage )
+else:
+    master.bind("<Control-Right>", KeyNextStage )
+
+def KeyPreviousStage(event):
+    IPTClock.previous_stage()
+if usingMac:
+    master.bind("<Command-Left>", KeyPreviousStage )
+else:
+    master.bind("<Control-Left>", KeyPreviousStage )
+
+## bindings for start and stop 
+def keyboardStartPaus(event):
+    if IPTClock.timer.isTicking():
+        IPTClock.pause()
+    else:
+        IPTClock.start()
+    
+def keyboardReset(event):
+    IPTClock.reset()
+    IPTClock.start()    
+    
+
+if usingLinuxMasterRace or usingWindows:
+    master.bind("<Control-r>", keyboardReset)
+    master.bind("<Control-KP_Enter>", keyboardStartPaus)
+    master.bind("<Control-Return>", keyboardStartPaus)
+else:
+    master.bind("<Command-r>", keyboardReset)
+    master.bind("<Command-KP_Enter>", keyboardStartPaus)
+    master.bind("<Command-Return>", keyboardStartPaus)
+    
 ## change font size ##
 
 # increase
