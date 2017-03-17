@@ -555,7 +555,7 @@ class SponsImage():
         widthInch =  widthmm* 0.0393700787 * self.widthRatioOfImage
         heightInch = heightmm * 0.0393700787
 
-        sponsFig = plt.figure(figsize =(widthInch,heightInch) ,edgecolor=None, facecolor = defaultBackgroundColour )#facecolor=wedgeBackgroundColour)
+        sponsFig = plt.figure(figsize =(widthInch,heightInch), dpi=300 ,edgecolor=None, facecolor = defaultBackgroundColour )#facecolor=wedgeBackgroundColour)
         
         imgplot = plt.imshow(self.img, interpolation="none")
         plt.axis('off') # removes labels and axis, numbers etc.
@@ -604,6 +604,6 @@ class SponsImage():
         # inch convert
         widthInch =  widthmm* 0.0393700787 # * self.widthRatioOfImage
         heightInch = heightmm * 0.0393700787
-        self._fig.set_size_inches( widthInch,heightInch, forward=True)
+   #     self._fig.set_size_inches( widthInch,heightInch, forward=True)
         #self._canvas.show()
         self._updateCanvas()
