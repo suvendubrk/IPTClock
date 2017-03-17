@@ -461,7 +461,7 @@ class TimeoutClass:
         self.fps = 10
         
 
-        self.timeoutTime = 4 # [s]
+        self.timeoutTime = 60 # [s]
         self.timerStopTime = 0
         self.timer = TimeoutTimer()
         self.timer.set_timer(self.timeoutTime)
@@ -495,7 +495,6 @@ class TimeoutClass:
         if self.timer.isTicking():
 
             # Update the countdownText Label with the updated time
-
             self.msg.configure(text=self.timer.string())
 
             self.timer.tick()
@@ -507,7 +506,7 @@ class TimeoutClass:
         self._master_handle.after(time_left, self.update)
 
         # check exit criteria
-        if self.timer._time < self.timerStopTime:
+        if self.timer.time() < self.timerStopTime:
             # terminate countdown and unpause main clock
             self.timeoutState = False
             if self.timer.isTicking: #self.ongoingTimer:

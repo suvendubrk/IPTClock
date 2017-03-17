@@ -3,7 +3,7 @@
 #  such as backgroundcolor filepaths etc.         #
 ###################################################
 
-fps = 10 # used for timer to set update frequency
+fps = 1 # used for timer to set update frequency
 
 defaultBackgroundColour = '#FFFFFF'  # 'blue'    # String, following tkinter naming. colour used for background, buttons and labels etc. NOT colour behind wedge, use "None" without "" to get system default
 

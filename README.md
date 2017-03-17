@@ -73,6 +73,11 @@ Ctrl + - : Decrease font size
 
 Ctrl + 0 : Revert to default font size
 
+Ctrl + Enter : Start/Paus
+
+Ctrl + r : Reset and start clock
+
+
 --For Mac--
 
 Command+Left : Switch to previous stage
@@ -83,11 +88,16 @@ Command+Right : Switch to next stage
 
 \<Escape\> : Exit fullscreen
 
-Ctrl + + : Increase font size
+Command + + : Increase font size
 
-Ctrl + - : Decrease font size
+Command + - : Decrease font size
 
-Ctrl + 0 : Revert to default font size
+Command + 0 : Revert to default font size
+
+Command + Enter : Start/Paus
+
+Command + r : Reset and start clock
+
 
 ## configuration ##
 Variables used to change the IPTClock is positioned in Config/config.py

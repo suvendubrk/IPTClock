@@ -673,42 +673,6 @@ master.bind("<Control-0>", SetToDefaultFontSize) #keypad 0
 
 
 
-#####################
-# Keyboard bindings #
-#####################
-
-
-
-# bindings for fullscreen
-master.fullscreen = False
-master.attributes('-fullscreen', False)
-
-if usingLinuxMasterRace or usingMac:
-    master.bind("<F11>", toogleFullscreenLinux)
-    master.bind("<Escape>", endFullscreenLinux)
-else:
-    master.bind("<F11>", toogleFullscreenLinux)
-    master.bind("<Escape>", endFullscreenLinux)
-#    master.bind("<F11>", toogleFullscreen)    
-#    master.bind("<Escape>", endFullscreen)
-
-# bindings for changing stage
-
-def KeyNextStage(event):
-    IPTClock.next_stage()
-if usingMac:
-    master.bind("<Command-Right>", KeyNextStage )
-else:
-    master.bind("<Control-Right>", KeyNextStage )
-
-def KeyPreviousStage(event):
-    IPTClock.previous_stage()
-if usingMac:
-    master.bind("<Command-Left>", KeyPreviousStage )
-else:
-    master.bind("<Control-Left>", KeyPreviousStage )
-
-
 #######################
 # Final loop commands #
 #######################
