@@ -500,7 +500,6 @@ class TimeoutClass:
         # decrease timer with one second
         t0 = time.time()
         if self.timer.isTicking():
-
             # Update the countdownText Label with the updated time
             self.msg.configure(text=self.timer.string())
 
@@ -518,17 +517,18 @@ class TimeoutClass:
             self.timeoutState = False
             if self.timer.isTicking: #self.ongoingTimer:
                 self._clock_handle.start()
-            self.top.quit()
-            self.top.destroy()
-
+            self.exit_timeout()
+  
+			
 
     def exit_timeout(self):
-        self.top.quit()
-        self.top.destroy() 
-
-        # check so that we don't start the clock if it wasn't running before timeout
+	        # check so that we don't start the clock if it wasn't running before timeout
+        self.timer.pause() # needed to avoid calls to non existen msg
         if self.tick_state:
             self._clock_handle.start()
+	
+        self.top.destroy()
+
 
  
     

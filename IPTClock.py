@@ -128,14 +128,18 @@ def endFullscreenLinux(tmp):
 
 def endFullscreen():
     global master, fullscreenButton
-    master.fullscreen = False
-    master.attributes("-fullscreen", False)
-    fullscreenButton.configure(text="Fullscreen")
-    master.focus_set()
-    SponsImageResize() # needed since it might skip resizing back elsewise
-    master.fullscreenSwitch.set(False) # traced variable
-    time.sleep(3)
-    FontResize()
+    if master.fullscreen:
+        master.fullscreen = False
+        master.attributes("-fullscreen", False)
+        fullscreenButton.configure(text="Fullscreen")
+        master.focus_set()
+		
+        fullscreenButton.configure(text="Fullscreen")
+        master.fullscreenSwitch.set(False) # traced variable
+        screenWidth = 640
+        FontResize(screenWidth)
+        SponsImageResize() # needed since it might skip resizing back elsewise
+		
 
 def EditReporter():
     reporterString = simpledialog.askstring('Edit Reporter', 'Reporter', initialvalue=reporterNameLabel.cget('text'))
