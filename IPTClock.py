@@ -120,6 +120,7 @@ def toogleFullscreenButton():
         master.fullscreenSwitch.set(False) # traced variable
         screenWidth = 640
     FontResize(screenWidth)
+    SponsImageResize()
 
 def endFullscreenLinux(tmp):
     endFullscreen() # there's some difference between os and input using keyes
@@ -387,13 +388,15 @@ def SetToDefaultFontSize(event):
 # Sponsor Image #
 #################
 
-IPTSpons = SponsImage(master) # takes tk handle
+# IPTSpons = SponsImage(master) # uses matplotlib to render image
+IPTSpons = SponsImagePillow(master) # uses PIL and tkinter to render image (fastest)
 
 ### OLD image presentation using just tkinter###########
 #master.image = tk.PhotoImage(file=leftSponsImagePath)
 #master.sponsLabel = tk.Label(master, image=master.image)
 #master.sponsLabel.grid(row=0, column=0, columnspan=1, rowspan=14, sticky='N')
 #####################################################
+
 
 
 ####################
@@ -475,7 +478,6 @@ def HandleReturn():
 
 # Timeout button
 timeoutButton = tk.Button(master=master, text='Timeout', command=lambda clockHandle = IPTClock: Timeout(clockHandle) , font= master.customFontButtons)
-#timeoutButton = tk.Button(master=master, text='Timeout', command=lambda clockHandle, masterHandle = HandleReturn(): Timeout(clockHandle, masterHandle) , font= master.customFontButtons) 
 timeoutButton.configure(background=defaultBackgroundColour, fg= textColour)
 timeoutButton.grid(row=10,column=7,sticky='WE')
 
@@ -558,7 +560,7 @@ master.config(menu=menubar) # set the final menu
 master.rowconfigure(3, weight=2)
 master.rowconfigure(9, minsize=125)
 
-master.columnconfigure(0, weight=1, minsize = 100) # minsize to ensure that sponsor logo is visible
+master.columnconfigure(0, weight=2, minsize = 200) # minsize to ensure that sponsor logo is visible
 #master.columnconfigure(1, weight=1)
 master.columnconfigure(3, weight=1)
 #master.columnconfigure(7, minsize=240)
@@ -599,11 +601,10 @@ master.protocol("WM_DELETE_WINDOW", on_closing)  # necessary to cleanly exit the
 master.bind('<Configure>', ResizeObjectsOnEvent )
 
 
+
 #####################
 # Keyboard bindings #
 #####################
-
-
 
 # bindings for fullscreen
 master.fullscreen = False
@@ -671,42 +672,6 @@ master.bind("<Control-KP_Subtract>", DecreaseFontSize) #keypad -
 master.bind("<Control-KP_0>", SetToDefaultFontSize)
 master.bind("<Control-0>", SetToDefaultFontSize) #keypad 0
 
-
-
-#####################
-# Keyboard bindings #
-#####################
-
-
-
-# bindings for fullscreen
-master.fullscreen = False
-master.attributes('-fullscreen', False)
-
-if usingLinuxMasterRace or usingMac:
-    master.bind("<F11>", toogleFullscreenLinux)
-    master.bind("<Escape>", endFullscreenLinux)
-else:
-    master.bind("<F11>", toogleFullscreenLinux)
-    master.bind("<Escape>", endFullscreenLinux)
-#    master.bind("<F11>", toogleFullscreen)    
-#    master.bind("<Escape>", endFullscreen)
-
-# bindings for changing stage
-
-def KeyNextStage(event):
-    IPTClock.next_stage()
-if usingMac:
-    master.bind("<Command-Right>", KeyNextStage )
-else:
-    master.bind("<Control-Right>", KeyNextStage )
-
-def KeyPreviousStage(event):
-    IPTClock.previous_stage()
-if usingMac:
-    master.bind("<Command-Left>", KeyPreviousStage )
-else:
-    master.bind("<Control-Left>", KeyPreviousStage )
 
 
 #######################

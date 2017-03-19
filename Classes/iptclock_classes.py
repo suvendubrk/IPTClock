@@ -10,6 +10,9 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 import time
 
+# imports pillow as an alternative way of displaying images.
+from PIL import Image, ImageTk
+
 import _thread # in order to utilize threads # the threading that is used is written for python 3
 
 # check if we use audio or not (.wave format)
@@ -453,16 +456,15 @@ class TimeoutTimer():
 # Timeout Class #
 #################
 
-class TimeoutClass:
-    # Presently it makes calls to IPTClock (which is a clock class), which isn't very nice
+class TimeoutClass:    
     def __init__(self, clockHandle):
-        self._clock_handle = clockHandle
+        self._clock_handle = clockHandle # handle for the clock class, used for pause/start.
         self._master_handle  = self._clock_handle._tkHandle
-        self.fps = 10
+        self.fps = 10 # value controlling timesteps displayed in dountdown.
         
 
-        self.timeoutTime = 60 # [s]
-        self.timerStopTime = 0
+        self.timeoutTime = 60 # [s], the time of the Timeout.
+        self.timerStopTime = 0 # the time at which the timout timer should stop.
         self.timer = TimeoutTimer()
         self.timer.set_timer(self.timeoutTime)
         self.timeoutState = True
@@ -497,7 +499,7 @@ class TimeoutClass:
             # Update the countdownText Label with the updated time
             self.msg.configure(text=self.timer.string())
 
-            self.timer.tick()
+            self.timer.tick() # new time step
            
 
         # Call the update() function after 1/fps seconds
@@ -516,9 +518,11 @@ class TimeoutClass:
 
 
     def exit_timeout(self):
-        self.top.destroy() # this results in an exception, not breaking the program but ugly.
+        self.top.quit()
+        self.top.destroy() 
 
-        if self.tick_state: # check so that we don't start the clock if it wasn't running before timeout
+        # check so that we don't start the clock if it wasn't running before timeout
+        if self.tick_state:
             self._clock_handle.start()
 
 
@@ -528,11 +532,13 @@ class TimeoutClass:
 ###################
 
 class SponsImage():
+    # class displaying a frame containing
+    # a image drawn on canvas using matplotlib
     def __init__(self,tkHandle):
         self._tkHandle = tkHandle
         self._sponsImage = leftSponsImagePath # must be PNG
         self.img = mpimg.imread( self._sponsImage )#'./ponyAndDuck.png') # converts/load image
-        self.widthRatioOfImage = 0.3 # how much of the screen that is sponsImage
+        self.widthRatioOfImage = 0.35 # how much of the screen that is sponsImage
         self._determine_pixeldistance()
         self._fig, self._canvas, self._plt  = self._create_sponsImage_canvas()
         
@@ -555,14 +561,13 @@ class SponsImage():
         widthInch =  widthmm* 0.0393700787 * self.widthRatioOfImage
         heightInch = heightmm * 0.0393700787
 
-        sponsFig = plt.figure(figsize =(widthInch,heightInch), dpi=300 ,edgecolor=None, facecolor = defaultBackgroundColour )#facecolor=wedgeBackgroundColour)
+        sponsFig = plt.figure(figsize =(widthInch,heightInch), dpi=200 ,edgecolor=None, facecolor = defaultBackgroundColour )#facecolor=wedgeBackgroundColour)        
         
-        imgplot = plt.imshow(self.img, interpolation="none")
+        imgplot = plt.imshow(self.img, interpolation='bilinear')
         plt.axis('off') # removes labels and axis, numbers etc.
         plt.tight_layout(pad=0, w_pad=0, h_pad=0) # removes padding round figure
 
-        # Create own frame for the canvas
-       # self.SponsFrame = tk.Frame(master)
+        # Create own frame for the canvas     
         self.SponsFrame = tk.Frame(self._tkHandle)
         self.SponsFrame.config(bg= defaultBackgroundColour)
         sponsCanvas = FigureCanvasTkAgg(sponsFig, master=self.SponsFrame)
@@ -578,8 +583,7 @@ class SponsImage():
 
 
     def screen_dimensions(self):
-        #returns size of screen in mm and pixels
-        #widthmm = master.winfo_screenmmheight() #returns size of master object in mm
+        #returns size of screen in mm and pixels     
         widthmm = self._tkHandle.winfo_screenmmheight() #returns size of master object in mm
         heightmm = self._tkHandle.winfo_screenmmwidth()
 
@@ -594,8 +598,6 @@ class SponsImage():
 
 
     def updateFigSize(self):
-#        widthPix, heightPix = master.winfo_width(), master.winfo_height()
-#        widthPix, heightPix = self._canvas.winfo_width(), self._canvas.winfo_height()
         widthPix, heightPix =  self.SponsFrame.winfo_width(), self.SponsFrame.winfo_height()
  
         widthmm = widthPix * self.pixDist_width
@@ -604,6 +606,56 @@ class SponsImage():
         # inch convert
         widthInch =  widthmm* 0.0393700787 # * self.widthRatioOfImage
         heightInch = heightmm * 0.0393700787
-   #     self._fig.set_size_inches( widthInch,heightInch, forward=True)
-        #self._canvas.show()
+        
         self._updateCanvas()
+
+
+        
+#############################################################
+# Sponsor Image class  using Pillow for scaling and display #
+#############################################################
+        
+class SponsImagePillow():
+    # Class displaying a frame containing a (sponsor) image
+    # using tkinter and PIL.
+    def __init__(self,tkHandle):
+        self._tkHandle = tkHandle
+        self._sponsImage = leftSponsImagePath # Can be any format supported by PIL
+        self.image2_orig = Image.open(leftSponsImagePath) # keep original
+        self.image2 = self.image2_orig.copy() # create copy image to work with
+
+        # create the frame used to display image in  
+        self.SponsFrame = tk.Frame(self._tkHandle)
+        
+        # align frame and let it expand
+        self.SponsFrame.grid(row=0, column=0, columnspan=1, rowspan=14 , sticky='NWES')
+        self.SponsFrame.config(bg= defaultBackgroundColour)
+
+        self.image_size = self.get_FrameSize() # get given size for frame.
+
+        # convert initial image into tk compatible format
+        self.tk_image = ImageTk.PhotoImage( self.image2 )
+
+        # create label containing image
+        self.displayLabel = tk.Label(self.SponsFrame, image = self.tk_image)
+        self.displayLabel.configure(bg= defaultBackgroundColour)
+        self.displayLabel.grid(sticky='NWSE')
+
+    def get_FrameSize(self):        
+        # Returns the size of the frame in pixels.
+        # Will return 1x1 pixels if called before
+        # frame is processed by geometry manager (here .grid)
+        xsize, ysize = self.SponsFrame.winfo_width(), self.SponsFrame.winfo_height()
+        size = [xsize,ysize]
+        return size
+        
+    def updateFigSize(self):
+        self.image_size = self.get_FrameSize()
+        # makes copy of original to avoid recursive smaller images.
+        self.image2 = self.image2_orig.copy()
+
+        # downsize the original file
+        self.image2.thumbnail(self.image_size)
+
+        self.tk_image = ImageTk.PhotoImage( self.image2 ) # convert resized file to tk readable format
+        self.displayLabel.configure(image = self.tk_image) # update the displayed image

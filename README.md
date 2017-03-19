@@ -33,6 +33,9 @@ matplotlib
 
 tkinter
 
+Image, ImageTk from PIL  (install package python3-pil.imagetk) (it is actually pillow, a PIL fork)
+
+
 (for a smaller breakdown if you want
 to avoid installing the entire modules, please see the imports at the top of
 IPTClock.py and Classes/iptclock_classes.py)
