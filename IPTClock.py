@@ -681,28 +681,39 @@ if usingLinuxMasterRace or usingWindows:
     master.bind("<Control-Return>", keyboardStartPaus)
     master.bind("<Control-j>", IncreaseSponsWidth)
     master.bind("<Control-k>", DecreaseSponsWidth)
+	
+	## change font size ##
+    # increase
+    master.bind("<Control-plus>", IncreaseFontSize)
+    master.bind("<Control-KP_Add>", IncreaseFontSize) #keypad +
+
+    # decrease
+    master.bind("<Control-minus>", DecreaseFontSize)
+    master.bind("<Control-KP_Subtract>", DecreaseFontSize) #keypad -
+
+    # default size
+    master.bind("<Control-KP_0>", SetToDefaultFontSize)
+    master.bind("<Control-0>", SetToDefaultFontSize) #keypad 0
 else:
     master.bind("<Command-r>", keyboardReset)
     master.bind("<Command-KP_Enter>", keyboardStartPaus)
     master.bind("<Command-Return>", keyboardStartPaus)
     master.bind("<Command-j>", IncreaseSponsWidth)
     master.bind("<Command-k>", DecreaseSponsWidth)
+	
+	## change font size ##
+    # increase
+    master.bind("<Command-plus>", IncreaseFontSize)
+    master.bind("<Command-KP_Add>", IncreaseFontSize) #keypad +
+
+    # decrease
+    master.bind("<Command-minus>", DecreaseFontSize)
+    master.bind("<Command-KP_Subtract>", DecreaseFontSize) #keypad -
+
+    # default size
+    master.bind("<Command-KP_0>", SetToDefaultFontSize)
+    master.bind("<Command-0>", SetToDefaultFontSize) #keypad 0
     
-## change font size ##
-
-# increase
-master.bind("<Control-plus>", IncreaseFontSize)
-master.bind("<Control-KP_Add>", IncreaseFontSize) #keypad +
-
-# decrease
-master.bind("<Control-minus>", DecreaseFontSize)
-master.bind("<Control-KP_Subtract>", DecreaseFontSize) #keypad -
-
-# default size
-master.bind("<Control-KP_0>", SetToDefaultFontSize)
-master.bind("<Control-0>", SetToDefaultFontSize) #keypad 0
-
-
 
 
 #######################

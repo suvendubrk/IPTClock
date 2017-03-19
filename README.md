@@ -94,7 +94,7 @@ Command+Right : Switch to next stage
 
 \<Escape\> : Exit fullscreen
 
-Command + + : Increase font size
+Command + + : Increase font size (Warning mind dead key, see Known bugs)
 
 Command + - : Decrease font size
 
@@ -113,7 +113,6 @@ Variables used to change the IPTClock is positioned in Config/config.py
 
 Further, changes to the fight layout in the form of stages and time can
 be changed in the file stages.txt
-
 
  
 ## Build instructions ##
@@ -139,6 +138,15 @@ I encountered a problem where the linking was broken while using cx_Freeze and
 python 3.5, using python 3.4 solved this issue.
 
 
-Crashes on Mac OS X 10.10.5 when using dead keys. For details see issue #1 https://github.com/AlbinJS/IPTClock/issues/1
+- Crashes on Mac OS X 10.10.5 when using dead keys. For details see issue #1 https://github.com/AlbinJS/IPTClock/issues/1
 
 Present solution: Don't push dead keys on Mac OSX.
+
+
+- Fullscreen on Mac doesn't use the area of the menus at the top and bottom.
+
+
+- When exiting IPTClock on windows a pop telling python has stopped working.
+
+
+- Resizing sponsor area using keybinds doesn't work in fullscreen on Windows.
