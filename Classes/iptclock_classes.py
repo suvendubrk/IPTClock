@@ -628,7 +628,8 @@ class SponsImagePillow():
         self.SponsFrame = tk.Frame(self._tkHandle)
         
         # align frame and let it expand
-        self.SponsFrame.grid(row=0, column=0, columnspan=1, rowspan=14 , sticky='NWES')
+        self.SponsFrame.grid(row=0, column=0, columnspan=1, rowspan=14 , sticky='WESN')
+
         self.SponsFrame.config(bg= defaultBackgroundColour)
 
         self.image_size = self.get_FrameSize() # get given size for frame.
@@ -655,7 +656,7 @@ class SponsImagePillow():
         self.image2 = self.image2_orig.copy()
 
         # downsize the original file
-        self.image2.thumbnail(self.image_size)
+        self.image2.thumbnail(self.image_size, resample=Image.LANCZOS) # improve image by lanczosfilter
 
         self.tk_image = ImageTk.PhotoImage( self.image2 ) # convert resized file to tk readable format
         self.displayLabel.configure(image = self.tk_image) # update the displayed image

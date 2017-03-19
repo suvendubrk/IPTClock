@@ -14,7 +14,7 @@ textColour = 'black'  # String, following tkinter naming. colour used for text c
 clockColours = ['#7DC7EE', '#FED812', '#d32c2c', '#864da0']  # List of colours for the clock to cycle through
 
 # Path to sponsor image [Presently PNG!], if using tkinter and label, it has to be in GIF and if we use matplotlib it has to be in PNG.
-leftSponsImagePath = './Images/Sponsors/SponsorLogos2.png' #./Images/Sponsors/sponsors.png' # './testPicture.gif'  # './ponyAndDuck.gif'
+leftSponsImagePath = './Images/Sponsors/sponsors.png' #./Images/Sponsors/sponsors.png' # './testPicture.gif'  # './ponyAndDuck.gif'
 
 pathToSoundFile = ''#'./Audio/theDuckSong2.wav'  # If left empty nothing happens, requires [.wav]
 

@@ -80,6 +80,9 @@ Ctrl + Enter : Start/Paus
 
 Ctrl + r : Reset and start clock
 
+Ctrl + j : decrease size of sponsor image
+
+Ctrl + k : decrease size of sponsor image
 
 --For Mac--
 
@@ -101,6 +104,9 @@ Command + Enter : Start/Paus
 
 Command + r : Reset and start clock
 
+Command + j : decrease size of sponsor image
+
+Command + k : decrease size of sponsor image
 
 ## configuration ##
 Variables used to change the IPTClock is positioned in Config/config.py

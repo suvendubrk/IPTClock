@@ -558,9 +558,11 @@ master.config(menu=menubar) # set the final menu
 #master.rowconfigure(1, weight=1)
 #master.rowconfigure(2, weight=1)#, minsize = 200)
 master.rowconfigure(3, weight=2)
+
 master.rowconfigure(9, minsize=125)
 
-master.columnconfigure(0, weight=2, minsize = 200) # minsize to ensure that sponsor logo is visible
+master.sponsWidth=200
+master.columnconfigure(0, weight=2, minsize = master.sponsWidth) # minsize to ensure that sponsor logo is visible
 #master.columnconfigure(1, weight=1)
 master.columnconfigure(3, weight=1)
 #master.columnconfigure(7, minsize=240)
@@ -601,7 +603,15 @@ master.protocol("WM_DELETE_WINDOW", on_closing)  # necessary to cleanly exit the
 master.bind('<Configure>', ResizeObjectsOnEvent )
 
 
-
+# Methods for manually change size of sponsor column
+def IncreaseSponsWidth(event):
+    master.sponsWidth = master.sponsWidth + 1
+    master.columnconfigure(0, weight=2, minsize = master.sponsWidth)
+    
+def DecreaseSponsWidth(event):
+    master.sponsWidth = master.sponsWidth -1
+    master.columnconfigure(0, weight=2, minsize = master.sponsWidth)
+    
 #####################
 # Keyboard bindings #
 #####################
@@ -619,8 +629,8 @@ else:
 #    master.bind("<F11>", toogleFullscreen)    
 #    master.bind("<Escape>", endFullscreen)
 
-# bindings for changing stage
 
+# bindings for changing stage
 def KeyNextStage(event):
     IPTClock.next_stage()
 if usingMac:
@@ -634,7 +644,6 @@ if usingMac:
     master.bind("<Command-Left>", KeyPreviousStage )
 else:
     master.bind("<Control-Left>", KeyPreviousStage )
-
 
 
 ## bindings for start and stop 
@@ -653,10 +662,14 @@ if usingLinuxMasterRace or usingWindows:
     master.bind("<Control-r>", keyboardReset)
     master.bind("<Control-KP_Enter>", keyboardStartPaus)
     master.bind("<Control-Return>", keyboardStartPaus)
+    master.bind("<Control-j>", IncreaseSponsWidth)
+    master.bind("<Control-k>", DecreaseSponsWidth)
 else:
     master.bind("<Command-r>", keyboardReset)
     master.bind("<Command-KP_Enter>", keyboardStartPaus)
     master.bind("<Command-Return>", keyboardStartPaus)
+    master.bind("<Command-j>", IncreaseSponsWidth)
+    master.bind("<Command-k>", DecreaseSponsWidth)
     
 ## change font size ##
 
@@ -671,6 +684,7 @@ master.bind("<Control-KP_Subtract>", DecreaseFontSize) #keypad -
 # default size
 master.bind("<Control-KP_0>", SetToDefaultFontSize)
 master.bind("<Control-0>", SetToDefaultFontSize) #keypad 0
+
 
 
 
