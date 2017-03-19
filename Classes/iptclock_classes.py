@@ -479,6 +479,8 @@ class TimeoutClass:
         self.top = tk.Toplevel()
         self.top.title("TIMEOUT!")
         self.top.configure(bg= defaultBackgroundColour)
+
+      
         self.msg = tk.Label(self.top, text=self.timer.string,  font=('Courier New', 60) )
         self.msg.pack(fill='x')
         self.msg.configure(bg=defaultBackgroundColour, fg= textColour)
@@ -488,6 +490,9 @@ class TimeoutClass:
         self.button.pack()
         self.top.protocol("WM_DELETE_WINDOW", self.exit_timeout) # if push x on border
 
+        
+
+        
 
   # function updating the time
     def update(self):       
@@ -525,7 +530,8 @@ class TimeoutClass:
         if self.tick_state:
             self._clock_handle.start()
 
-
+ 
+    
 
 ###################
 # SponsImageClass #
