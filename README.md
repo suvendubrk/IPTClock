@@ -21,7 +21,7 @@ This program is written to serve the purpose of a timing and presentation tool
 for the international physicist tournament. http://iptnet.info/
 
 It is written in python 3 and is meant to be cross-platform, using tkinter as
-GUI control and matplotlib for image and graphics tweaking.
+GUI control and matplotlib for image and graphics tweaking. It should also be backwards compatible with python2.
 
 
 ## Dependencies ##

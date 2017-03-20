@@ -1,10 +1,32 @@
+import sys
+if sys.version_info[0] < 3:
+    usePython3 = False
+else:    
+    usePython3 = True
+
 from Config.config import * # imports configuration variables
 import math
 
 import matplotlib as mpl
 mpl.use('TkAgg') # needs to be called before plt
-import tkinter as tk
 
+
+try:
+    import pyaudio
+    installedPyaudio = True
+except ImportError:
+    installedPyaudio = False
+
+
+if usePython3:
+    import tkinter as tk
+    import _thread # in order to utilize threads # the threading that is used is written for python 3
+
+else:
+    import Tkinter as tk
+    installedPyaudio = False # to avoid calling python3 specific commands.
+    import copy
+    
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
@@ -13,14 +35,8 @@ import time
 # imports pillow as an alternative way of displaying images.
 from PIL import Image, ImageTk
 
-import _thread # in order to utilize threads # the threading that is used is written for python 3
 
 # check if we use audio or not (.wave format)
-try:
-    import pyaudio
-    installedPyaudio = True
-except ImportError:
-    installedPyaudio = False
 
 if installedPyaudio:
     import wave
@@ -136,7 +152,10 @@ class Stage:
             self._current_stage -= 1
 
     def get_stages(self):
-        return self._stages.copy()
+        if usePython3:
+            return self._stages.copy()
+        else:
+            return copy.copy(self._stages)
 
 
 ###############
@@ -165,17 +184,20 @@ def create_clock_labels(tkLabel):
 
 
 def create_clock_canvas(tkHandle,wedgeBgColour):
-    fig = plt.figure(figsize=(16, 16), edgecolor=None, facecolor=wedgeBgColour)
+#    fig = plt.figure(figsize=(16, 16), edgecolor=None, facecolor=wedgeBgColour)
+    fig = plt.figure(figsize=(16, 16), edgecolor = None, facecolor=wedgeBackgroundColour)
     ax = fig.add_subplot(111)
-    #    ax.set_axis_bgcolor(None)
-#    ax.set_facecolor(None)
+#    ax.set_axis_bgcolor(None) ###
+#    ax.set_facecolor(None)  #######
     ax.set_xlim(-1, 1)
     ax.set_ylim(-1, 1)
     ax.set_aspect(1)  # similar to "axis('equal')", but better.
     ax.axis('off')  # makes axis borders etc invisible.
 
     canvas = FigureCanvasTkAgg(fig, master=tkHandle)
+#    canvas.get_tk_widget().configure(highlightthickness=0, highlightcolor=None)
     canvas.show()
+   
     canvas.get_tk_widget().grid(row=2, column=2, columnspan=3, rowspan=7)  # , sticky=tk.N)
     return ax, fig, canvas
 
@@ -265,12 +287,15 @@ class Clock:
             self.countdownText.configure(text=self.timer.string())
 
             # Update the clock graphics. Clock starts at 0 then negative direction clockwise
-            angle = -360 * ((self.timer.start_time() - self.timer.time()) / self.timer.start_time())
+#            angle = -360 * ((self.timer.start_time() - self.timer.time()) / self.timer.start_time())
+            angle = -360 * ((self.timer.start_time() - self.timer.time()) / float(self.timer.start_time()) ) # added float since python2 returns int else.
+
             self.clock_graphics.set_angle(angle)
 
             # check for countdown time for activating "low health mode"
-            if self.timer.time() == self.startPlayingSongTime:
-                _thread.start_new_thread(self.PlayASoundFile, (pathToSoundFile,))
+            if usePython3:
+                if self.timer.time() == self.startPlayingSongTime:
+                    _thread.start_new_thread(self.PlayASoundFile, (pathToSoundFile,))
 
         # Call the update() function after 1/fps seconds
         dt = (time.time() - t0) * 1000
@@ -309,7 +334,7 @@ class ClockGraphics:
         self._clock_center = [0, 0]
         self._clock_reference_angle = 90
         self._clock_radius = 0.9
-        self._angle = 0
+        self._angle = 90 #0
 
         # Check colours
         self._set_backgroundColour()
@@ -322,7 +347,7 @@ class ClockGraphics:
 
         # set colours
         self._colours = [self.wedgeBackgroundColour] + clockColours  # [wedgeBackgroundColour, wedgeColour, 'red', 'purple']
-
+       
         # Reset the clock
         self.reset()
 
@@ -356,9 +381,10 @@ class ClockGraphics:
             background_colour = self._colours[lap]
         else:
             wedge_colour = self._backgroundDisc.get_facecolour()
-            background_colour = self._wedge.get_facecolour()
+            background_colour = self._wedge.get_facecolour() 
         self._wedge.set_facecolor(wedge_colour)
         self._backgroundDisc.set_facecolor(background_colour)
+         
 
     def set_angle(self, new_angle):
         self._angle = new_angle
@@ -381,6 +407,8 @@ class ClockGraphics:
 
         if wedgeBackgroundColour is None:
             self.wedgeBackgroundColour = bgRGB
+        else:
+            self.wedgeBackgroundColour = wedgeBackgroundColour
 
         
 ###########
@@ -400,7 +428,7 @@ class TimeoutTimer():
         self._string = ''
 
         self._string_pattern = '{0:02d}:{1:02d}:{2:02d}'  # the pattern format for the timer to ensure 2 digits
-        self._time_step = 1/10 #1/fps # 
+        self._time_step = float(1)/10 #1/fps # added float for python 2 compatibility
 
         self.set_timer(self._start_time)
 
@@ -422,7 +450,7 @@ class TimeoutTimer():
     def start_time(self):
         return self._start_time
 
-    def time(self):
+    def time(self):       
         return self._time
 
     def string(self):
@@ -433,7 +461,7 @@ class TimeoutTimer():
         self._start_time = start_time
         self.reset()
 
-    def tick(self):
+    def tick(self):        
         self._set_time(self._time-self._time_step)
 
     def isTicking(self):
@@ -451,6 +479,7 @@ class TimeoutTimer():
 
     def set_time_step(self, fps):
         self._time_step = 1/fps
+
 
 #################        
 # Timeout Class #
@@ -473,6 +502,7 @@ class TimeoutClass:
         # check if clock is running
         self.tick_state = self._clock_handle.timer._tick_state             
         self._clock_handle.pause() # pause clock
+       
         
     def setupTimeout(self):
         # create and positions the pop up frame
@@ -492,13 +522,13 @@ class TimeoutClass:
 
         
 
-        
-
   # function updating the time
     def update(self):       
         # Every time this function is called,
         # decrease timer with one second
+
         t0 = time.time()
+
         if self.timer.isTicking():
             # Update the countdownText Label with the updated time
             self.msg.configure(text=self.timer.string())
@@ -508,7 +538,10 @@ class TimeoutClass:
 
         # Call the update() function after 1/fps seconds
         dt = (time.time() - t0) * 1000
+
         time_left = max(0, int(1000 / self.fps - dt))
+#        time_left = max(0, int(1000 / float(self.fps) - dt))
+
         self._master_handle.after(time_left, self.update)
 
         # check exit criteria

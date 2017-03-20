@@ -7,7 +7,7 @@ fps = 1 # used for timer to set update frequency
 
 defaultBackgroundColour = '#FFFFFF'  # 'blue'    # String, following tkinter naming. colour used for background, buttons and labels etc. NOT colour behind wedge, use "None" without "" to get system default
 
-wedgeBackgroundColour = None  # '#13235b' # String, following matplotlib naming.  colour of the wedge background (for example to adhere to present year's colour scheme. None defaults to Tkinter colour from defaultBackgroundColour
+wedgeBackgroundColour = '#FFFFFF'# None  # '#13235b' # String, following matplotlib naming.  colour of the wedge background (for example to adhere to present year's colour scheme. None defaults to Tkinter colour from defaultBackgroundColour
 
 textColour = 'black'  # String, following tkinter naming. colour used for text colour. Use "None" without "" to get system default.
 

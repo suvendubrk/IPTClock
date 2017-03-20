@@ -35,16 +35,24 @@
 import sys
 if sys.version_info[0] < 3:
     print('You are using a Python version < 3 !! \n Repent!\n ')
-    sys.exit(0)
+#    sys.exit(0)
+    usePython3 = False
 else:    
     import _thread # in order to utilize threads # the threading that is used is written for python 3
     usePython3 = True
 
-# import tkinter    
-import tkinter as tk
-from tkinter import messagebox # used for popups
-from tkinter import simpledialog
-import tkinter.font as tkFont # used for custom font settings
+# import tkinter
+if usePython3: 
+    import tkinter as tk
+    from tkinter import messagebox # used for popups
+    from tkinter import simpledialog
+    import tkinter.font as tkFont # used for custom font settings
+else:
+    #python2 compatibility
+    import Tkinter as tk
+    import tkMessageBox as messagebox# used for popups
+    import tkSimpleDialog as simpledialog
+    import tkFont # used for custom font settings
 
 import math
 import time
@@ -119,7 +127,7 @@ def toogleFullscreenButton():
         fullscreenButton.configure(text="Fullscreen")
         master.fullscreenSwitch.set(False) # traced variable
         screenWidth = 640
-    FontResize(screenWidth)
+    FontResize(int(screenWidth))
     SponsImageResize()
 
 def endFullscreenLinux(tmp):
@@ -168,21 +176,21 @@ def FontResize(screenWidthPixels):
     widthRatio = widthPix / 640.0
     
     fontSize = master.customFontCompetitors_orig
-    fontSize = math.floor(fontSize*widthRatio)
+    fontSize = int( math.floor(fontSize*widthRatio) )
     master.customFontCompetitors.configure(size=fontSize)
 
     fontSize = master.customFontButtons_orig
-    fontSize = math.floor(fontSize*widthRatio)
+    fontSize = int( math.floor(fontSize*widthRatio) )
     if (abs(fontSize) > 16):
         fontSize = 16
     master.customFontButtons.configure(size=fontSize)
 
     fontSize = master.customFontDigitalClock_orig
-    fontSize = math.floor(fontSize*widthRatio)
+    fontSize = int( math.floor(fontSize*widthRatio) )
     master.customFontDigitalClock.configure(size=fontSize)
 
     fontSize = master.customFontStage_orig
-    fontSize = math.floor(fontSize*widthRatio)    
+    fontSize = int( math.floor(fontSize*widthRatio) )
     master.customFontStage.configure(size=fontSize)
     
     # scales the text wrap in stage presentation    
