@@ -265,8 +265,55 @@ def SponsImageFullscreen(a,b,c):
  #   else:
  #       master.newImage = master.image
  #   master.sponsLabel.configure(image = master.newImage)
+
+
+ # Set stage time
+def SetStageStartTime(start_time):    
+    IPTClock.set_stage_startTime(start_time)
+
+
+# Popup for setting time of countdownclock
+def SetTimePopUp(event):
+    correctInput = False
+    dialogString = tk.StringVar()
+    dialogString.set("How much time has passed?")
     
-    
+    while not correctInput:
+        initialTime = tk.IntVar()
+        initialTime.set(0)
+        timeInteger = simpledialog.askinteger("Set Time",dialogString.get(), initialvalue=initialTime.get())
+
+        # check None in case termination with "windows cross"
+        if timeInteger is None:            
+            break
+        else:            
+            # check validity
+            if timeInteger < 0 or abs(timeInteger) > IPTClock.stage.time():
+                correctInput = False
+                dialogString.set("Insert valid time range!")
+            else:
+                correctInput = True
+
+    if correctInput:
+        SetStageStartTime(timeInteger)
+
+
+def IncreaseTime(event):
+    timeStep = 5
+    MoveTime( timeStep )
+
+def DecreaseTime(event):
+    timeStep = -5
+    MoveTime( timeStep )
+
+def MoveTime(timeMoved):
+    time = IPTClock.timer.time()      
+    # validity check
+  #  if (time - timeMoved) < 0:
+  #      timeMoved = 0
+    IPTClock.timer.set_time(time - timeMoved) # to decrease we here add
+    IPTClock.refresh()
+
     
 # about this application
 def AboutPopup():
@@ -461,7 +508,7 @@ IPTClock = Clock(master) # takes tkHandle,
 # fix some font setup.
 IPTClock.presentationTextLabel.configure(font = master.customFontStage) # updates the font and size of using defined font
 IPTClock.countdownText.configure(font = master.customFontDigitalClock)
-
+IPTClock.countdownText.bind("<Button-1>", SetTimePopUp)
 
 
 ###################
@@ -702,6 +749,13 @@ if usingLinuxMasterRace or usingWindows:
     # default size
     master.bind("<Control-KP_0>", SetToDefaultFontSize)
     master.bind("<Control-0>", SetToDefaultFontSize) #keypad 0
+
+    # update start time
+    master.bind("<Control-u>", SetTimePopUp )
+
+    # increase and decrease timer
+    master.bind("<Control-m>", IncreaseTime)
+    master.bind("<Control-n>", DecreaseTime)
 else:
     master.bind("<Command-r>", keyboardReset)
     master.bind("<Command-KP_Enter>", keyboardStartPaus)
@@ -722,6 +776,12 @@ else:
     master.bind("<Command-KP_0>", SetToDefaultFontSize)
     master.bind("<Command-0>", SetToDefaultFontSize) #keypad 0
     
+    # update start time
+    master.bind("<Command-u>", SetTimePopUp  )
+
+    # increase and decrease timer
+    master.bind("<Command-m>", IncreaseTime)
+    master.bind("<Command-n>", DecreaseTime)
 
 
 #######################

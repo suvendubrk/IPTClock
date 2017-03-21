@@ -99,6 +99,8 @@ class Timer():
         self._tick_state = False
         self._set_time(self._start_time)
 
+    def set_time(self,time):
+       self._set_time(time)
 
           
 ###############
@@ -322,8 +324,21 @@ class Clock:
         self.reset()
         self.presentationTextLabel.configure(text=self.stage.description())  # update text presenting stage
 
+    def set_stage_startTime(self, start_time):
+        # Set the present countdown time of the timer
+        self.reset()
+        self.timer.set_time(self.stage.time() - start_time)
+        self.refresh()
+       
 
+    def refresh(self):
+         # Update the countdownText Label with the updated time
+        self.countdownText.configure(text=self.timer.string()) 
 
+        angle = -360 * ((self.timer.start_time() - self.timer.time()) / float(self.timer.start_time()) ) # added float since python2 returns int else.
+
+        self.clock_graphics.set_angle(angle)
+        
 #######################
 # ClockGraphics Class #
 #######################

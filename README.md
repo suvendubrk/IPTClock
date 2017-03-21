@@ -56,6 +56,7 @@ alternatively it can be run using pre build binaries found under the build folde
 For instance in the case of windows use the exe file IPTClock.exe found in
 build/exe.win-ARCHITECHURE-PYTHONVER/IPTClock.exe
 
+If you click on the count down text a popup will appear for changing the time of the present stage.
 
 ## Key bindings ##
 Key bindings used by IPTClock is
@@ -84,6 +85,12 @@ Ctrl + j : decrease size of sponsor image
 
 Ctrl + k : decrease size of sponsor image
 
+Ctrl + u : Activates popup for changing the start time of the countdown. This is the same as left click on the countdown with the mouse.
+
+Ctrl + m : Substract 5s from timer
+
+Ctrl + n : Add 5s from timer
+
 --For Mac--
 
 Command+Left : Switch to previous stage
@@ -107,6 +114,12 @@ Command + r : Reset and start clock
 Command + j : decrease size of sponsor image
 
 Command + k : decrease size of sponsor image
+
+Command + u : Activates popup for changing the start time of the countdown. This is the same as left click on the countdown with the mouse.
+
+Command + m : Substract 5s from timer
+
+Command + n : Add 5s from timer
 
 ## configuration ##
 Variables used to change the IPTClock is positioned in Config/config.py
