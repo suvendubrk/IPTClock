@@ -72,6 +72,7 @@ Ctrl+Right : Switch to next stage
 \<Escape\> : Exit fullscreen
 
 Ctrl + + : Increase font size
+
 Ctrl + = : Increase font size
 
 Ctrl + - : Decrease font size
