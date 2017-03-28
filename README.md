@@ -89,7 +89,7 @@ Ctrl + u : Activates popup for changing the start time of the countdown. This is
 
 Ctrl + m : Substract 5s from timer
 
-Ctrl + n : Add 5s from timer
+Ctrl + n : Add 5s to timer
 
 --For Mac--
 
@@ -119,7 +119,7 @@ Command + u : Activates popup for changing the start time of the countdown. This
 
 Command + m : Substract 5s from timer
 
-Command + n : Add 5s from timer
+Command + n : Add 5s to timer
 
 ## configuration ##
 Variables used to change the IPTClock is positioned in Config/config.py

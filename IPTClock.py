@@ -129,6 +129,7 @@ def toogleFullscreenButton():
         screenWidth = 640
     FontResize(int(screenWidth))
     SponsImageResize()
+    
 
 def endFullscreenLinux(tmp):
     endFullscreen() # there's some difference between os and input using keyes
@@ -142,11 +143,11 @@ def endFullscreen():
         fullscreenButton.configure(text="Fullscreen")
         master.focus_set()
 		
-        fullscreenButton.configure(text="Fullscreen")
+    #fullscreenButton.configure(text="Fullscreen")
         master.fullscreenSwitch.set(False) # traced variable
         screenWidth = 640
-        FontResize(screenWidth)
-        SponsImageResize() # needed since it might skip resizing back elsewise
+    FontResize(screenWidth)
+    SponsImageResize() # needed since it might skip resizing back elsewise
 		
 
 def EditReporter():
@@ -181,8 +182,9 @@ def FontResize(screenWidthPixels):
 
     fontSize = master.customFontButtons_orig
     fontSize = int( math.floor(fontSize*widthRatio) )
-    if (abs(fontSize) > 16):
-        fontSize = 16
+    #if (abs(fontSize) > 16):
+    if fontSize < master.minButtonFontSize:
+        fontSize = master.minButtonFontSize
     master.customFontButtons.configure(size=fontSize)
 
     fontSize = master.customFontDigitalClock_orig
@@ -399,10 +401,13 @@ master.fullscreen = False
 # objects                  #
 ############################
 
-master.customFontButtons = tkFont.Font(family='Courier New', size=7)
-master.customFontCompetitors = tkFont.Font(family='Courier New', size=12)
-master.customFontDigitalClock = tkFont.Font(family='Courier New', size=36)
-master.customFontStage = tkFont.Font(family='Courier New', size=16)
+master.customFontButtons = tkFont.Font(family=defaultFont, size=7)
+master.customFontCompetitors = tkFont.Font(family=defaultFont, size=12)
+master.customFontDigitalClock = tkFont.Font(family=defaultFont, size=32)
+master.customFontStage = tkFont.Font(family=defaultFont, size=16)
+master.minButtonFontSize = 7 # min font size for buttons
+
+master.buttonFontSize = master.customFontButtons.cget('size')
 
 # save the original for use in scaling
 master.customFontButtons_orig = master.customFontButtons.cget('size')
@@ -419,12 +424,19 @@ def IncreaseFontSize(event):
     fontSize = fontSize + 1    
     master.customFontCompetitors.configure(size=fontSize)
 
-    fontSize = master.customFontButtons.cget('size')
-    fontSize = fontSize + 1    
-    master.customFontButtons.configure(size=fontSize)
+#    fontSize = master.customFontButtons.cget('size')
+    fontSize = master.buttonFontSize
+    fontSize = fontSize + 1
+
+    # ensure the buttons doesn't get to small
+    if fontSize < master.minButtonFontSize:
+        master.customFontButtons.configure(size=master.minButtonFontSize)
+    else:
+        master.customFontButtons.configure(size=fontSize)
+    master.buttonFontSize = fontSize
 
     fontSize = master.customFontDigitalClock.cget('size')
-    fontSize = fontSize + 1    
+    fontSize = fontSize + 2    
     master.customFontDigitalClock.configure(size=fontSize)
 
     fontSize = master.customFontStage.cget('size')
@@ -437,12 +449,19 @@ def DecreaseFontSize(event):
     fontSize = fontSize - 1    
     master.customFontCompetitors.configure(size=fontSize)
 
-    fontSize = master.customFontButtons.cget('size')
-    fontSize = fontSize - 1    
-    master.customFontButtons.configure(size=fontSize)
+#    fontSize = master.customFontButtons.cget('size')
+    fontSize = master.buttonFontSize
+    fontSize = fontSize - 1
 
+    # ensure the buttons doesn't get to small
+    if fontSize < master.minButtonFontSize:
+        master.customFontButtons.configure(size=master.minButtonFontSize)
+    else:
+        master.customFontButtons.configure(size=fontSize)
+    master.buttonFontSize = fontSize
+        
     fontSize = master.customFontDigitalClock.cget('size')
-    fontSize = fontSize - 1    
+    fontSize = fontSize - 2    
     master.customFontDigitalClock.configure(size=fontSize)
 
     fontSize = master.customFontStage.cget('size')
@@ -451,11 +470,20 @@ def DecreaseFontSize(event):
 
 
 def SetToDefaultFontSize(event):
+    # Set default values for font sizes
     master.customFontButtons.configure(size= master.customFontButtons_orig)
     master.customFontCompetitors.configure(size= master.customFontCompetitors_orig)
     master.customFontDigitalClock.configure(size= master.customFontDigitalClock_orig)
     master.customFontStage.configure(size= master.customFontStage_orig)
 
+    # call window scaling
+    if (master.fullscreen):
+         screenWidth = master.winfo_screenwidth() 
+    else:
+        screenWidth = 640
+    FontResize(int(screenWidth))
+
+    
 #################
 # Sponsor Image #
 #################
@@ -633,10 +661,13 @@ master.rowconfigure(3, weight=2)
 
 master.rowconfigure(9, minsize=125)
 
-master.sponsWidth=200
+master.sponsWidth= 150
 master.columnconfigure(0, weight=2, minsize = master.sponsWidth) # minsize to ensure that sponsor logo is visible
+#master.columnconfigure(0, weight=1, minsize = master.sponsWidth) # minsize to ensure that sponsor logo is visible
 #master.columnconfigure(1, weight=1)
-master.columnconfigure(3, weight=1)
+####master.columnconfigure(3, weight=1)
+master.clockWidth = 250
+master.columnconfigure(3, weight=1, minsize= master.clockWidth )
 #master.columnconfigure(7, minsize=240)
 #master.columnconfigure(7, weight=1)
 
@@ -679,10 +710,12 @@ master.bind('<Configure>', ResizeObjectsOnEvent )
 def IncreaseSponsWidth(event):
     master.sponsWidth = master.sponsWidth + 1
     master.columnconfigure(0, weight=2, minsize = master.sponsWidth)
+    SponsImageResize()
     
 def DecreaseSponsWidth(event):
-    master.sponsWidth = master.sponsWidth -1
-    master.columnconfigure(0, weight=2, minsize = master.sponsWidth)
+    master.sponsWidth = master.sponsWidth -1 
+    master.columnconfigure(0, weight=2, minsize = master.sponsWidth)    
+    SponsImageResize()
     
 #####################
 # Keyboard bindings #
@@ -737,10 +770,11 @@ if usingLinuxMasterRace or usingWindows:
     master.bind("<Control-j>", IncreaseSponsWidth)
     master.bind("<Control-k>", DecreaseSponsWidth)
 	
-	## change font size ##
+    ## change font size ##
     # increase
     master.bind("<Control-plus>", IncreaseFontSize)
     master.bind("<Control-KP_Add>", IncreaseFontSize) #keypad +
+    master.bind("<Control-0x003d>", IncreaseFontSize)
 
     # decrease
     master.bind("<Control-minus>", DecreaseFontSize)
@@ -767,7 +801,8 @@ else:
     # increase
     master.bind("<Command-plus>", IncreaseFontSize)
     master.bind("<Command-KP_Add>", IncreaseFontSize) #keypad +
-
+    master.bind("<Command-0x003d>", IncreaseFontSize)
+    
     # decrease
     master.bind("<Command-minus>", DecreaseFontSize)
     master.bind("<Command-KP_Subtract>", DecreaseFontSize) #keypad -

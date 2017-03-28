@@ -177,7 +177,7 @@ def create_clock_labels(tkLabel):
     # Presentation of current phase
 #    presentationTextLabel = tk.Label(tkLabel, text='', font=('Courier New', 32), wraplength=1400)
 #    tkLabel.origWrapLength = 400
-    wrapLength = 400
+    wrapLength = 350
     presentationTextLabel = tk.Label(tkLabel, text='', font=tkLabel.customFontStage, wraplength= wrapLength) # This should probably be scaled with windowssize.
     presentationTextLabel.grid(row=9, column=2, columnspan=3, sticky="EWS")
     presentationTextLabel.configure(background=defaultBackgroundColour, fg= textColour)
@@ -216,6 +216,9 @@ def get_backgroundColour():
 
 class Clock:
     def __init__(self, tkHandle):
+#        self.low_health_ratio =
+        self._low_health_time = 15 # time left in second for activating low health mode
+        self.is_low_health = False # boolean controlling low health mode
         self._tkHandle = tkHandle
         self.stage = Stage()
         self.timer = Timer()
@@ -236,6 +239,10 @@ class Clock:
 
     # To reset the countdown to startTime
     def reset(self):
+
+        # resets low health mode
+        self.is_low_health = False
+        
         # reset the timer
         self.timer.reset()
 
@@ -295,9 +302,11 @@ class Clock:
             self.clock_graphics.set_angle(angle)
 
             # check for countdown time for activating "low health mode"
-            if usePython3:
-                if self.timer.time() == self.startPlayingSongTime:
-                    _thread.start_new_thread(self.PlayASoundFile, (pathToSoundFile,))
+            if self.timer.time() < (self._low_health_time +2) : # +1 since we update after time update. another +1 to activate at the specified time.
+                # check if low health mode is activated
+                if not self.is_low_health:
+                    self.is_low_health = True # update boolean so we don't call it more than once
+                    self.low_health_mode()            
 
         # Call the update() function after 1/fps seconds
         dt = (time.time() - t0) * 1000
@@ -338,7 +347,15 @@ class Clock:
         angle = -360 * ((self.timer.start_time() - self.timer.time()) / float(self.timer.start_time()) ) # added float since python2 returns int else.
 
         self.clock_graphics.set_angle(angle)
+
+    def low_health_mode(self):
+        background_colour = 'red' # colour of last wedge part in low health
+        self.clock_graphics.set_wedge_background_colour(background_colour)
         
+        # for playing low health sound
+#            if usePython3:
+#                    _thread.start_new_thread(self.PlayASoundFile, (pathToSoundFile,))
+
 #######################
 # ClockGraphics Class #
 #######################
@@ -395,8 +412,9 @@ class ClockGraphics:
             wedge_colour = self._colours[lap+1]
             background_colour = self._colours[lap]
         else:
-            wedge_colour = self._backgroundDisc.get_facecolour()
-            background_colour = self._wedge.get_facecolour() 
+            wedge_colour = self._backgroundDisc.get_facecolor()
+            background_colour = self._wedge.get_facecolor()
+            
         self._wedge.set_facecolor(wedge_colour)
         self._backgroundDisc.set_facecolor(background_colour)
          
@@ -425,6 +443,8 @@ class ClockGraphics:
         else:
             self.wedgeBackgroundColour = wedgeBackgroundColour
 
+    def set_wedge_background_colour(self, background_colour):
+        self._backgroundDisc.set_facecolor(background_colour)
         
 ###########
 # Timeout #
@@ -560,7 +580,8 @@ class TimeoutClass:
         self._master_handle.after(time_left, self.update)
 
         # check exit criteria
-        if self.timer.time() < self.timerStopTime:
+        if self.timer.time() < self.timerStopTime :
+                                
             # terminate countdown and unpause main clock
             self.timeoutState = False
             if self.timer.isTicking: #self.ongoingTimer:
@@ -576,8 +597,6 @@ class TimeoutClass:
             self._clock_handle.start()
 	
         self.top.destroy()
-
-
  
     
 
