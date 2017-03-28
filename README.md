@@ -72,6 +72,7 @@ Ctrl+Right : Switch to next stage
 \<Escape\> : Exit fullscreen
 
 Ctrl + + : Increase font size
+Ctrl + = : Increase font size
 
 Ctrl + - : Decrease font size
 
@@ -102,6 +103,8 @@ Command+Right : Switch to next stage
 \<Escape\> : Exit fullscreen
 
 Command + + : Increase font size (Warning mind dead key, see Known bugs)
+
+Command 0 = : Increase font size
 
 Command + - : Decrease font size
 
