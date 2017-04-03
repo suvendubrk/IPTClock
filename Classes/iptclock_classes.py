@@ -559,7 +559,7 @@ class TimeoutClass:
         self.button.configure(bg = defaultBackgroundColour, fg= textColour )
         self.button.pack()
         self.top.protocol("WM_DELETE_WINDOW", self.exit_timeout) # if push x on border
-
+        self.centreTop(self.top)
         
 
   # function updating the time
@@ -603,7 +603,16 @@ class TimeoutClass:
 	
         self.top.destroy()
  
-    
+    def centreTop(self, toplevel):
+        # centering the top widget
+        toplevel.update_idletasks()
+        w = toplevel.winfo_screenwidth()
+        h = toplevel.winfo_screenheight()
+        size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
+        x = w/2 - size[0]/2
+        y = h/2 - size[1]/2
+        toplevel.geometry("%dx%d+%d+%d" % (size + (x, y)))
+
 
 ###################
 # SponsImageClass #
@@ -748,7 +757,7 @@ class EditFrame():
         self.tk_handle = tkHandle
         
         self._create_top_frame()
-
+        self.centerTop(self.top) # center the popup
 
     def _create_top_frame(self):        
         # create and positions the pop up frame
@@ -926,5 +935,15 @@ class EditFrame():
         self.tk_handle.opponentNameLabel.configure(text=self.opponentStrVar.get())
 
         self.tk_handle.reviewerNameLabel.configure(text=self.reviewerStrVar.get())
+		
+    def centerTop(self, toplevel):
+        # centering the top widget
+        toplevel.update_idletasks()
+        w = toplevel.winfo_screenwidth()
+        h = toplevel.winfo_screenheight()
+        size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
+        x = w/2 - size[0]/2
+        y = h/2 - size[1]/2
+        toplevel.geometry("%dx%d+%d+%d" % (size + (x, y)))
 
 

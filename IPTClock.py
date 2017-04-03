@@ -153,8 +153,8 @@ def endFullscreen():
 def EditReporterEvent(event):
     EditReporter()
 
-def EditReporter():
-    master.reporterString = simpledialog.askstring('Edit Reporter', 'Reporter', initialvalue=master.reporterNameLabel.cget('text'))
+def EditReporter():    
+    master.reporterString = simpledialog.askstring('Edit Reporter', 'Reporter', initialvalue=master.reporterNameLabel.cget('text') )
     master.reporterNameLabel.configure(text=master.reporterString)
 
 def EditOpponentEvent(event):
@@ -834,7 +834,8 @@ class KeyBindingClass():
         else:
             self.tk_handle.bind("<Control-Left>", self.KeyPreviousStage )
 
-
+        if usingLinuxMasterRace:
+            self.tk_handle.bind("<Control-0x003d>", IncreaseFontSize) # for =, doesn't work on windows.
 
         if usingLinuxMasterRace or usingWindows:
             self.tk_handle.bind("<Control-r>", self.keyboardReset)
@@ -846,8 +847,7 @@ class KeyBindingClass():
             ## change font size ##
             # increase
             self.tk_handle.bind("<Control-plus>", IncreaseFontSize)
-            self.tk_handle.bind("<Control-KP_Add>", IncreaseFontSize) #keypad +
-            self.tk_handle.bind("<Control-0x003d>", IncreaseFontSize)
+            self.tk_handle.bind("<Control-KP_Add>", IncreaseFontSize) #keypad +            
 
             # decrease
             self.tk_handle.bind("<Control-minus>", DecreaseFontSize)
