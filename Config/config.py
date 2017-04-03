@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###################################################
 #  This file contains variables used for tweaking #
 #  such as backgroundcolor filepaths etc.         #

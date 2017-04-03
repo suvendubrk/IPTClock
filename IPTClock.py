@@ -148,19 +148,28 @@ def endFullscreen():
         screenWidth = 640
     FontResize(screenWidth)
     SponsImageResize() # needed since it might skip resizing back elsewise
-		
+
+
+def EditReporterEvent(event):
+    EditReporter()
 
 def EditReporter():
-    reporterString = simpledialog.askstring('Edit Reporter', 'Reporter', initialvalue=reporterNameLabel.cget('text'))
-    reporterNameLabel.configure(text=reporterString)
+    master.reporterString = simpledialog.askstring('Edit Reporter', 'Reporter', initialvalue=master.reporterNameLabel.cget('text'))
+    master.reporterNameLabel.configure(text=master.reporterString)
 
+def EditOpponentEvent(event):
+    EditOpponent()
+    
 def EditOpponent():
-    opponentString = simpledialog.askstring('Edit Opponent', 'Opponent', initialvalue=opponentNameLabel.cget('text'))
-    opponentNameLabel.configure(text=opponentString)
+    master.opponentString = simpledialog.askstring('Edit Opponent', 'Opponent', initialvalue=master.opponentNameLabel.cget('text'))
+    master.opponentNameLabel.configure(text=master.opponentString)
 
+def EditReviewerEvent(event):
+    EditReviewer()
+    
 def EditReviewer():
-    reviewerString = simpledialog.askstring('Edit Reviewer', 'Reviewer', initialvalue=reviewerNameLabel.cget('text'))
-    reviewerNameLabel.configure(text=reviewerString)
+    master.reviewerString = simpledialog.askstring('Edit Reviewer', 'Reviewer', initialvalue=master.reviewerNameLabel.cget('text'))
+    master.reviewerNameLabel.configure(text=master.reviewerString)
 
 
 #################
@@ -179,31 +188,45 @@ def FontResize(screenWidthPixels):
     fontSize = master.customFontCompetitors_orig
     fontSize = int( math.floor(fontSize*widthRatio) )
     master.customFontCompetitors.configure(size=fontSize)
-
+    master.competitorFontSize.set(fontSize)
+    
     fontSize = master.customFontButtons_orig
     fontSize = int( math.floor(fontSize*widthRatio) )
     #if (abs(fontSize) > 16):
     if fontSize < master.minButtonFontSize:
         fontSize = master.minButtonFontSize
     master.customFontButtons.configure(size=fontSize)
-
+    master.buttonFontSize.set(fontSize)
+    
     fontSize = master.customFontDigitalClock_orig
     fontSize = int( math.floor(fontSize*widthRatio) )
     master.customFontDigitalClock.configure(size=fontSize)
-
+    master.digitalClockFontSize.set(fontSize)
+    
     fontSize = master.customFontStage_orig
     fontSize = int( math.floor(fontSize*widthRatio) )
-    master.customFontStage.configure(size=fontSize)
+    
+    # ensure stage fontsize is below imposed limit
+    if( fontSize > master.maxStageFontSize):    
+        master.customFontStage.configure(size=master.maxStageFontSize)
+    else:
+        master.customFontStage.configure(size=fontSize)
+    master.stageFontSize.set(fontSize)
+    
     
     # scales the text wrap in stage presentation    
-    wrapLength = math.floor( IPTClock.wrapLength * widthRatio  )
-    IPTClock.presentationTextLabel.configure(wraplength= wrapLength)
-
+    wrapLength = math.floor( master.IPTClock.wrapLength * widthRatio  )
+    master.IPTClock.presentationTextLabel.configure(wraplength= wrapLength)
+    
     
 def ResizeObjectsOnEvent(event):
     # activates scaling functions when resizing window
     SponsImageResize() # I know but it works
 
+# Removed since it counters manual changes.    
+#    frameWidthPixels = master.winfo_width()
+#    FontResize(frameWidthPixels)
+    
     
 def SponsImageResize():
     IPTSpons.updateFigSize() # calls class function
@@ -271,7 +294,7 @@ def SponsImageFullscreen(a,b,c):
 
  # Set stage time
 def SetStageStartTime(start_time):    
-    IPTClock.set_stage_startTime(start_time)
+    master.IPTClock.set_stage_startTime(start_time)
 
 
 # Popup for setting time of countdownclock
@@ -290,7 +313,7 @@ def SetTimePopUp(event):
             break
         else:            
             # check validity
-            if timeInteger < 0 or abs(timeInteger) > IPTClock.stage.time():
+            if timeInteger < 0 or abs(timeInteger) > master.IPTClock.stage.time():
                 correctInput = False
                 dialogString.set("Insert valid time range!")
             else:
@@ -309,12 +332,12 @@ def DecreaseTime(event):
     MoveTime( timeStep )
 
 def MoveTime(timeMoved):
-    time = IPTClock.timer.time()      
+    time = master.IPTClock.timer.time()      
     # validity check
   #  if (time - timeMoved) < 0:
   #      timeMoved = 0
-    IPTClock.timer.set_time(time - timeMoved) # to decrease we here add
-    IPTClock.refresh()
+    master.IPTClock.timer.set_time(time - timeMoved) # to decrease we here add
+    master.IPTClock.refresh()
 
     
 # about this application
@@ -402,19 +425,35 @@ master.fullscreen = False
 ############################
 
 master.customFontButtons = tkFont.Font(family=defaultFont, size=7)
-master.customFontCompetitors = tkFont.Font(family=defaultFont, size=12)
-master.customFontDigitalClock = tkFont.Font(family=defaultFont, size=32)
-master.customFontStage = tkFont.Font(family=defaultFont, size=16)
 master.minButtonFontSize = 7 # min font size for buttons
 
-master.buttonFontSize = master.customFontButtons.cget('size')
+master.customFontCompetitors = tkFont.Font(family=defaultFont, size=12)
+master.customFontDigitalClock = tkFont.Font(family=defaultFont, size=32)
+
+master.customFontStage = tkFont.Font(family=defaultFont, size=16)
+master.maxStageFontSize = 57 # imposed limitation for font size
+
+# variables to keep track of the font size value, if outside imposed limitations.
+# need to be intvar for use in spinbox
+master.buttonFontSize = tk.IntVar(master)
+master.buttonFontSize.set( master.customFontButtons.cget('size') )
+
+master.competitorFontSize = tk.IntVar(master)
+master.competitorFontSize.set(master.customFontCompetitors.cget('size') )
+
+master.stageFontSize = tk.IntVar(master)
+master.stageFontSize.set(master.customFontStage.cget('size'))
+
+master.digitalClockFontSize = tk.IntVar(master)
+master.digitalClockFontSize.set(master.customFontDigitalClock.cget('size') )
+
 
 # save the original for use in scaling
 master.customFontButtons_orig = master.customFontButtons.cget('size')
 master.customFontCompetitors_orig = master.customFontCompetitors.cget('size')
 master.customFontDigitalClock_orig = master.customFontDigitalClock.cget('size')
 master.customFontStage_orig = master.customFontStage.cget('size')
-
+ 
 
 
 # functions for changing font size
@@ -424,8 +463,7 @@ def IncreaseFontSize(event):
     fontSize = fontSize + 1    
     master.customFontCompetitors.configure(size=fontSize)
 
-#    fontSize = master.customFontButtons.cget('size')
-    fontSize = master.buttonFontSize
+    fontSize = master.buttonFontSize.get()
     fontSize = fontSize + 1
 
     # ensure the buttons doesn't get to small
@@ -433,15 +471,22 @@ def IncreaseFontSize(event):
         master.customFontButtons.configure(size=master.minButtonFontSize)
     else:
         master.customFontButtons.configure(size=fontSize)
-    master.buttonFontSize = fontSize
+    master.buttonFontSize.set(fontSize)
 
     fontSize = master.customFontDigitalClock.cget('size')
     fontSize = fontSize + 2    
     master.customFontDigitalClock.configure(size=fontSize)
 
+    
     fontSize = master.customFontStage.cget('size')
-    fontSize = fontSize + 1    
-    master.customFontStage.configure(size=fontSize)
+    fontSize = fontSize + 1
+    
+    # ensure stage fontsize is below imposed limit
+    if( fontSize > master.maxStageFontSize):    
+        master.customFontStage.configure(size=master.maxStageFontSize)
+    else:
+        master.customFontStage.configure(size=fontSize)
+    master.stageFontSize.set(fontSize)
 
     
 def DecreaseFontSize(event):
@@ -449,8 +494,7 @@ def DecreaseFontSize(event):
     fontSize = fontSize - 1    
     master.customFontCompetitors.configure(size=fontSize)
 
-#    fontSize = master.customFontButtons.cget('size')
-    fontSize = master.buttonFontSize
+    fontSize = master.buttonFontSize.get()
     fontSize = fontSize - 1
 
     # ensure the buttons doesn't get to small
@@ -458,16 +502,22 @@ def DecreaseFontSize(event):
         master.customFontButtons.configure(size=master.minButtonFontSize)
     else:
         master.customFontButtons.configure(size=fontSize)
-    master.buttonFontSize = fontSize
+    master.buttonFontSize.set(fontSize)
         
     fontSize = master.customFontDigitalClock.cget('size')
     fontSize = fontSize - 2    
     master.customFontDigitalClock.configure(size=fontSize)
 
     fontSize = master.customFontStage.cget('size')
-    fontSize = fontSize - 1    
-    master.customFontStage.configure(size=fontSize)
+    fontSize = fontSize - 1
 
+    # ensure stage fontsize is below imposed limit
+    if( fontSize > master.maxStageFontSize):    
+        master.customFontStage.configure(size=master.maxStageFontSize)
+    else:
+        master.customFontStage.configure(size=fontSize)
+    master.stageFontSize.set(fontSize)
+    
 
 def SetToDefaultFontSize(event):
     # Set default values for font sizes
@@ -483,6 +533,17 @@ def SetToDefaultFontSize(event):
         screenWidth = 640
     FontResize(int(screenWidth))
 
+
+###########################
+# Configure menu
+##########################
+def StartConfigure():
+    # created EditFrame class to create
+    # a top frame for configuring fontsizes
+    master.EditFrame = EditFrame(master)
+
+    # make sure the same keybindings work even if the edit window is up.
+    master.EditFrameBindings = KeyBindingClass(master.EditFrame.top)
     
 #################
 # Sponsor Image #
@@ -502,41 +563,52 @@ IPTSpons = SponsImagePillow(master) # uses PIL and tkinter to render image (fast
 ####################
 # Competitor Names #
 ####################
-# Reporter
-reporterLabel = tk.Label(master, text="Reporter:", font= master.customFontCompetitors)
-reporterLabel.grid(row=11, column=2)
-reporterLabel.configure(background=defaultBackgroundColour, fg= textColour)
-reporterNameLabel = tk.Label(master, text='Arnold Schwarzenegger', font= master.customFontCompetitors )
+## Reporter ##
+master.reporterLabel = tk.Label(master, text="Reporter:", font= master.customFontCompetitors)
+master.reporterLabel.grid(row=11, column=2)
+master.reporterLabel.configure(background=defaultBackgroundColour, fg= textColour)
+master.reporterLabel.bind("<Button-1>",EditReporterEvent)
+master.reporterNameLabel = tk.Label(master, text='Arnold Schwarzenegger', font= master.customFontCompetitors )
 #reporterNameLabel = tk.Label(master, text='Starlight Glimmer', font=('Courier New', 16))
-reporterNameLabel.grid(row=11, column=3, sticky=tk.W)
-reporterNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
+master.reporterNameLabel.grid(row=11, column=3, sticky=tk.W)
+master.reporterNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
+master.reporterNameLabel.bind("<Button-1>",EditReporterEvent)
 
-# Opponent
-opponentLabel = tk.Label(master, text="Opponent:",font= master.customFontCompetitors)
-opponentLabel.grid(row=12, column=2)
-opponentLabel.configure(background=defaultBackgroundColour, fg= textColour)
-opponentNameLabel = tk.Label(master, text='Dwayne "The Rock" Johnson', font= master.customFontCompetitors)
+
+## Opponent ##
+master.opponentLabel = tk.Label(master, text="Opponent:",font= master.customFontCompetitors)
+master.opponentLabel.grid(row=12, column=2)
+master.opponentLabel.configure(background=defaultBackgroundColour, fg= textColour)
+master.opponentLabel.bind("<Button-1>",EditOpponentEvent)
+
+master.opponentNameLabel = tk.Label(master, text='Dwayne "The Rock" Johnson', font= master.customFontCompetitors)
 #opponentNameLabel = tk.Label(master, text='Princess Twilight Sparkle', font=master.customFontCompetitors)
-opponentNameLabel.grid(row=12, column=3, sticky=tk.W )
-opponentNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
+master.opponentNameLabel.grid(row=12, column=3, sticky=tk.W )
+master.opponentNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
+master.opponentNameLabel.bind("<Button-1>",EditOpponentEvent)
 
-# Reviewer
-reviewerLabel = tk.Label(master, text="Reviewer:", font=master.customFontCompetitors)
-reviewerLabel.grid(row=13, column=2)
-reviewerLabel.configure(background=defaultBackgroundColour, fg= textColour)
-reviewerNameLabel = tk.Label(master, text='Chuck Norris', font=master.customFontCompetitors)
+
+## Reviewer ##
+master.reviewerLabel = tk.Label(master, text="Reviewer:", font=master.customFontCompetitors)
+master.reviewerLabel.grid(row=13, column=2)
+master.reviewerLabel.configure(background=defaultBackgroundColour, fg= textColour)
+master.reviewerLabel.bind("<Button-1>",EditReviewerEvent)
+
+master.reviewerNameLabel = tk.Label(master, text='Chuck Norris', font=master.customFontCompetitors)
 #reviewerNameLabel = tk.Label(master, text='Shining Armor', font=master.customFontCompetitors)
-reviewerNameLabel.grid(row=13, column=3, sticky=tk.W)
-reviewerNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
+master.reviewerNameLabel.grid(row=13, column=3, sticky=tk.W)
+master.reviewerNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
+master.reviewerNameLabel.bind("<Button-1>",EditReviewerEvent)
+
 ####################
 # Initialize Clock #
 ####################
-IPTClock = Clock(master) # takes tkHandle, 
+master.IPTClock = Clock(master) # takes tkHandle, 
 
 # fix some font setup.
-IPTClock.presentationTextLabel.configure(font = master.customFontStage) # updates the font and size of using defined font
-IPTClock.countdownText.configure(font = master.customFontDigitalClock)
-IPTClock.countdownText.bind("<Button-1>", SetTimePopUp)
+master.IPTClock.presentationTextLabel.configure(font = master.customFontStage) # updates the font and size of using defined font
+master.IPTClock.countdownText.configure(font = master.customFontDigitalClock)
+master.IPTClock.countdownText.bind("<Button-1>", SetTimePopUp)
 
 
 ###################
@@ -548,12 +620,12 @@ IPTClock.countdownText.bind("<Button-1>", SetTimePopUp)
 controlButton_frame = tk.Frame(master)
 controlButton_frame.grid(row=3, column=7, rowspan=7, sticky="WES", pady=20)
 
-startButton = tk.Button(master=controlButton_frame, text='Start', command=IPTClock.start, font= master.customFontButtons)
+startButton = tk.Button(master=controlButton_frame, text='Start', command=master.IPTClock.start, font= master.customFontButtons)
 startButton.configure(background=defaultBackgroundColour, fg= textColour)
 startButton.grid(row=0, sticky="WE")
 
 # Pause Button
-pauseButton = tk.Button(master=controlButton_frame, text='Pause', command=IPTClock.pause, font= master.customFontButtons)
+pauseButton = tk.Button(master=controlButton_frame, text='Pause', command=master.IPTClock.pause, font= master.customFontButtons)
 pauseButton.configure(background=defaultBackgroundColour, fg= textColour)
 pauseButton.grid(row=1, sticky="WE")
 
@@ -563,27 +635,27 @@ fullscreenButton.configure(background=defaultBackgroundColour, fg= textColour)
 fullscreenButton.grid(row=2, sticky="WE")
 
 # Previous Stage
-previousStageButton = tk.Button(master=controlButton_frame, text='<<', command=IPTClock.previous_stage, font= master.customFontButtons)
+previousStageButton = tk.Button(master=controlButton_frame, text='<<', command=master.IPTClock.previous_stage, font= master.customFontButtons)
 previousStageButton.configure(background=defaultBackgroundColour, fg= textColour)
 previousStageButton.grid(row=3, sticky="WE")
 
 # Next Stage
-nextStageButton = tk.Button(master=controlButton_frame, text='>>', command=IPTClock.next_stage, font= master.customFontButtons)
+nextStageButton = tk.Button(master=controlButton_frame, text='>>', command=master.IPTClock.next_stage, font= master.customFontButtons)
 nextStageButton.configure(background=defaultBackgroundColour, fg= textColour)
 nextStageButton.grid(row=4, sticky="WE")
 
 # timeout
 def HandleReturn():
-    return IPTClock, master
+    return master.IPTClock, master
 
 # Timeout button
-timeoutButton = tk.Button(master=master, text='Timeout', command=lambda clockHandle = IPTClock: Timeout(clockHandle) , font= master.customFontButtons)
+timeoutButton = tk.Button(master=master, text='Timeout', command=lambda clockHandle = master.IPTClock: Timeout(clockHandle) , font= master.customFontButtons)
 timeoutButton.configure(background=defaultBackgroundColour, fg= textColour)
 timeoutButton.grid(row=10,column=7,sticky='WE')
 
 
 # Reset button
-resetButton = tk.Button(master=master, text='Reset', command=IPTClock.reset, font= master.customFontButtons)
+resetButton = tk.Button(master=master, text='Reset', command=master.IPTClock.reset, font= master.customFontButtons)
 resetButton.configure(background=defaultBackgroundColour, fg= textColour)
 resetButton.grid(row=11, column=7, sticky='WEN')
 
@@ -593,6 +665,8 @@ quitButton.configure(background=defaultBackgroundColour, fg= textColour)
 quitButton.grid(row=13, column=7, sticky='WE')
 
 
+# Removed Edit buttons
+"""
 # Edit Reporter
 editReporterButton = tk.Button(master=master, text='Edit', command=EditReporter, font= master.customFontButtons)
 editReporterButton.configure(background=defaultBackgroundColour, fg= textColour)
@@ -607,7 +681,7 @@ editOpponentButton.grid(row=12, column=5)
 editReviewerButton = tk.Button(master=master, text='Edit', command=EditReviewer, font= master.customFontButtons)
 editReviewerButton.configure(background=defaultBackgroundColour, fg= textColour)
 editReviewerButton.grid(row=13, column=5)
-
+"""
 
 
 #####################
@@ -627,6 +701,8 @@ verticalLineLeft.grid(row=0, column=1, columnspan=1, rowspan=14, sticky='NS')
 # Top menu configuration #
 ##########################
 menubar = tk.Menu(master)
+
+## add file menu ##
 filemenu = tk.Menu(menubar, tearoff=0)
 filemenu.add_separator()
 
@@ -635,11 +711,17 @@ menubar.add_cascade(label="File", menu=filemenu)
 
 # drop down menu to chose stage
 stagemenu = tk.Menu(menubar, tearoff=0)
-for i, stage in enumerate(IPTClock.stage.get_stages()):
+for i, stage in enumerate(master.IPTClock.stage.get_stages()):
     stagemenu.add_command(label=str(i) + ": " + stage[0],
-                          command=lambda stage_number=i: IPTClock.set_stage(stage_number))
+                          command=lambda stage_number=i: master.IPTClock.set_stage(stage_number))
 
 menubar.add_cascade(label="Stage", menu=stagemenu)
+
+## edit menu ##
+editmenu = tk.Menu(menubar,tearoff = 0) # creates edit menu
+editmenu.add_command(label="Configure", command = StartConfigure)
+menubar.add_cascade(label="Edit", menu = editmenu)
+
 
 ## help menu ##
 logo_image = tk.PhotoImage(file= './Images/IPTlogos/IPTlogo_color_small.gif') #'./Images/IPTlogos/newIPTlogo_without_text.gif') # needed outside aboutPopup to avoid garbage collect
@@ -725,105 +807,122 @@ def DecreaseSponsWidth(event):
 master.fullscreen = False
 master.attributes('-fullscreen', False)
 
-if usingLinuxMasterRace or usingMac:
-    master.bind("<F11>", toogleFullscreenLinux)
-    master.bind("<Escape>", endFullscreenLinux)
-else:
-    master.bind("<F11>", toogleFullscreenLinux)
-    master.bind("<Escape>", endFullscreenLinux)
-#    master.bind("<F11>", toogleFullscreen)    
-#    master.bind("<Escape>", endFullscreen)
 
 
-# bindings for changing stage
-def KeyNextStage(event):
-    IPTClock.next_stage()
-if usingMac:
-    master.bind("<Command-Right>", KeyNextStage )
-else:
-    master.bind("<Control-Right>", KeyNextStage )
-
-def KeyPreviousStage(event):
-    IPTClock.previous_stage()
-if usingMac:
-    master.bind("<Command-Left>", KeyPreviousStage )
-else:
-    master.bind("<Control-Left>", KeyPreviousStage )
-
-
-## bindings for start and stop 
-def keyboardStartPaus(event):
-    if IPTClock.timer.isTicking():
-        IPTClock.pause()
-    else:
-        IPTClock.start()
+class KeyBindingClass():
+    # for dealing with key bindings
     
-def keyboardReset(event):
-    IPTClock.reset()
-    IPTClock.start()    
-    
+    def __init__(self,tkHandle):
+        self.tk_handle = tkHandle        
 
-if usingLinuxMasterRace or usingWindows:
-    master.bind("<Control-r>", keyboardReset)
-    master.bind("<Control-KP_Enter>", keyboardStartPaus)
-    master.bind("<Control-Return>", keyboardStartPaus)
-    master.bind("<Control-j>", IncreaseSponsWidth)
-    master.bind("<Control-k>", DecreaseSponsWidth)
+        if usingLinuxMasterRace or usingMac:
+            self.tk_handle.bind("<F11>", toogleFullscreenLinux)
+            self.tk_handle.bind("<Escape>", endFullscreenLinux)
+        else:
+            self.tk_handle.bind("<F11>", toogleFullscreenLinux)
+            self.tk_handle.bind("<Escape>", endFullscreenLinux)
+            #    master.bind("<F11>", toogleFullscreen)    
+            #    master.bind("<Escape>", endFullscreen)
+
+        if usingMac:
+            self.tk_handle.bind("<Command-Right>", self.KeyNextStage )
+        else:
+            self.tk_handle.bind("<Control-Right>", self.KeyNextStage )
+
+        if usingMac:
+            self.tk_handle.bind("<Command-Left>", self.KeyPreviousStage )
+        else:
+            self.tk_handle.bind("<Control-Left>", self.KeyPreviousStage )
+
+
+
+        if usingLinuxMasterRace or usingWindows:
+            self.tk_handle.bind("<Control-r>", self.keyboardReset)
+            self.tk_handle.bind("<Control-KP_Enter>", self.keyboardStartPaus)
+            self.tk_handle.bind("<Control-Return>", self.keyboardStartPaus)
+            self.tk_handle.bind("<Control-j>", IncreaseSponsWidth)
+            self.tk_handle.bind("<Control-k>", DecreaseSponsWidth)
 	
-    ## change font size ##
-    # increase
-    master.bind("<Control-plus>", IncreaseFontSize)
-    master.bind("<Control-KP_Add>", IncreaseFontSize) #keypad +
-    master.bind("<Control-0x003d>", IncreaseFontSize)
+            ## change font size ##
+            # increase
+            self.tk_handle.bind("<Control-plus>", IncreaseFontSize)
+            self.tk_handle.bind("<Control-KP_Add>", IncreaseFontSize) #keypad +
+            self.tk_handle.bind("<Control-0x003d>", IncreaseFontSize)
 
-    # decrease
-    master.bind("<Control-minus>", DecreaseFontSize)
-    master.bind("<Control-KP_Subtract>", DecreaseFontSize) #keypad -
+            # decrease
+            self.tk_handle.bind("<Control-minus>", DecreaseFontSize)
+            self.tk_handle.bind("<Control-KP_Subtract>", DecreaseFontSize) #keypad -
 
-    # default size
-    master.bind("<Control-KP_0>", SetToDefaultFontSize)
-    master.bind("<Control-0>", SetToDefaultFontSize) #keypad 0
+            # default size
+            self.tk_handle.bind("<Control-KP_0>", SetToDefaultFontSize)
+            self.tk_handle.bind("<Control-0>", SetToDefaultFontSize) #keypad 0
 
-    # update start time
-    master.bind("<Control-u>", SetTimePopUp )
+            # update start time
+            self.tk_handle.bind("<Control-u>", SetTimePopUp )
 
-    # increase and decrease timer
-    master.bind("<Control-m>", IncreaseTime)
-    master.bind("<Control-n>", DecreaseTime)
-else:
-    master.bind("<Command-r>", keyboardReset)
-    master.bind("<Command-KP_Enter>", keyboardStartPaus)
-    master.bind("<Command-Return>", keyboardStartPaus)
-    master.bind("<Command-j>", IncreaseSponsWidth)
-    master.bind("<Command-k>", DecreaseSponsWidth)
+            # increase and decrease timer
+            self.tk_handle.bind("<Control-m>", IncreaseTime)
+            self.tk_handle.bind("<Control-n>", DecreaseTime)
+        else:
+            self.tk_handle.bind("<Command-r>", keyboardReset)
+            self.tk_handle.bind("<Command-KP_Enter>", keyboardStartPaus)
+            self.tk_handle.bind("<Command-Return>", keyboardStartPaus)
+            self.tk_handle.bind("<Command-j>", IncreaseSponsWidth)
+            self.tk_handle.bind("<Command-k>", DecreaseSponsWidth)
 	
-	## change font size ##
-    # increase
-    master.bind("<Command-plus>", IncreaseFontSize)
-    master.bind("<Command-KP_Add>", IncreaseFontSize) #keypad +
-    master.bind("<Command-0x003d>", IncreaseFontSize)
+	    ## change font size ##
+            # increase
+            self.tk_handle.bind("<Command-plus>", IncreaseFontSize)
+            self.tk_handle.bind("<Command-KP_Add>", IncreaseFontSize) #keypad +
+            self.tk_handle.bind("<Command-0x003d>", IncreaseFontSize)
     
-    # decrease
-    master.bind("<Command-minus>", DecreaseFontSize)
-    master.bind("<Command-KP_Subtract>", DecreaseFontSize) #keypad -
+            # decrease
+            self.tk_handle.bind("<Command-minus>", DecreaseFontSize)
+            self.tk_handle.bind("<Command-KP_Subtract>", DecreaseFontSize) #keypad -
 
-    # default size
-    master.bind("<Command-KP_0>", SetToDefaultFontSize)
-    master.bind("<Command-0>", SetToDefaultFontSize) #keypad 0
+            # default size
+            self.tk_handle.bind("<Command-KP_0>", SetToDefaultFontSize)
+            self.tk_handle.bind("<Command-0>", SetToDefaultFontSize) #keypad 0
     
-    # update start time
-    master.bind("<Command-u>", SetTimePopUp  )
+            # update start time
+            self.tk_handle.bind("<Command-u>", SetTimePopUp  )
+        
+            # increase and decrease timer
+            self.tk_handle.bind("<Command-m>", IncreaseTime)
+            self.tk_handle.bind("<Command-n>", DecreaseTime)
 
-    # increase and decrease timer
-    master.bind("<Command-m>", IncreaseTime)
-    master.bind("<Command-n>", DecreaseTime)
 
+        
+            # bindings for changing stage
+    def KeyNextStage(self,event):
+        master.IPTClock.next_stage()
+    
+            
+    def KeyPreviousStage(self,event):
+        master.IPTClock.previous_stage()        
+    
+
+            ## bindings for start and stop 
+    def keyboardStartPaus(self,event):
+        if master.IPTClock.timer.isTicking():
+            master.IPTClock.pause()
+        else:
+            master.IPTClock.start()
+    
+    def keyboardReset(self,event):
+        master.IPTClock.reset()
+        master.IPTClock.start()    
+    
+
+# activate keybindings for master    
+master.KeyBindings = KeyBindingClass(master)
+        
 
 #######################
 # Final loop commands #
 #######################
 
-IPTClock.update()  # update the countdown during GUI loop
+master.IPTClock.update()  # update the countdown during GUI loop
 
 # start the GUI loop
 master.mainloop()

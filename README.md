@@ -56,7 +56,11 @@ alternatively it can be run using pre build binaries found under the build folde
 For instance in the case of windows use the exe file IPTClock.exe found in
 build/exe.win-ARCHITECHURE-PYTHONVER/IPTClock.exe
 
-If you click on the count down text a popup will appear for changing the time of the present stage.
+Names of Competitors can be set either through the configure window under the "Edit" menu or simply by clicking on the name or the descriptor (for example, left clicking Reporter brings up a window for filling in the name of the reporter).
+
+If you click on the count down text a popup will appear for changing the time of the present stage. 
+
+It is also possible to manually edit the different font sizes by using the configure menu under the "Edit" menu.
 
 ## Key bindings ##
 Key bindings used by IPTClock is
@@ -83,7 +87,7 @@ Ctrl + Enter : Start/Paus
 
 Ctrl + r : Reset and start clock
 
-Ctrl + j : decrease size of sponsor image
+Ctrl + j : increase size of sponsor image
 
 Ctrl + k : decrease size of sponsor image
 
@@ -115,7 +119,7 @@ Command + Enter : Start/Paus
 
 Command + r : Reset and start clock
 
-Command + j : decrease size of sponsor image
+Command + j : increase size of sponsor image
 
 Command + k : decrease size of sponsor image
 
@@ -163,7 +167,7 @@ Present solution: Don't push dead keys on Mac OSX.
 - Fullscreen on Mac doesn't use the area of the menus at the top and bottom.
 
 
-- When exiting IPTClock on windows a pop telling python has stopped working.
+- When exiting IPTClock on windows a pop-up appears telling python has stopped working.
 
 
-- Resizing sponsor area using keybinds doesn't work in fullscreen on Windows.
+- Resizing sponsor area using keybinds doesn't work in fullscreen.

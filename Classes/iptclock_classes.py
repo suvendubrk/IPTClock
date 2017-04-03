@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import sys
 if sys.version_info[0] < 3:
     usePython3 = False
@@ -41,7 +44,11 @@ from PIL import Image, ImageTk
 if installedPyaudio:
     import wave
 
+# import classes
+
+
     
+
 ###############
 # Timer Class #
 ###############
@@ -175,10 +182,8 @@ def create_clock_labels(tkLabel):
     countdownText.configure(background=defaultBackgroundColour, fg= textColour)
 
     # Presentation of current phase
-#    presentationTextLabel = tk.Label(tkLabel, text='', font=('Courier New', 32), wraplength=1400)
-#    tkLabel.origWrapLength = 400
     wrapLength = 350
-    presentationTextLabel = tk.Label(tkLabel, text='', font=tkLabel.customFontStage, wraplength= wrapLength) # This should probably be scaled with windowssize.
+    presentationTextLabel = tk.Label(tkLabel, text='', font=tkLabel.customFontStage, wraplength= wrapLength)
     presentationTextLabel.grid(row=9, column=2, columnspan=3, sticky="EWS")
     presentationTextLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
@@ -733,3 +738,193 @@ class SponsImagePillow():
 
         self.tk_image = ImageTk.PhotoImage( self.image2 ) # convert resized file to tk readable format
         self.displayLabel.configure(image = self.tk_image) # update the displayed image
+
+
+#######################
+# Edit Frame class
+######################
+class EditFrame():
+    def __init__(self,tkHandle):
+        self.tk_handle = tkHandle
+        
+        self._create_top_frame()
+
+
+    def _create_top_frame(self):        
+        # create and positions the pop up frame
+        self.top = tk.Toplevel()
+        self.top.title("Edit")
+        self.top.configure(bg= defaultBackgroundColour)
+        self.top.protocol("WM_DELETE_WINDOW", self.exit) # if push x on border
+        
+        # Stage
+        self.stageLabel = tk.Label(self.top, text = "Stage font size:",anchor='w')
+        self.stageLabel.grid(column=0,row=0,sticky='EW')
+        self.stageLabel.configure(background=defaultBackgroundColour, fg= textColour)
+
+        
+       # self.stageSpinBox = tk.Spinbox(self.top, from_=1, to=self.tk_handle.maxStageFontSize, textvariable = self.tk_handle.stageFontSize)
+        self.stageSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.stageFontSize)
+        self.stageSpinBox.grid(column=1, row=0)
+        self.stageSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
+        
+        # Digital Clock
+        self.clockLabel = tk.Label(self.top, text = "Clock font size:",anchor='w')
+        self.clockLabel.grid(column=0,row=1,sticky='EW')
+        self.clockLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        
+        self.clockSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.digitalClockFontSize)#self.tk_handle.stageFontSize)
+        self.clockSpinBox.grid(column=1, row=1)
+        self.clockSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
+        
+        # Competitor labels
+        self.competitorLabel = tk.Label(self.top, text = "Competitor font size:",anchor='w')     
+        self.competitorLabel.grid(column=0,row=2,sticky='EW')
+        self.competitorLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        
+        self.competitorSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.competitorFontSize)#self.tk_handle.stageFontSize)
+        self.competitorSpinBox.grid(column=1, row=2)
+        self.competitorSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
+
+        # Buttons font size         
+        self.buttonLabel = tk.Label(self.top, text = "Button font size:",anchor='w', justify='left')
+        self.buttonLabel.grid(column=0,row=3,sticky='EW')
+        self.buttonLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        
+        self.buttonSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.buttonFontSize)#self.tk_handle.stageFontSize)
+        self.buttonSpinBox.grid(column=1, row=3)
+        self.buttonSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
+
+        ## Competitors ##
+        # Reporter
+        self.reporterLabel = tk.Label(self.top,  text="Reporter:", anchor='w')
+        self.reporterLabel.grid(column=0, row= 4,sticky='we')
+        self.reporterLabel.configure(background=defaultBackgroundColour, fg= textColour)
+
+        self.reporterStrVar = tk.StringVar()
+        self.reporterStrVar.set(self.tk_handle.reporterNameLabel.cget('text') )
+        self.reporterEntry = tk.Entry(self.top, text =  self.reporterStrVar )
+        self.reporterEntry.grid(column=1, row=4, sticky='we', columnspan=2)
+        self.reporterEntry.configure(background=defaultBackgroundColour, fg= textColour)
+
+        # Opponent
+        self.opponentLabel = tk.Label(self.top,  text="Opponent:", anchor='w')
+        self.opponentLabel.grid(column=0, row= 5,sticky='we')
+        self.opponentLabel.configure(background=defaultBackgroundColour, fg= textColour)
+
+        self.opponentStrVar = tk.StringVar()
+        self.opponentStrVar.set(self.tk_handle.opponentNameLabel.cget('text') )
+        self.opponentEntry = tk.Entry(self.top, text =  self.opponentStrVar )
+        self.opponentEntry.grid(column=1, row=5, sticky='we', columnspan=2)
+        self.opponentEntry.configure(background=defaultBackgroundColour, fg= textColour)
+
+        # Reviewer
+        self.reviewerLabel = tk.Label(self.top,  text="Reviewer:", anchor='w')
+        self.reviewerLabel.grid(column=0, row= 6,sticky='we')
+        self.reviewerLabel.configure(background=defaultBackgroundColour, fg= textColour)
+
+        self.reviewerStrVar = tk.StringVar()
+        self.reviewerStrVar.set(self.tk_handle.reviewerNameLabel.cget('text') )
+        self.reviewerEntry = tk.Entry(self.top, text =  self.reviewerStrVar )
+        self.reviewerEntry.grid(column=1, row=6, sticky='we', columnspan=2)
+        self.reviewerEntry.configure(background=defaultBackgroundColour, fg= textColour)
+
+        
+        # buttons
+        self.updateButton = tk.Button(self.top, text="Update", command=self.update )
+        self.updateButton.grid(column=0, row = 7)
+        self.updateButton.configure(background=defaultBackgroundColour, fg= textColour)
+
+        self.closeButton = tk.Button(self.top, text="Close", command=self.exit )
+        self.closeButton.grid(column=2, row = 7)
+        self.closeButton.configure(background=defaultBackgroundColour, fg= textColour)
+
+        self.resetButton = tk.Button(self.top, text="Reset font", command=self.reset_font )
+        self.resetButton.grid(column=1, row = 7)
+        self.resetButton.configure(background=defaultBackgroundColour, fg= textColour)
+        
+
+    def _exit(self):
+        self.top.destroy()
+
+    def exit(self):
+        self._exit()
+
+    def reset_font(self):
+        self.tk_handle.stageFontSize.set(self.tk_handle.customFontStage_orig)
+        self.tk_handle.digitalClockFontSize.set(self.tk_handle.customFontDigitalClock_orig)
+        self.tk_handle.competitorFontSize.set(self.tk_handle.customFontCompetitors_orig)
+        self.tk_handle.buttonFontSize.set(self.tk_handle.customFontButtons_orig)
+        
+ 
+      
+        # call window scaling
+        if (self.tk_handle.fullscreen):
+            screenWidth = self.tk_handle.winfo_screenwidth() 
+        else:
+            screenWidth = 640
+            
+        self.font_resize(int(screenWidth))
+      
+        
+
+
+    def font_resize(self,screenWidthPixels):    
+        # Determine present windowsize then upscale the font with the ration
+        # between the present width and 480p (width 640 pixels) (choosen as base).
+        # Uses original font sizes 
+        
+        widthPix = screenWidthPixels
+        widthRatio = widthPix / 640.0
+        
+        fontSize = self.tk_handle.customFontCompetitors_orig
+        fontSize = int( math.floor(fontSize*widthRatio) )
+        self.tk_handle.customFontCompetitors.configure(size=fontSize)
+        self.tk_handle.competitorFontSize.set(fontSize)
+            
+        fontSize = self.tk_handle.customFontButtons_orig
+        fontSize = int( math.floor(fontSize*widthRatio) )
+        #if (abs(fontSize) > 16):
+        if fontSize < self.tk_handle.minButtonFontSize:
+            fontSize = self.tk_handle.minButtonFontSize
+        self.tk_handle.customFontButtons.configure(size=fontSize)
+        self.tk_handle.buttonFontSize.set(fontSize)
+
+        fontSize = self.tk_handle.customFontDigitalClock_orig
+        fontSize = int( math.floor(fontSize*widthRatio) )
+        self.tk_handle.customFontDigitalClock.configure(size=fontSize)
+        self.tk_handle.digitalClockFontSize.set(fontSize)
+
+    
+        fontSize = self.tk_handle.customFontStage_orig
+        fontSize = int( math.floor(fontSize*widthRatio) )
+            
+        # ensure stage fontsize is below imposed limit
+        if( fontSize > self.tk_handle.maxStageFontSize):    
+            self.tk_handle.customFontStage.configure(size=self.tk_handle.maxStageFontSize)
+        else:
+            self.tk_handle.customFontStage.configure(size=fontSize)
+        self.tk_handle.stageFontSize.set(fontSize)        
+
+            
+        # scales the text wrap in stage presentation    
+        wrapLength = math.floor( self.tk_handle.IPTClock.wrapLength * widthRatio  )
+        self.tk_handle.IPTClock.presentationTextLabel.configure(wraplength= wrapLength)
+
+        
+   
+    def update(self):
+        # Updates the fontsize from configuration menu
+        self.tk_handle.customFontStage.configure(size=self.tk_handle.stageFontSize.get())
+        self.tk_handle.customFontDigitalClock.configure(size=self.tk_handle.digitalClockFontSize.get() )
+        self.tk_handle.customFontCompetitors.configure(size=self.tk_handle.competitorFontSize.get() )
+        self.tk_handle.customFontButtons.configure(size=self.tk_handle.buttonFontSize.get() )
+
+        # update the competitors texts
+        self.tk_handle.reporterNameLabel.configure(text=self.reporterStrVar.get())
+
+        self.tk_handle.opponentNameLabel.configure(text=self.opponentStrVar.get())
+
+        self.tk_handle.reviewerNameLabel.configure(text=self.reviewerStrVar.get())
+
+
