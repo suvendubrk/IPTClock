@@ -33,7 +33,7 @@ matplotlib
 
 tkinter
 
-Image, ImageTk from PIL  (install package python3-pil.imagetk) (it is actually pillow, a PIL fork)
+PIL, install using "pip3 install Pillow" (since some distros has outdated packages).
 
 
 (for a smaller breakdown if you want
