@@ -532,7 +532,7 @@ class TimeoutClass:
         self.fps = 10 # value controlling timesteps displayed in dountdown.
         
 
-        self.timeoutTime = 60 # [s], the time of the Timeout.
+        self.timeoutTime = 6 # [s], the time of the Timeout.
         self.timerStopTime = 0 # the time at which the timout timer should stop.
         self.timer = TimeoutTimer()
         self.timer.set_timer(self.timeoutTime)
@@ -542,7 +542,7 @@ class TimeoutClass:
         # check if clock is running
         self.tick_state = self._clock_handle.timer._tick_state             
         self._clock_handle.pause() # pause clock
-       
+        
         
     def setupTimeout(self):
         # create and positions the pop up frame
@@ -560,7 +560,7 @@ class TimeoutClass:
         self.button.pack()
         self.top.protocol("WM_DELETE_WINDOW", self.exit_timeout) # if push x on border
         self.centreTop(self.top)
-        
+       
 
   # function updating the time
     def update(self):       
@@ -576,22 +576,19 @@ class TimeoutClass:
             self.timer.tick() # new time step
            
 
-        # Call the update() function after 1/fps seconds
-        dt = (time.time() - t0) * 1000
+            # Call the update() function after 1/fps seconds
+            dt = (time.time() - t0) * 1000
 
-        time_left = max(0, int(1000 / self.fps - dt))
-#        time_left = max(0, int(1000 / float(self.fps) - dt))
+            time_left = max(0, int(1000 / self.fps - dt))
+            #        time_left = max(0, int(1000 / float(self.fps) - dt))
+            
+            self._master_handle.after(time_left, self.update)
 
-        self._master_handle.after(time_left, self.update)
-
-        # check exit criteria
-        if self.timer.time() < self.timerStopTime :
-                                
-            # terminate countdown and unpause main clock
-            self.timeoutState = False
-            if self.timer.isTicking: #self.ongoingTimer:
-                self._clock_handle.start()
-            self.exit_timeout()
+            # check exit criteria
+            if self.timer.time() < self.timerStopTime :
+                
+                # terminate countdown and unpause main clock       
+                self.exit_timeout()
   
 			
 
