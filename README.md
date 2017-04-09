@@ -87,9 +87,9 @@ Ctrl + Enter : Start/Paus
 
 Ctrl + r : Reset and start clock
 
-Ctrl + j : increase size of sponsor image
+Ctrl + k : increase size of sponsor image
 
-Ctrl + k : decrease size of sponsor image
+Ctrl + j : decrease size of sponsor image
 
 Ctrl + u : Activates popup for changing the start time of the countdown. This is the same as left click on the countdown with the mouse.
 
@@ -119,9 +119,9 @@ Command + Enter : Start/Paus
 
 Command + r : Reset and start clock
 
-Command + j : increase size of sponsor image
+Command + k : increase size of sponsor image
 
-Command + k : decrease size of sponsor image
+Command + j : decrease size of sponsor image
 
 Command + u : Activates popup for changing the start time of the countdown. This is the same as left click on the countdown with the mouse.
 

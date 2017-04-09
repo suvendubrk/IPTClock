@@ -532,7 +532,7 @@ class TimeoutClass:
         self.fps = 10 # value controlling timesteps displayed in dountdown.
         
 
-        self.timeoutTime = 6 # [s], the time of the Timeout.
+        self.timeoutTime = 60 # [s], the time of the Timeout.
         self.timerStopTime = 0 # the time at which the timout timer should stop.
         self.timer = TimeoutTimer()
         self.timer.set_timer(self.timeoutTime)
@@ -801,52 +801,68 @@ class EditFrame():
         self.buttonSpinBox.grid(column=1, row=3)
         self.buttonSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
 
+
+        # Sponsor image width
+        self.sponsImageLabel = tk.Label(self.top, text = "Sponsor image minimum width:",anchor='w', justify='left')
+        self.sponsImageLabel.grid(column=0,row=4,sticky='EW')
+        self.sponsImageLabel.configure(background=defaultBackgroundColour, fg= textColour)
+
+        self.sponsImageSpinBox = tk.Spinbox(self.top, from_=1, to=1000, textvariable = self.tk_handle.sponsWidth)
+        self.sponsImageSpinBox.grid(column=1, row=4)
+        self.sponsImageSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
+
+        self.updateWidthButton = tk.Button(self.top, text="Update", command=self.update_sponsWidth)
+        self.updateWidthButton.grid(column=2, row = 4)
+        self.updateWidthButton.configure(background=defaultBackgroundColour, fg= textColour)
+        
+        
+        
         ## Competitors ##
         # Reporter
         self.reporterLabel = tk.Label(self.top,  text="Reporter:", anchor='w')
-        self.reporterLabel.grid(column=0, row= 4,sticky='we')
+        self.reporterLabel.grid(column=0, row= 5,sticky='we')
         self.reporterLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
         self.reporterStrVar = tk.StringVar()
         self.reporterStrVar.set(self.tk_handle.reporterNameLabel.cget('text') )
         self.reporterEntry = tk.Entry(self.top, text =  self.reporterStrVar )
-        self.reporterEntry.grid(column=1, row=4, sticky='we', columnspan=2)
+        self.reporterEntry.grid(column=1, row=5, sticky='we', columnspan=2)
         self.reporterEntry.configure(background=defaultBackgroundColour, fg= textColour)
 
         # Opponent
         self.opponentLabel = tk.Label(self.top,  text="Opponent:", anchor='w')
-        self.opponentLabel.grid(column=0, row= 5,sticky='we')
+        self.opponentLabel.grid(column=0, row= 6,sticky='we')
         self.opponentLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
         self.opponentStrVar = tk.StringVar()
         self.opponentStrVar.set(self.tk_handle.opponentNameLabel.cget('text') )
         self.opponentEntry = tk.Entry(self.top, text =  self.opponentStrVar )
-        self.opponentEntry.grid(column=1, row=5, sticky='we', columnspan=2)
+        self.opponentEntry.grid(column=1, row=6, sticky='we', columnspan=2)
         self.opponentEntry.configure(background=defaultBackgroundColour, fg= textColour)
 
         # Reviewer
         self.reviewerLabel = tk.Label(self.top,  text="Reviewer:", anchor='w')
-        self.reviewerLabel.grid(column=0, row= 6,sticky='we')
+        self.reviewerLabel.grid(column=0, row= 7,sticky='we')
         self.reviewerLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
         self.reviewerStrVar = tk.StringVar()
         self.reviewerStrVar.set(self.tk_handle.reviewerNameLabel.cget('text') )
         self.reviewerEntry = tk.Entry(self.top, text =  self.reviewerStrVar )
-        self.reviewerEntry.grid(column=1, row=6, sticky='we', columnspan=2)
+        self.reviewerEntry.grid(column=1, row=7, sticky='we', columnspan=2)
         self.reviewerEntry.configure(background=defaultBackgroundColour, fg= textColour)
 
         
         # buttons
         self.updateButton = tk.Button(self.top, text="Update", command=self.update )
-        self.updateButton.grid(column=0, row = 7)
+        self.updateButton.grid(column=0, row = 8)
         self.updateButton.configure(background=defaultBackgroundColour, fg= textColour)
 
         self.closeButton = tk.Button(self.top, text="Close", command=self.exit )
-        self.closeButton.grid(column=2, row = 7)
+        self.closeButton.grid(column=2, row = 8)
         self.closeButton.configure(background=defaultBackgroundColour, fg= textColour)
 
         self.resetButton = tk.Button(self.top, text="Reset font", command=self.reset_font )
-        self.resetButton.grid(column=1, row = 7)
+        self.resetButton.grid(column=1, row = 8)
         self.resetButton.configure(background=defaultBackgroundColour, fg= textColour)
         
 
@@ -926,12 +942,20 @@ class EditFrame():
         self.tk_handle.customFontCompetitors.configure(size=self.tk_handle.competitorFontSize.get() )
         self.tk_handle.customFontButtons.configure(size=self.tk_handle.buttonFontSize.get() )
 
+              
         # update the competitors texts
         self.tk_handle.reporterNameLabel.configure(text=self.reporterStrVar.get())
 
         self.tk_handle.opponentNameLabel.configure(text=self.opponentStrVar.get())
 
         self.tk_handle.reviewerNameLabel.configure(text=self.reviewerStrVar.get())
+
+
+    def update_sponsWidth(self):
+         # update sponsImage width
+        self.tk_handle.columnconfigure(0, weight=2, minsize = self.tk_handle.sponsWidth.get() )    
+        self.tk_handle.IPTSpons.updateFigSize()
+        
 		
     def centerTop(self, toplevel):
         # centering the top widget

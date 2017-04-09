@@ -81,7 +81,8 @@ from Classes.iptclock_classes import *
 
         
 # function creating class and running update
-def Timeout(clockHandle):    
+def Timeout(clockHandle):
+    
     IPTTimeout = TimeoutClass(clockHandle)
     IPTTimeout.setupTimeout()
     IPTTimeout.update()
@@ -113,12 +114,14 @@ def toogleFullscreen():
 def toogleFullscreenLinux(temp):
     toogleFullscreenButton() 
 
+    
 def toogleFullscreenButton():
     global master, fullscreenButton
     state = not master.fullscreen
     master.attributes('-fullscreen', state)
     master.focus_set()
     master.fullscreen = state
+
     if (master.fullscreen):
         fullscreenButton.configure(text="Windowed")
         master.fullscreenSwitch.set(True) # traced variable
@@ -229,7 +232,7 @@ def ResizeObjectsOnEvent(event):
     
     
 def SponsImageResize():
-    IPTSpons.updateFigSize() # calls class function
+    master.IPTSpons.updateFigSize() # calls class function
     
 ######## OLD image presentation using just tkinter###########
 #    # checks if the image is larger then the window and rescales. Slow process
@@ -262,7 +265,7 @@ def SponsImageResize():
     
 
 def SponsImageFullscreen(a,b,c):
-    IPTSpons.updateFigSize() # calls class update function
+    master.IPTSpons.updateFigSize() # calls class update function
     
 ######## OLD image presentation using just tkinter###########
  #   global master
@@ -382,6 +385,7 @@ def centerTop(toplevel):
 # GUI Definitions #
 ###################
 master = tk.Tk()  # define master tk object
+
 
 # fix icon on window
 if usingWindows:
@@ -550,7 +554,7 @@ def StartConfigure():
 #################
 
 # IPTSpons = SponsImage(master) # uses matplotlib to render image
-IPTSpons = SponsImagePillow(master) # uses PIL and tkinter to render image (fastest)
+master.IPTSpons = SponsImagePillow(master) # uses PIL and tkinter to render image (fastest)
 
 ### OLD image presentation using just tkinter###########
 #master.image = tk.PhotoImage(file=leftSponsImagePath)
@@ -743,8 +747,10 @@ master.rowconfigure(3, weight=2)
 
 master.rowconfigure(9, minsize=125)
 
-master.sponsWidth= 150
-master.columnconfigure(0, weight=2, minsize = master.sponsWidth) # minsize to ensure that sponsor logo is visible
+#master.sponsWidth = 150
+master.sponsWidth = tk.IntVar()
+master.sponsWidth.set(150)
+master.columnconfigure(0, weight=2, minsize = master.sponsWidth.get()) # minsize to ensure that sponsor logo is visible
 #master.columnconfigure(0, weight=1, minsize = master.sponsWidth) # minsize to ensure that sponsor logo is visible
 #master.columnconfigure(1, weight=1)
 ####master.columnconfigure(3, weight=1)
@@ -790,13 +796,15 @@ master.bind('<Configure>', ResizeObjectsOnEvent )
 
 # Methods for manually change size of sponsor column
 def IncreaseSponsWidth(event):
-    master.sponsWidth = master.sponsWidth + 1
-    master.columnconfigure(0, weight=2, minsize = master.sponsWidth)
+#    master.sponsWidth = master.sponsWidth + 1
+    master.sponsWidth.set( master.sponsWidth.get() +1 )
+    master.columnconfigure(0, weight=2, minsize = master.sponsWidth.get() )
     SponsImageResize()
     
 def DecreaseSponsWidth(event):
-    master.sponsWidth = master.sponsWidth -1 
-    master.columnconfigure(0, weight=2, minsize = master.sponsWidth)    
+#    master.sponsWidth = master.sponsWidth -1
+    master.sponsWidth.set( master.sponsWidth.get() - 1)
+    master.columnconfigure(0, weight=2, minsize = master.sponsWidth.get() )    
     SponsImageResize()
     
 #####################
@@ -841,8 +849,8 @@ class KeyBindingClass():
             self.tk_handle.bind("<Control-r>", self.keyboardReset)
             self.tk_handle.bind("<Control-KP_Enter>", self.keyboardStartPaus)
             self.tk_handle.bind("<Control-Return>", self.keyboardStartPaus)
-            self.tk_handle.bind("<Control-j>", IncreaseSponsWidth)
-            self.tk_handle.bind("<Control-k>", DecreaseSponsWidth)
+            self.tk_handle.bind("<Control-k>", IncreaseSponsWidth)
+            self.tk_handle.bind("<Control-j>", DecreaseSponsWidth)
 	
             ## change font size ##
             # increase
@@ -867,8 +875,8 @@ class KeyBindingClass():
             self.tk_handle.bind("<Command-r>", keyboardReset)
             self.tk_handle.bind("<Command-KP_Enter>", keyboardStartPaus)
             self.tk_handle.bind("<Command-Return>", keyboardStartPaus)
-            self.tk_handle.bind("<Command-j>", IncreaseSponsWidth)
-            self.tk_handle.bind("<Command-k>", DecreaseSponsWidth)
+            self.tk_handle.bind("<Command-k>", IncreaseSponsWidth)
+            self.tk_handle.bind("<Command-j>", DecreaseSponsWidth)
 	
 	    ## change font size ##
             # increase
