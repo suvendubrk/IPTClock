@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 ##############################################################################################
 #  IPTClock, a graphical countdown clock for use with the international physicist's tournament
@@ -81,6 +79,9 @@ from Classes.iptclock_classes import *
 
         
 # function creating class and running update
+def TimeoutMaster(event):
+    Timeout(master.IPTClock)
+
 def Timeout(clockHandle):
     
     IPTTimeout = TimeoutClass(clockHandle)
@@ -541,6 +542,9 @@ def SetToDefaultFontSize(event):
 ###########################
 # Configure menu
 ##########################
+def StartConfigureEvent(event):
+    StartConfigure()
+
 def StartConfigure():
     # created EditFrame class to create
     # a top frame for configuring fontsizes
@@ -871,10 +875,21 @@ class KeyBindingClass():
             # increase and decrease timer
             self.tk_handle.bind("<Control-m>", IncreaseTime)
             self.tk_handle.bind("<Control-n>", DecreaseTime)
+
+            # fullscreen
+            self.tk_handle.bind("<Control-f>", toogleFullscreenLinux )
+
+            # timeout
+            self.tk_handle.bind("<Control-t>", TimeoutMaster )
+
+            # open config menu
+            self.tk_handle.bind("<Control-c>", StartConfigureEvent )
+
+            
         else:
-            self.tk_handle.bind("<Command-r>", keyboardReset)
-            self.tk_handle.bind("<Command-KP_Enter>", keyboardStartPaus)
-            self.tk_handle.bind("<Command-Return>", keyboardStartPaus)
+            self.tk_handle.bind("<Command-r>", self.keyboardReset)
+            self.tk_handle.bind("<Command-KP_Enter>", self.keyboardStartPaus)
+            self.tk_handle.bind("<Command-Return>", self.keyboardStartPaus)
             self.tk_handle.bind("<Command-k>", IncreaseSponsWidth)
             self.tk_handle.bind("<Command-j>", DecreaseSponsWidth)
 	
@@ -882,7 +897,7 @@ class KeyBindingClass():
             # increase
             self.tk_handle.bind("<Command-plus>", IncreaseFontSize)
             self.tk_handle.bind("<Command-KP_Add>", IncreaseFontSize) #keypad +
-            self.tk_handle.bind("<Command-0x003d>", IncreaseFontSize)
+   #         self.tk_handle.bind("<Command-0x003d>", IncreaseFontSize)
     
             # decrease
             self.tk_handle.bind("<Command-minus>", DecreaseFontSize)
@@ -898,7 +913,15 @@ class KeyBindingClass():
             # increase and decrease timer
             self.tk_handle.bind("<Command-m>", IncreaseTime)
             self.tk_handle.bind("<Command-n>", DecreaseTime)
+            
+            # fullscreen
+            self.tk_handle.bind("<Command-f>", toogleFullscreenLinux )
 
+            # timeout
+            self.tk_handle.bind("<Command-t>", TimeoutMaster )
+
+            # open config menu
+            self.tk_handle.bind("<Command-c>", StartConfigureEvent )
 
         
             # bindings for changing stage
@@ -926,11 +949,20 @@ class KeyBindingClass():
 master.KeyBindings = KeyBindingClass(master)
         
 
+
 #######################
 # Final loop commands #
 #######################
 
 master.IPTClock.update()  # update the countdown during GUI loop
 
-# start the GUI loop
-master.mainloop()
+
+# ugly exception capture
+while True:
+    try:
+
+        # start the GUI loop
+        master.mainloop()
+        break
+    except UnicodeDecodeError:
+        pass

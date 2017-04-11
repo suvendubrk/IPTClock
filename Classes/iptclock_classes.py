@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 import sys
 if sys.version_info[0] < 3:
     usePython3 = False
@@ -953,8 +952,7 @@ class EditFrame():
 
     def update_sponsWidth(self):
          # update sponsImage width
-        self.tk_handle.columnconfigure(0, weight=2, minsize = self.tk_handle.sponsWidth.get() )    
-        self.tk_handle.IPTSpons.updateFigSize()
+        self.tk_handle.columnconfigure(0, weight=0, minsize = self.tk_handle.sponsWidth.get() )    # weight is changes here. Should give tighter padding        self.tk_handle.IPTSpons.updateFigSize()
         
 		
     def centerTop(self, toplevel):

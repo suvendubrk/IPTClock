@@ -97,6 +97,12 @@ Ctrl + m : Substract 5s from timer
 
 Ctrl + n : Add 5s to timer
 
+Ctrl + t : Activate timeout
+
+Ctrl + c : Open configuration window
+
+Ctrl + f : Toggle fullscreen 
+
 --For Mac--
 
 Command+Left : Switch to previous stage
@@ -108,8 +114,6 @@ Command+Right : Switch to next stage
 \<Escape\> : Exit fullscreen
 
 Command + + : Increase font size (Warning mind dead key, see Known bugs)
-
-Command 0 = : Increase font size
 
 Command + - : Decrease font size
 
@@ -128,6 +132,12 @@ Command + u : Activates popup for changing the start time of the countdown. This
 Command + m : Substract 5s from timer
 
 Command + n : Add 5s to timer
+
+Command + t : Activate timeout
+
+Command + c : Open configuration window
+
+Command + f : Toggle fullscreen
 
 ## configuration ##
 Variables used to change the IPTClock is positioned in Config/config.py
