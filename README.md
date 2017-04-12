@@ -62,6 +62,8 @@ If you click on the count down text a popup will appear for changing the time of
 
 It is also possible to manually edit the different font sizes by using the configure menu under the "Edit" menu.
 
+The configuration window under the edit menu makes it possible to control the clock and hide all control in the main windows, like a portable control window, should one desire to do so.
+
 ## Key bindings ##
 Key bindings used by IPTClock is
 

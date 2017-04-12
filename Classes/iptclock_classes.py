@@ -751,9 +751,18 @@ class SponsImagePillow():
 class EditFrame():
     def __init__(self,tkHandle):
         self.tk_handle = tkHandle
+        self.hide_competitors = tk.IntVar() # for controling appearance of competitors
+        self.hide_competitors.set(1)
+
+        self.hide_buttons = tk.IntVar()
+        self.hide_buttons.set(0)
+
         
         self._create_top_frame()
         self.centerTop(self.top) # center the popup
+
+        
+        self.toggle_show_competitors()
 
     def _create_top_frame(self):        
         # create and positions the pop up frame
@@ -801,6 +810,18 @@ class EditFrame():
         self.buttonSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
 
 
+        # Tick boxes        
+        self.competitorHideTick = tk.Checkbutton(self.top, text="Hide competitors", var = self.hide_competitors , command= self.toggle_show_competitors)
+        self.competitorHideTick.grid(column = 2, row = 2)
+        self.competitorHideTick.configure(background=defaultBackgroundColour, fg= textColour)
+
+        self.ButtonsHideTick = tk.Checkbutton(self.top, text="Hide buttons", var = self.hide_buttons , command= self.toggle_show_buttons)
+        self.ButtonsHideTick.grid(column = 2, row = 1)
+        self.ButtonsHideTick.configure(background=defaultBackgroundColour, fg= textColour)
+
+
+        
+        
         # Sponsor image width
         self.sponsImageLabel = tk.Label(self.top, text = "Sponsor image minimum width:",anchor='w', justify='left')
         self.sponsImageLabel.grid(column=0,row=4,sticky='EW')
@@ -810,7 +831,7 @@ class EditFrame():
         self.sponsImageSpinBox.grid(column=1, row=4)
         self.sponsImageSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
 
-        self.updateWidthButton = tk.Button(self.top, text="Update", command=self.update_sponsWidth)
+        self.updateWidthButton = tk.Button(self.top, text="Update image", command=self.update_sponsWidth)
         self.updateWidthButton.grid(column=2, row = 4)
         self.updateWidthButton.configure(background=defaultBackgroundColour, fg= textColour)
         
@@ -852,19 +873,78 @@ class EditFrame():
 
         
         # buttons
-        self.updateButton = tk.Button(self.top, text="Update", command=self.update )
+        self.updateButton = tk.Button(self.top, text="Update text", command=self.update )
         self.updateButton.grid(column=0, row = 8)
         self.updateButton.configure(background=defaultBackgroundColour, fg= textColour)
 
         self.closeButton = tk.Button(self.top, text="Close", command=self.exit )
-        self.closeButton.grid(column=2, row = 8)
-        self.closeButton.configure(background=defaultBackgroundColour, fg= textColour)
+        self.closeButton.grid(column=0, row = 14,sticky='we')
+        self.closeButton.configure(background=defaultBackgroundColour, fg= textColour,font= self.tk_handle.customFontButtons)
 
         self.resetButton = tk.Button(self.top, text="Reset font", command=self.reset_font )
         self.resetButton.grid(column=1, row = 8)
         self.resetButton.configure(background=defaultBackgroundColour, fg= textColour)
         
 
+
+        # seperation line
+        horizontalLine = tk.Label(self.top, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth=0)
+        horizontalLine.grid(row=9, column=0, columnspan=3, sticky='WE', pady=10)
+        
+        #### Control buttons ########
+
+        
+        self.startButton = tk.Button(master=self.top, text='Start', command=self.tk_handle.IPTClock.start, font= self.tk_handle.customFontButtons)
+        self.startButton.configure(background=defaultBackgroundColour, fg= textColour)
+        self.startButton.grid(column=1, row = 10,sticky='we')
+        
+        
+         # Pause Button
+        self.pauseButton = tk.Button(master=self.top, text='Pause', command=self.tk_handle.IPTClock.pause, font= self.tk_handle.customFontButtons)
+        self.pauseButton.configure(background=defaultBackgroundColour, fg= textColour)
+        self.pauseButton.grid(column=1, row = 11,sticky='we')
+
+        
+        # Fullscreen
+        self.fullscreenButton = tk.Button(master=self.top, text='Fullscreen', command=self.fullscreen_toggle, font= self.tk_handle.customFontButtons)
+        self.fullscreenButton.configure(background=defaultBackgroundColour, fg= textColour)
+        self.fullscreenButton.grid(column=1, row = 13, sticky='we')
+
+        
+        # Previous Stage
+        self.previousStageButton = tk.Button(master=self.top, text='<<', command=self.tk_handle.IPTClock.previous_stage, font= self.tk_handle.customFontButtons)
+        self.previousStageButton.configure(background=defaultBackgroundColour, fg= textColour)
+        self.previousStageButton.grid(column=0, row = 10, sticky='we')
+        
+        # Next Stage
+        self.nextStageButton = tk.Button(master=self.top, text='>>', command=self.tk_handle.IPTClock.next_stage, font= self.tk_handle.customFontButtons)
+        self.nextStageButton.configure(background=defaultBackgroundColour, fg= textColour)
+        self.nextStageButton.grid(column=2,row = 10, sticky='we')
+        
+        # timeout
+        def HandleReturn():
+            return self.tk_handle.IPTClock, self.tk_handle
+
+        
+        # Timeout button
+        self.timeoutButton = tk.Button(master=self.top, text='Timeout', command=self.timeoutButtonAction , font= self.tk_handle.customFontButtons)
+        self.timeoutButton.configure(background=defaultBackgroundColour, fg= textColour)
+        self.timeoutButton.grid(column=0, row = 12, sticky='we')
+
+        # Reset button
+        self.resetButton = tk.Button(master=self.top, text='Reset', command=self.tk_handle.IPTClock.reset, font= self.tk_handle.customFontButtons)
+        self.resetButton.configure(background=defaultBackgroundColour, fg= textColour)
+        self.resetButton.grid(column=2, row = 12, sticky='we')
+
+        
+        # Quit button
+        self.quitButton = tk.Button(master=self.top, text='Quit', command=self.quitButtonAction, font= self.tk_handle.customFontButtons)
+        self.quitButton.configure(background=defaultBackgroundColour, fg= textColour)
+        self.quitButton.grid(column=2, row = 14, sticky='we')
+
+        
+
+        
     def _exit(self):
         self.top.destroy()
 
@@ -966,3 +1046,30 @@ class EditFrame():
         toplevel.geometry("%dx%d+%d+%d" % (size + (x, y)))
 
 
+    def toggle_show_competitors(self):
+        
+        if self.hide_competitors.get() == 1:
+            self.tk_handle.competitorFrame.grid_forget()
+        else:
+             self.tk_handle.competitorFrameClass.position()
+           
+
+
+    def toggle_show_buttons(self):
+
+        if (self.hide_buttons.get() ==1 ):
+            self.tk_handle.ControlButtonFrameClass.forget_frame_position()
+            self.tk_handle.ControlButtonFrameClass.hide_buttons()
+        else:
+            self.tk_handle.ControlButtonFrameClass.position_frame()
+            self.tk_handle.ControlButtonFrameClass.position_buttons()
+
+    def fullscreen_toggle(self):
+        self.tk_handle.ControlButtonFrameClass.fullscreenToggle()
+
+    def quitButtonAction(self):
+        self.tk_handle.ControlButtonFrameClass.quitButtonAction()
+
+
+    def timeoutButtonAction(self):
+        self.tk_handle.ControlButtonFrameClass.timeoutButtonAction()

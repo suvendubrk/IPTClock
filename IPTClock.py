@@ -124,11 +124,11 @@ def toogleFullscreenButton():
     master.fullscreen = state
 
     if (master.fullscreen):
-        fullscreenButton.configure(text="Windowed")
+        master.ControlButtonFrameClass.fullscreenButton.configure(text="Windowed")
         master.fullscreenSwitch.set(True) # traced variable
         screenWidth = master.winfo_screenwidth() 
     else:
-        fullscreenButton.configure(text="Fullscreen")
+        master.ControlButtonFrameClass.fullscreenButton.configure(text="Fullscreen")
         master.fullscreenSwitch.set(False) # traced variable
         screenWidth = 640
     FontResize(int(screenWidth))
@@ -144,7 +144,7 @@ def endFullscreen():
     if master.fullscreen:
         master.fullscreen = False
         master.attributes("-fullscreen", False)
-        fullscreenButton.configure(text="Fullscreen")
+        master.ControlButtonFrame.fullscreenButton.configure(text="Fullscreen")
         master.focus_set()
 		
     #fullscreenButton.configure(text="Fullscreen")
@@ -571,42 +571,60 @@ master.IPTSpons = SponsImagePillow(master) # uses PIL and tkinter to render imag
 ####################
 # Competitor Names #
 ####################
+
+class CompetitorFrameClass():
+    def __init__(self,tk_handle):
+        self.tk_handle = tk_handle
+        self._initialise()
+    #    self.position()
+
+    def _initialise(self):
+        self.tk_handle.competitorFrame = tk.Frame( self.tk_handle)
+        self.tk_handle.competitorFrame.configure(background=defaultBackgroundColour)
+
 ## Reporter ##
-master.reporterLabel = tk.Label(master, text="Reporter:", font= master.customFontCompetitors)
-master.reporterLabel.grid(row=11, column=2)
-master.reporterLabel.configure(background=defaultBackgroundColour, fg= textColour)
-master.reporterLabel.bind("<Button-1>",EditReporterEvent)
-master.reporterNameLabel = tk.Label(master, text='Arnold Schwarzenegger', font= master.customFontCompetitors )
+        self.tk_handle.reporterLabel = tk.Label( self.tk_handle.competitorFrame, text="Reporter:", font=  self.tk_handle.customFontCompetitors)
+        self.tk_handle.reporterLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        self.tk_handle.reporterLabel.bind("<Button-1>",EditReporterEvent)
+        self.tk_handle.reporterNameLabel = tk.Label( self.tk_handle.competitorFrame, text='Arnold Schwarzenegger', font=  self.tk_handle.customFontCompetitors )
 #reporterNameLabel = tk.Label(master, text='Starlight Glimmer', font=('Courier New', 16))
-master.reporterNameLabel.grid(row=11, column=3, sticky=tk.W)
-master.reporterNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
-master.reporterNameLabel.bind("<Button-1>",EditReporterEvent)
+        self.tk_handle.reporterNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        self.tk_handle.reporterNameLabel.bind("<Button-1>",EditReporterEvent)
 
 
 ## Opponent ##
-master.opponentLabel = tk.Label(master, text="Opponent:",font= master.customFontCompetitors)
-master.opponentLabel.grid(row=12, column=2)
-master.opponentLabel.configure(background=defaultBackgroundColour, fg= textColour)
-master.opponentLabel.bind("<Button-1>",EditOpponentEvent)
+        self.tk_handle.opponentLabel = tk.Label( self.tk_handle.competitorFrame, text="Opponent:",font=  self.tk_handle.customFontCompetitors)
+        self.tk_handle.opponentLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        self.tk_handle.opponentLabel.bind("<Button-1>",EditOpponentEvent)
 
-master.opponentNameLabel = tk.Label(master, text='Dwayne "The Rock" Johnson', font= master.customFontCompetitors)
+        self.tk_handle.opponentNameLabel = tk.Label( self.tk_handle.competitorFrame, text='Dwayne "The Rock" Johnson', font=  self.tk_handle.customFontCompetitors)
 #opponentNameLabel = tk.Label(master, text='Princess Twilight Sparkle', font=master.customFontCompetitors)
-master.opponentNameLabel.grid(row=12, column=3, sticky=tk.W )
-master.opponentNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
-master.opponentNameLabel.bind("<Button-1>",EditOpponentEvent)
+        self.tk_handle.opponentNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        self.tk_handle.opponentNameLabel.bind("<Button-1>",EditOpponentEvent)
 
 
 ## Reviewer ##
-master.reviewerLabel = tk.Label(master, text="Reviewer:", font=master.customFontCompetitors)
-master.reviewerLabel.grid(row=13, column=2)
-master.reviewerLabel.configure(background=defaultBackgroundColour, fg= textColour)
-master.reviewerLabel.bind("<Button-1>",EditReviewerEvent)
+        self.tk_handle.reviewerLabel = tk.Label( self.tk_handle.competitorFrame, text="Reviewer:", font= self.tk_handle.customFontCompetitors)
+        self.tk_handle.reviewerLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        self.tk_handle.reviewerLabel.bind("<Button-1>",EditReviewerEvent)
 
-master.reviewerNameLabel = tk.Label(master, text='Chuck Norris', font=master.customFontCompetitors)
+        self.tk_handle.reviewerNameLabel = tk.Label( self.tk_handle.competitorFrame, text='Chuck Norris', font= self.tk_handle.customFontCompetitors)
 #reviewerNameLabel = tk.Label(master, text='Shining Armor', font=master.customFontCompetitors)
-master.reviewerNameLabel.grid(row=13, column=3, sticky=tk.W)
-master.reviewerNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
-master.reviewerNameLabel.bind("<Button-1>",EditReviewerEvent)
+        self.tk_handle.reviewerNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        self.tk_handle.reviewerNameLabel.bind("<Button-1>",EditReviewerEvent)
+
+    def position(self):
+        self.tk_handle.reporterLabel.grid(row=0, column=0)
+        self.tk_handle.reporterNameLabel.grid(row=0, column=1, sticky=tk.W)
+        self.tk_handle.opponentLabel.grid(row=1, column=0)
+        self.tk_handle.opponentNameLabel.grid(row=1, column=1, sticky=tk.W )
+        self.tk_handle.reviewerLabel.grid(row=2, column=0)
+        self.tk_handle.reviewerNameLabel.grid(row=2, column=1, sticky=tk.W)
+        self.tk_handle.competitorFrame.grid(row=11, rowspan = 3, column =2, columnspan=2)
+
+
+master.competitorFrameClass = CompetitorFrameClass(master)   
+
 
 ####################
 # Initialize Clock #
@@ -625,72 +643,96 @@ master.IPTClock.countdownText.bind("<Button-1>", SetTimePopUp)
 
 # Create frame for top buttons
 
-controlButton_frame = tk.Frame(master)
-controlButton_frame.grid(row=3, column=7, rowspan=7, sticky="WES", pady=20)
+class ControlButtonFrameClass():
+    def  __init__(self,tk_handle):
+        self.tk_handle = tk_handle
+        self._initialise()
+        self.position_frame()
+        self.position_buttons()
 
-startButton = tk.Button(master=controlButton_frame, text='Start', command=master.IPTClock.start, font= master.customFontButtons)
-startButton.configure(background=defaultBackgroundColour, fg= textColour)
-startButton.grid(row=0, sticky="WE")
+    def _initialise(self):
+        self.controlButton_frame = tk.Frame(self.tk_handle)
 
-# Pause Button
-pauseButton = tk.Button(master=controlButton_frame, text='Pause', command=master.IPTClock.pause, font= master.customFontButtons)
-pauseButton.configure(background=defaultBackgroundColour, fg= textColour)
-pauseButton.grid(row=1, sticky="WE")
+        #start button
+        self.startButton = tk.Button(master=self.controlButton_frame, text='Start', command=self.tk_handle.IPTClock.start, font= master.customFontButtons)
+        self.startButton.configure(background=defaultBackgroundColour, fg= textColour)
 
-# Fullscreen
-fullscreenButton = tk.Button(master=controlButton_frame, text='Fullscreen', command=toogleFullscreenButton, font= master.customFontButtons)
-fullscreenButton.configure(background=defaultBackgroundColour, fg= textColour)
-fullscreenButton.grid(row=2, sticky="WE")
+        # Pause Button
+        self.pauseButton = tk.Button(master=self.controlButton_frame, text='Pause', command=self.tk_handle.IPTClock.pause, font= self.tk_handle.customFontButtons)
+        self.pauseButton.configure(background=defaultBackgroundColour, fg= textColour)
 
-# Previous Stage
-previousStageButton = tk.Button(master=controlButton_frame, text='<<', command=master.IPTClock.previous_stage, font= master.customFontButtons)
-previousStageButton.configure(background=defaultBackgroundColour, fg= textColour)
-previousStageButton.grid(row=3, sticky="WE")
+        # Fullscreen
+        self.fullscreenButton = tk.Button(master=self.controlButton_frame, text='Fullscreen', command=self.fullscreenToggle, font= self.tk_handle.customFontButtons)
+        self.fullscreenButton.configure(background=defaultBackgroundColour, fg= textColour)
 
-# Next Stage
-nextStageButton = tk.Button(master=controlButton_frame, text='>>', command=master.IPTClock.next_stage, font= master.customFontButtons)
-nextStageButton.configure(background=defaultBackgroundColour, fg= textColour)
-nextStageButton.grid(row=4, sticky="WE")
+        # Previous Stage
+        self.previousStageButton = tk.Button(master=self.controlButton_frame, text='<<', command=self.tk_handle.IPTClock.previous_stage, font= self.tk_handle.customFontButtons)
+        self.previousStageButton.configure(background=defaultBackgroundColour, fg= textColour)
 
-# timeout
-def HandleReturn():
-    return master.IPTClock, master
+        # Next Stage
+        self.nextStageButton = tk.Button(master=self.controlButton_frame, text='>>', command=self.tk_handle.IPTClock.next_stage, font= self.tk_handle.customFontButtons)
+        self.nextStageButton.configure(background=defaultBackgroundColour, fg= textColour)
 
-# Timeout button
-timeoutButton = tk.Button(master=master, text='Timeout', command=lambda clockHandle = master.IPTClock: Timeout(clockHandle) , font= master.customFontButtons)
-timeoutButton.configure(background=defaultBackgroundColour, fg= textColour)
-timeoutButton.grid(row=10,column=7,sticky='WE')
+        # timeout
+        def HandleReturn():
+            return self.tk_handle.IPTClock, self.tk_handle
 
-
-# Reset button
-resetButton = tk.Button(master=master, text='Reset', command=master.IPTClock.reset, font= master.customFontButtons)
-resetButton.configure(background=defaultBackgroundColour, fg= textColour)
-resetButton.grid(row=11, column=7, sticky='WEN')
-
-# Quit button
-quitButton = tk.Button(master=master, text='Quit', command=_quit, font= master.customFontButtons)
-quitButton.configure(background=defaultBackgroundColour, fg= textColour)
-quitButton.grid(row=13, column=7, sticky='WE')
+        
+        # Timeout button
+    #    self.timeoutButton = tk.Button(master=self.tk_handle, text='Timeout', command=lambda clockHandle = self.tk_handle.IPTClock: Timeout(clockHandle) , font= self.tk_handle.customFontButtons)
+        self.timeoutButton = tk.Button(master=self.tk_handle, text='Timeout', command= self.timeoutButtonAction , font= self.tk_handle.customFontButtons)
+        self.timeoutButton.configure(background=defaultBackgroundColour, fg= textColour)
 
 
-# Removed Edit buttons
-"""
-# Edit Reporter
-editReporterButton = tk.Button(master=master, text='Edit', command=EditReporter, font= master.customFontButtons)
-editReporterButton.configure(background=defaultBackgroundColour, fg= textColour)
-editReporterButton.grid(row=11, column=5)
+        # Reset button
+        self.resetButton = tk.Button(master=self.tk_handle, text='Reset', command=self.tk_handle.IPTClock.reset, font= self.tk_handle.customFontButtons)
+        self.resetButton.configure(background=defaultBackgroundColour, fg= textColour)
 
-# Edit Opponent
-editOpponentButton = tk.Button(master=master, text='Edit', command=EditOpponent, font= master.customFontButtons)
-editOpponentButton.configure(background=defaultBackgroundColour, fg= textColour)
-editOpponentButton.grid(row=12, column=5)
+        # Quit button
+        self.quitButton = tk.Button(master=self.tk_handle, text='Quit', command=self.quitButtonAction, font= self.tk_handle.customFontButtons)
+        self.quitButton.configure(background=defaultBackgroundColour, fg= textColour)
 
-# Edit Reviewer
-editReviewerButton = tk.Button(master=master, text='Edit', command=EditReviewer, font= master.customFontButtons)
-editReviewerButton.configure(background=defaultBackgroundColour, fg= textColour)
-editReviewerButton.grid(row=13, column=5)
-"""
+    def position_frame(self):
+        self.controlButton_frame.grid(row=3, column=7, rowspan=7, sticky="WES", pady=20)
+        
+    def forget_frame_position(self):
+        self.controlButton_frame.grid_forget()
 
+    def position_buttons(self):
+        self.startButton.grid(row=0, sticky="WE")
+        self.pauseButton.grid(row=1, sticky="WE")
+        self.fullscreenButton.grid(row=2, sticky="WE")
+        self.previousStageButton.grid(row=3, sticky="WE")
+        self.nextStageButton.grid(row=4, sticky="WE")
+        
+        self.timeoutButton.grid(row=10,column=7,sticky='WE')
+        self.resetButton.grid(row=11, column=7, sticky='WEN')
+        self.quitButton.grid(row=13, column=7, sticky='WE')
+   
+
+    def hide_buttons(self):
+        self.startButton.grid_forget()
+        self.pauseButton.grid_forget()
+        self.fullscreenButton.grid_forget()
+        self.previousStageButton.grid_forget()
+        self.nextStageButton.grid_forget()
+        self.timeoutButton.grid_forget()
+        self.resetButton.grid_forget()
+        self.quitButton.grid_forget()
+        
+    def fullscreenToggle(self):
+        toogleFullscreenButton()
+
+
+    def quitButtonAction(self):
+        _quit()
+
+    def timeoutButtonAction(self):
+        Timeout(self.tk_handle.IPTClock)
+        
+# create frame class fro buttons
+master.ControlButtonFrameClass = ControlButtonFrameClass(master)
+        
 
 #####################
 # layout lines
