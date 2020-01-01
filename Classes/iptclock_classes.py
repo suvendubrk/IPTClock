@@ -31,7 +31,7 @@ else:
     
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import time
 
 # imports pillow as an alternative way of displaying images.
@@ -202,7 +202,7 @@ def create_clock_canvas(tkHandle,wedgeBgColour):
 
     canvas = FigureCanvasTkAgg(fig, master=tkHandle)
 #    canvas.get_tk_widget().configure(highlightthickness=0, highlightcolor=None)
-    canvas.show()
+    canvas.draw()
    
     canvas.get_tk_widget().grid(row=2, column=2, columnspan=3, rowspan=7)  # , sticky=tk.N)
     return ax, fig, canvas
