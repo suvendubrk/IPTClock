@@ -23,6 +23,6 @@ pathToSoundFile = ''#'./Audio/theDuckSong2.wav'  # If left empty nothing happens
 stagesPath = "./Stages/stages.txt"  # Stages config path
 
 # To be introduced...:
-defaultFont = 'Courier New' # string deciding the standard font
+defaultFont = 'Roberto' # string deciding the standard font
 
 

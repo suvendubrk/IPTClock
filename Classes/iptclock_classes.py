@@ -182,7 +182,7 @@ def create_clock_labels(tkLabel):
 
     # Presentation of current phase
     wrapLength = 350
-    presentationTextLabel = tk.Label(tkLabel, text='', font=tkLabel.customFontStage, wraplength= wrapLength)
+    presentationTextLabel = tk.Label(tkLabel, text='', font=tkLabel.customFontStage, wraplength= wrapLength, pady=40)
     presentationTextLabel.grid(row=9, column=2, columnspan=3, sticky="EWS")
     presentationTextLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
@@ -353,7 +353,7 @@ class Clock:
         self.clock_graphics.set_angle(angle)
 
     def low_health_mode(self):
-        background_colour = 'red' # colour of last wedge part in low health
+        background_colour = '#d32c2c' # colour of last wedge part in low health
         self.clock_graphics.set_wedge_background_colour(background_colour)
         
         # for playing low health sound
@@ -755,7 +755,7 @@ class EditFrame():
         self.hide_competitors.set(1)
 
         self.hide_buttons = tk.IntVar()
-        self.hide_buttons.set(0)
+        self.hide_buttons.set(1)
 
         
         self._create_top_frame()
@@ -771,155 +771,171 @@ class EditFrame():
         self.top.configure(bg= defaultBackgroundColour)
         self.top.protocol("WM_DELETE_WINDOW", self.exit) # if push x on border
         
+        # Appearance Catgegory
+        self.appearanceTitle = tk.Label(self.top, text="Appearance", font=("TkDefaultFont",20), anchor='w', padx=20, pady=20)
+        self.appearanceTitle.grid(column=0,row=0,sticky='W')
+        self.appearanceTitle.configure(background=defaultBackgroundColour, fg= textColour)
+
+
         # Stage
-        self.stageLabel = tk.Label(self.top, text = "Stage font size:",anchor='w')
-        self.stageLabel.grid(column=0,row=0,sticky='EW')
+        self.stageLabel = tk.Label(self.top, text = "Stage font size:",anchor='e',padx=5)
+        self.stageLabel.grid(column=0,row=1,sticky='E')
         self.stageLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
         
        # self.stageSpinBox = tk.Spinbox(self.top, from_=1, to=self.tk_handle.maxStageFontSize, textvariable = self.tk_handle.stageFontSize)
         self.stageSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.stageFontSize)
-        self.stageSpinBox.grid(column=1, row=0)
+        self.stageSpinBox.grid(column=1, row=1, sticky='E')
         self.stageSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
         
         # Digital Clock
-        self.clockLabel = tk.Label(self.top, text = "Clock font size:",anchor='w')
-        self.clockLabel.grid(column=0,row=1,sticky='EW')
+        self.clockLabel = tk.Label(self.top, text = "Clock font size:",anchor='e',padx=5)
+        self.clockLabel.grid(column=0,row=2,sticky='E')
         self.clockLabel.configure(background=defaultBackgroundColour, fg= textColour)
         
         self.clockSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.digitalClockFontSize)#self.tk_handle.stageFontSize)
-        self.clockSpinBox.grid(column=1, row=1)
+        self.clockSpinBox.grid(column=1, row=2, sticky='E')
         self.clockSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
         
         # Competitor labels
-        self.competitorLabel = tk.Label(self.top, text = "Competitor font size:",anchor='w')     
-        self.competitorLabel.grid(column=0,row=2,sticky='EW')
+        self.competitorLabel = tk.Label(self.top, text = "Competitor font size:",anchor='e',padx=5)     
+        self.competitorLabel.grid(column=0,row=3,sticky='E')
         self.competitorLabel.configure(background=defaultBackgroundColour, fg= textColour)
         
         self.competitorSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.competitorFontSize)#self.tk_handle.stageFontSize)
-        self.competitorSpinBox.grid(column=1, row=2)
+        self.competitorSpinBox.grid(column=1, row=3, sticky='E')
         self.competitorSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
 
         # Buttons font size         
-        self.buttonLabel = tk.Label(self.top, text = "Button font size:",anchor='w', justify='left')
-        self.buttonLabel.grid(column=0,row=3,sticky='EW')
+        self.buttonLabel = tk.Label(self.top, text = "Button font size:",anchor='e', justify='left',padx=5)
+        self.buttonLabel.grid(column=0,row=4,sticky='E')
         self.buttonLabel.configure(background=defaultBackgroundColour, fg= textColour)
         
         self.buttonSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.buttonFontSize)#self.tk_handle.stageFontSize)
-        self.buttonSpinBox.grid(column=1, row=3)
+        self.buttonSpinBox.grid(column=1, row=4, sticky='E')
         self.buttonSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
 
 
-        # Tick boxes        
-        self.competitorHideTick = tk.Checkbutton(self.top, text="Hide competitors", var = self.hide_competitors , command= self.toggle_show_competitors)
-        self.competitorHideTick.grid(column = 2, row = 2)
+        # Hide Tick boxes  
+
+        self.trialLabel = tk.Label(self.top, text = " A ",anchor='w', justify='left',padx=5)
+        self.trialLabel.grid(column=2,row=2,sticky='W')
+        self.trialLabel.configure(background=defaultBackgroundColour, fg= textColour)
+       
+
+
+        self.competitorHideTick = tk.Checkbutton(self.top, text="Hide competitors", var = self.hide_competitors , command= self.toggle_show_competitors, 
+            padx=5, anchor="w")
+        self.competitorHideTick.grid(column = 2, row = 2,sticky='W',padx=10)
         self.competitorHideTick.configure(background=defaultBackgroundColour, fg= textColour)
 
-        self.ButtonsHideTick = tk.Checkbutton(self.top, text="Hide buttons", var = self.hide_buttons , command= self.toggle_show_buttons)
-        self.ButtonsHideTick.grid(column = 2, row = 1)
+        self.ButtonsHideTick = tk.Checkbutton(self.top, text="Hide buttons", var = self.hide_buttons , command= self.toggle_show_buttons, 
+            padx=5, anchor="w")
+        self.ButtonsHideTick.grid(column = 2, row = 1,sticky='W',padx=10)
         self.ButtonsHideTick.configure(background=defaultBackgroundColour, fg= textColour)
 
-
+        # Sponsor Catgegory
+        self.sponsorTitle = tk.Label(self.top, text="Sponsors", font=("TkDefaultFont",20),  anchor='w', padx=20, pady=20)
+        self.sponsorTitle.grid(column=0,row=5,sticky='W')
+        self.sponsorTitle.configure(background=defaultBackgroundColour, fg= textColour)
         
         
         # Sponsor image width
-        self.sponsImageLabel = tk.Label(self.top, text = "Sponsor image minimum width:",anchor='w', justify='left')
-        self.sponsImageLabel.grid(column=0,row=4,sticky='EW')
+        self.sponsImageLabel = tk.Label(self.top, text = "Minimum width:",anchor='e', justify='left',padx=5)
+        self.sponsImageLabel.grid(column=0,row=6,sticky='E')
         self.sponsImageLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
         self.sponsImageSpinBox = tk.Spinbox(self.top, from_=1, to=1000, textvariable = self.tk_handle.sponsWidth)
-        self.sponsImageSpinBox.grid(column=1, row=4)
+        self.sponsImageSpinBox.grid(column=1, row=6, sticky='E')
         self.sponsImageSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
 
-        self.updateWidthButton = tk.Button(self.top, text="Update image", command=self.update_sponsWidth)
-        self.updateWidthButton.grid(column=2, row = 4)
+        self.updateWidthButton = tk.Button(self.top, text="Update image", command=self.update_sponsWidth,padx=5)
+        self.updateWidthButton.grid(column=2, row = 6, padx=10)
         self.updateWidthButton.configure(background=defaultBackgroundColour, fg= textColour)
         
+        # Participants Catgegory
+        self.participantTitle = tk.Label(self.top, text="Participants", font=("TkDefaultFont",20),  anchor='w', padx=20, pady=20)
+        self.participantTitle.grid(column=0,row=7,sticky='W')
+        self.participantTitle.configure(background=defaultBackgroundColour, fg= textColour)
         
         
         ## Competitors ##
         # Reporter
-        self.reporterLabel = tk.Label(self.top,  text="Reporter:", anchor='w')
-        self.reporterLabel.grid(column=0, row= 5,sticky='we')
+        self.reporterLabel = tk.Label(self.top,  text="Reporter:", anchor='e',padx=5)
+        self.reporterLabel.grid(column=0, row= 8,sticky='E')
         self.reporterLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
         self.reporterStrVar = tk.StringVar()
         self.reporterStrVar.set(self.tk_handle.reporterNameLabel.cget('text') )
         self.reporterEntry = tk.Entry(self.top, text =  self.reporterStrVar )
-        self.reporterEntry.grid(column=1, row=5, sticky='we', columnspan=2)
+        self.reporterEntry.grid(column=1, row=8, sticky='W', columnspan=1)
         self.reporterEntry.configure(background=defaultBackgroundColour, fg= textColour)
 
         # Opponent
-        self.opponentLabel = tk.Label(self.top,  text="Opponent:", anchor='w')
-        self.opponentLabel.grid(column=0, row= 6,sticky='we')
+        self.opponentLabel = tk.Label(self.top,  text="Opponent:", anchor='e',padx=5)
+        self.opponentLabel.grid(column=0, row= 9,sticky='E')
         self.opponentLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
         self.opponentStrVar = tk.StringVar()
         self.opponentStrVar.set(self.tk_handle.opponentNameLabel.cget('text') )
         self.opponentEntry = tk.Entry(self.top, text =  self.opponentStrVar )
-        self.opponentEntry.grid(column=1, row=6, sticky='we', columnspan=2)
+        self.opponentEntry.grid(column=1, row=9, sticky='W', columnspan=1)
         self.opponentEntry.configure(background=defaultBackgroundColour, fg= textColour)
 
         # Reviewer
-        self.reviewerLabel = tk.Label(self.top,  text="Reviewer:", anchor='w')
-        self.reviewerLabel.grid(column=0, row= 7,sticky='we')
+        self.reviewerLabel = tk.Label(self.top,  text="Reviewer:", anchor='e',padx=5)
+        self.reviewerLabel.grid(column=0, row= 10,sticky='E')
         self.reviewerLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
         self.reviewerStrVar = tk.StringVar()
         self.reviewerStrVar.set(self.tk_handle.reviewerNameLabel.cget('text') )
         self.reviewerEntry = tk.Entry(self.top, text =  self.reviewerStrVar )
-        self.reviewerEntry.grid(column=1, row=7, sticky='we', columnspan=2)
+        self.reviewerEntry.grid(column=1, row=10, sticky='W', columnspan=1)
         self.reviewerEntry.configure(background=defaultBackgroundColour, fg= textColour)
 
         
         # buttons
-        self.updateButton = tk.Button(self.top, text="Update text", command=self.update )
-        self.updateButton.grid(column=0, row = 8)
+        self.updateButton = tk.Button(self.top, text="Update text", command=self.update,padx=5 )
+        self.updateButton.grid(column=2, row = 10, padx=10)
         self.updateButton.configure(background=defaultBackgroundColour, fg= textColour)
 
-        self.closeButton = tk.Button(self.top, text="Close", command=self.exit )
-        self.closeButton.grid(column=0, row = 14,sticky='we')
-        self.closeButton.configure(background=defaultBackgroundColour, fg= textColour,font= self.tk_handle.customFontButtons)
+        self.closeButton = tk.Button(self.top, text="Close", command=self.exit,padx=5 )
+        self.closeButton.grid(column=2, row = 0, padx=10)
+        self.closeButton.configure(background=defaultBackgroundColour, fg= textColour)
 
-        self.resetButton = tk.Button(self.top, text="Reset font", command=self.reset_font )
-        self.resetButton.grid(column=1, row = 8)
+        self.resetButton = tk.Button(self.top, text="Reset font", command=self.reset_font,padx=5 )
+        self.resetButton.grid(column=2, row = 4, padx=10)
         self.resetButton.configure(background=defaultBackgroundColour, fg= textColour)
         
-
+##########_---Horror Zone-----########
 
         # seperation line
-        horizontalLine = tk.Label(self.top, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth=0)
-        horizontalLine.grid(row=9, column=0, columnspan=3, sticky='WE', pady=10)
+        horizontalLine = tk.Label(self.top, text='-', background='white', height=1, font=('Courier New', 1), borderwidth=0)
+        horizontalLine.grid(row=11, column=0, columnspan=3, sticky='WE', pady=10)
         
         #### Control buttons ########
 
         
-        self.startButton = tk.Button(master=self.top, text='Start', command=self.tk_handle.IPTClock.start, font= self.tk_handle.customFontButtons)
+        self.startButton = tk.Button(master=self.top, text='Start', command=self.tk_handle.IPTClock.start,padx=10,pady=5)
         self.startButton.configure(background=defaultBackgroundColour, fg= textColour)
-        self.startButton.grid(column=1, row = 10,sticky='we')
+        self.startButton.grid(column=1, row = 12,sticky='we')
         
         
          # Pause Button
-        self.pauseButton = tk.Button(master=self.top, text='Pause', command=self.tk_handle.IPTClock.pause, font= self.tk_handle.customFontButtons)
+        self.pauseButton = tk.Button(master=self.top, text='Pause', command=self.tk_handle.IPTClock.pause,padx=10,pady=5)
         self.pauseButton.configure(background=defaultBackgroundColour, fg= textColour)
-        self.pauseButton.grid(column=1, row = 11,sticky='we')
-
-        
-        # Fullscreen
-        self.fullscreenButton = tk.Button(master=self.top, text='Fullscreen', command=self.fullscreen_toggle, font= self.tk_handle.customFontButtons)
-        self.fullscreenButton.configure(background=defaultBackgroundColour, fg= textColour)
-        self.fullscreenButton.grid(column=1, row = 13, sticky='we')
+        self.pauseButton.grid(column=1, row = 13,sticky='we')
 
         
         # Previous Stage
-        self.previousStageButton = tk.Button(master=self.top, text='<<', command=self.tk_handle.IPTClock.previous_stage, font= self.tk_handle.customFontButtons)
+        self.previousStageButton = tk.Button(master=self.top, text='     <<     ', command=self.tk_handle.IPTClock.previous_stage,padx=10,pady=5)
         self.previousStageButton.configure(background=defaultBackgroundColour, fg= textColour)
-        self.previousStageButton.grid(column=0, row = 10, sticky='we')
+        self.previousStageButton.grid(column=0, row = 12, sticky='E')
         
         # Next Stage
-        self.nextStageButton = tk.Button(master=self.top, text='>>', command=self.tk_handle.IPTClock.next_stage, font= self.tk_handle.customFontButtons)
+        self.nextStageButton = tk.Button(master=self.top, text='     >>     ', command=self.tk_handle.IPTClock.next_stage,padx=10,pady=5)
         self.nextStageButton.configure(background=defaultBackgroundColour, fg= textColour)
-        self.nextStageButton.grid(column=2,row = 10, sticky='we')
+        self.nextStageButton.grid(column=2,row = 12, sticky='W')
         
         # timeout
         def HandleReturn():
@@ -927,22 +943,39 @@ class EditFrame():
 
         
         # Timeout button
-        self.timeoutButton = tk.Button(master=self.top, text='Timeout', command=self.timeoutButtonAction , font= self.tk_handle.customFontButtons)
+        self.timeoutButton = tk.Button(master=self.top, text='Timeout ', command=self.timeoutButtonAction,padx=10,pady=5)
         self.timeoutButton.configure(background=defaultBackgroundColour, fg= textColour)
-        self.timeoutButton.grid(column=0, row = 12, sticky='we')
+        self.timeoutButton.grid(column=0, row = 13, sticky='E')
 
         # Reset button
-        self.resetButton = tk.Button(master=self.top, text='Reset', command=self.tk_handle.IPTClock.reset, font= self.tk_handle.customFontButtons)
+        self.resetButton = tk.Button(master=self.top, text='   Reset  ', command=self.tk_handle.IPTClock.reset,padx=10,pady=5)
         self.resetButton.configure(background=defaultBackgroundColour, fg= textColour)
-        self.resetButton.grid(column=2, row = 12, sticky='we')
+        self.resetButton.grid(column=2, row = 13, sticky='W')
 
-        
+        # seperation line
+        horizontalLine2 = tk.Label(self.top, text='-', background='white', height=1, font=('Courier New', 1), borderwidth=0)
+        horizontalLine2.grid(row=14, column=0, columnspan=3, sticky='WE', pady=10)
+
+        # Fullscreen
+        self.fullscreenButton = tk.Button(master=self.top, text='   Fullscreen   ', command=self.fullscreen_toggle,padx=10)
+        self.fullscreenButton.configure(background=defaultBackgroundColour, fg= textColour)
+        self.fullscreenButton.grid(column=1, row = 15,sticky='e')
+
+
         # Quit button
-        self.quitButton = tk.Button(master=self.top, text='Quit', command=self.quitButtonAction, font= self.tk_handle.customFontButtons)
+        self.quitButton = tk.Button(master=self.top, text='   Quit Timer   ', command=self.quitButtonAction,padx=10)
         self.quitButton.configure(background=defaultBackgroundColour, fg= textColour)
-        self.quitButton.grid(column=2, row = 14, sticky='we')
+        self.quitButton.grid(column=2, row = 15)
 
-        
+        # seperation line
+        horizontalLine3 = tk.Label(self.top, text='-', background='white', height=1, font=('Courier New', 1), borderwidth=0)
+        horizontalLine3.grid(row=16, column=0, columnspan=3, sticky='WE', pady=5)
+
+        # Spacer
+        self.spacer = tk.Label(self.top,  text="    ", anchor='e',padx=5)
+        self.spacer.grid(column=0, row= 17,sticky='E')
+        self.spacer.configure(background=defaultBackgroundColour, fg= textColour)
+
 
         
     def _exit(self):
@@ -1049,9 +1082,9 @@ class EditFrame():
     def toggle_show_competitors(self):
         
         if self.hide_competitors.get() == 1:
-            self.tk_handle.competitorFrame.grid_forget()
+            self.tk_handle.competitorFrameClass.forget_frame_position()
         else:
-             self.tk_handle.competitorFrameClass.position()
+            self.tk_handle.competitorFrameClass.position()
            
 
 

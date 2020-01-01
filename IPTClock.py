@@ -398,7 +398,8 @@ elif usingLinuxMasterRace:
     master.tk.call('wm', 'iconphoto', master._w, img)
 
 elif usingMac:
-    pass
+    img = tk.PhotoImage(file='./Images/Ico/IPTlogo_color.png') #newIPTlogo_without_text.png')
+    master.tk.call('wm', 'iconphoto', master._w, img)
 else:
     pass
 
@@ -566,6 +567,17 @@ master.IPTSpons = SponsImagePillow(master) # uses PIL and tkinter to render imag
 #master.sponsLabel.grid(row=0, column=0, columnspan=1, rowspan=14, sticky='N')
 #####################################################
 
+#####################
+# layout lines
+####################
+horizontalLine = tk.Label(master, text='-', background='#F6F6F6', height=1, font=('Courier New', 1), borderwidth=0)
+horizontalLine.grid(row=10, column=2, columnspan=4, sticky='WE')
+
+verticalLineRight = tk.Label(master, text='-', background='#F6F6F6', height=1, font=('Courier New', 1), borderwidth=0)
+verticalLineRight.grid(row=0, column=6, columnspan=1, rowspan=14, sticky='NS')
+
+verticalLineLeft = tk.Label(master, text='-', background='#F6F6F6', height=1, font=('Courier New', 1), borderwidth=0)
+verticalLineLeft.grid(row=0, column=1, columnspan=1, rowspan=14, sticky='NS')
 
 
 ####################
@@ -576,42 +588,45 @@ class CompetitorFrameClass():
     def __init__(self,tk_handle):
         self.tk_handle = tk_handle
         self._initialise()
-    #    self.position()
 
     def _initialise(self):
         self.tk_handle.competitorFrame = tk.Frame( self.tk_handle)
         self.tk_handle.competitorFrame.configure(background=defaultBackgroundColour)
 
-## Reporter ##
+        ## Reporter ##
         self.tk_handle.reporterLabel = tk.Label( self.tk_handle.competitorFrame, text="Reporter:", font=  self.tk_handle.customFontCompetitors)
         self.tk_handle.reporterLabel.configure(background=defaultBackgroundColour, fg= textColour)
         self.tk_handle.reporterLabel.bind("<Button-1>",EditReporterEvent)
-        self.tk_handle.reporterNameLabel = tk.Label( self.tk_handle.competitorFrame, text='Arnold Schwarzenegger', font=  self.tk_handle.customFontCompetitors )
-#reporterNameLabel = tk.Label(master, text='Starlight Glimmer', font=('Courier New', 16))
+        self.tk_handle.reporterNameLabel = tk.Label( self.tk_handle.competitorFrame, text='  ', font=  self.tk_handle.customFontCompetitors )
+        #reporterNameLabel = tk.Label(master, text='Starlight Glimmer', font=('Courier New', 16))
         self.tk_handle.reporterNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
         self.tk_handle.reporterNameLabel.bind("<Button-1>",EditReporterEvent)
 
 
-## Opponent ##
+        ## Opponent ##
         self.tk_handle.opponentLabel = tk.Label( self.tk_handle.competitorFrame, text="Opponent:",font=  self.tk_handle.customFontCompetitors)
         self.tk_handle.opponentLabel.configure(background=defaultBackgroundColour, fg= textColour)
         self.tk_handle.opponentLabel.bind("<Button-1>",EditOpponentEvent)
 
-        self.tk_handle.opponentNameLabel = tk.Label( self.tk_handle.competitorFrame, text='Dwayne "The Rock" Johnson', font=  self.tk_handle.customFontCompetitors)
-#opponentNameLabel = tk.Label(master, text='Princess Twilight Sparkle', font=master.customFontCompetitors)
+        self.tk_handle.opponentNameLabel = tk.Label( self.tk_handle.competitorFrame, text='  ', font=  self.tk_handle.customFontCompetitors)
+        #opponentNameLabel = tk.Label(master, text='Princess Twilight Sparkle', font=master.customFontCompetitors)
         self.tk_handle.opponentNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
         self.tk_handle.opponentNameLabel.bind("<Button-1>",EditOpponentEvent)
 
 
-## Reviewer ##
+        ## Reviewer ##
         self.tk_handle.reviewerLabel = tk.Label( self.tk_handle.competitorFrame, text="Reviewer:", font= self.tk_handle.customFontCompetitors)
         self.tk_handle.reviewerLabel.configure(background=defaultBackgroundColour, fg= textColour)
         self.tk_handle.reviewerLabel.bind("<Button-1>",EditReviewerEvent)
 
-        self.tk_handle.reviewerNameLabel = tk.Label( self.tk_handle.competitorFrame, text='Chuck Norris', font= self.tk_handle.customFontCompetitors)
-#reviewerNameLabel = tk.Label(master, text='Shining Armor', font=master.customFontCompetitors)
+        self.tk_handle.reviewerNameLabel = tk.Label( self.tk_handle.competitorFrame, text='  ', font= self.tk_handle.customFontCompetitors)
+        #reviewerNameLabel = tk.Label(master, text='Shining Armor', font=master.customFontCompetitors)
         self.tk_handle.reviewerNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
         self.tk_handle.reviewerNameLabel.bind("<Button-1>",EditReviewerEvent)
+
+    def forget_frame_position(self):
+        self.tk_handle.competitorFrame.grid_forget()
+        horizontalLine.grid_remove()
 
     def position(self):
         self.tk_handle.reporterLabel.grid(row=0, column=0)
@@ -621,8 +636,9 @@ class CompetitorFrameClass():
         self.tk_handle.reviewerLabel.grid(row=2, column=0)
         self.tk_handle.reviewerNameLabel.grid(row=2, column=1, sticky=tk.W)
         self.tk_handle.competitorFrame.grid(row=11, rowspan = 3, column =2, columnspan=2)
+        horizontalLine.grid()
 
-
+        
 master.competitorFrameClass = CompetitorFrameClass(master)   
 
 
@@ -708,6 +724,7 @@ class ControlButtonFrameClass():
         self.timeoutButton.grid(row=10,column=7,sticky='WE')
         self.resetButton.grid(row=11, column=7, sticky='WEN')
         self.quitButton.grid(row=13, column=7, sticky='WE')
+        verticalLineRight.grid()
    
 
     def hide_buttons(self):
@@ -719,6 +736,7 @@ class ControlButtonFrameClass():
         self.timeoutButton.grid_forget()
         self.resetButton.grid_forget()
         self.quitButton.grid_forget()
+        verticalLineRight.grid_remove()
         
     def fullscreenToggle(self):
         toogleFullscreenButton()
@@ -732,19 +750,6 @@ class ControlButtonFrameClass():
         
 # create frame class fro buttons
 master.ControlButtonFrameClass = ControlButtonFrameClass(master)
-        
-
-#####################
-# layout lines
-####################
-horizontalLine = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth=0)
-horizontalLine.grid(row=10, column=2, columnspan=4, sticky='WE')
-
-verticalLineRight = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth=0)
-verticalLineRight.grid(row=0, column=6, columnspan=1, rowspan=14, sticky='NS')
-
-verticalLineLeft = tk.Label(master, text='-', background='darkgray', height=1, font=('Courier New', 1), borderwidth=0)
-verticalLineLeft.grid(row=0, column=1, columnspan=1, rowspan=14, sticky='NS')
 
 
 ##########################
@@ -939,7 +944,7 @@ class KeyBindingClass():
             # increase
             self.tk_handle.bind("<Command-plus>", IncreaseFontSize)
             self.tk_handle.bind("<Command-KP_Add>", IncreaseFontSize) #keypad +
-   #         self.tk_handle.bind("<Command-0x003d>", IncreaseFontSize)
+            #self.tk_handle.bind("<Command-0x003d>", IncreaseFontSize)
     
             # decrease
             self.tk_handle.bind("<Command-minus>", DecreaseFontSize)
@@ -989,8 +994,9 @@ class KeyBindingClass():
 
 # activate keybindings for master    
 master.KeyBindings = KeyBindingClass(master)
-        
 
+# hide buttons by default
+master.ControlButtonFrameClass.hide_buttons()
 
 #######################
 # Final loop commands #
