@@ -144,7 +144,7 @@ def endFullscreen():
     if master.fullscreen:
         master.fullscreen = False
         master.attributes("-fullscreen", False)
-        master.ControlButtonFrame.fullscreenButton.configure(text="Fullscreen")
+        master.ControlButtonFrameClass.fullscreenButton.configure(text="Fullscreen")
         master.focus_set()
 		
     #fullscreenButton.configure(text="Fullscreen")
@@ -570,76 +570,14 @@ master.IPTSpons = SponsImagePillow(master) # uses PIL and tkinter to render imag
 #####################
 # layout lines
 ####################
-horizontalLine = tk.Label(master, text='-', background='#F6F6F6', height=1, font=('Courier New', 1), borderwidth=0)
-horizontalLine.grid(row=10, column=2, columnspan=4, sticky='WE')
+# horizontalLine = tk.Label(master, text='-', background='#F6F6F6', height=1, font=('Courier New', 1), borderwidth=0)
+# horizontalLine.grid(row=10, column=2, columnspan=4, sticky='WE')
 
 verticalLineRight = tk.Label(master, text='-', background='#F6F6F6', height=1, font=('Courier New', 1), borderwidth=0)
-verticalLineRight.grid(row=0, column=6, columnspan=1, rowspan=14, sticky='NS')
+verticalLineRight.grid(row=0, column=6, columnspan=1, rowspan=15, sticky='NS')
 
 verticalLineLeft = tk.Label(master, text='-', background='#F6F6F6', height=1, font=('Courier New', 1), borderwidth=0)
-verticalLineLeft.grid(row=0, column=1, columnspan=1, rowspan=14, sticky='NS')
-
-
-####################
-# Competitor Names #
-####################
-
-class CompetitorFrameClass():
-    def __init__(self,tk_handle):
-        self.tk_handle = tk_handle
-        self._initialise()
-
-    def _initialise(self):
-        self.tk_handle.competitorFrame = tk.Frame( self.tk_handle)
-        self.tk_handle.competitorFrame.configure(background=defaultBackgroundColour)
-
-        ## Reporter ##
-        self.tk_handle.reporterLabel = tk.Label( self.tk_handle.competitorFrame, text="Reporter:", font=  self.tk_handle.customFontCompetitors)
-        self.tk_handle.reporterLabel.configure(background=defaultBackgroundColour, fg= textColour)
-        self.tk_handle.reporterLabel.bind("<Button-1>",EditReporterEvent)
-        self.tk_handle.reporterNameLabel = tk.Label( self.tk_handle.competitorFrame, text='  ', font=  self.tk_handle.customFontCompetitors )
-        #reporterNameLabel = tk.Label(master, text='Starlight Glimmer', font=('Courier New', 16))
-        self.tk_handle.reporterNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
-        self.tk_handle.reporterNameLabel.bind("<Button-1>",EditReporterEvent)
-
-
-        ## Opponent ##
-        self.tk_handle.opponentLabel = tk.Label( self.tk_handle.competitorFrame, text="Opponent:",font=  self.tk_handle.customFontCompetitors)
-        self.tk_handle.opponentLabel.configure(background=defaultBackgroundColour, fg= textColour)
-        self.tk_handle.opponentLabel.bind("<Button-1>",EditOpponentEvent)
-
-        self.tk_handle.opponentNameLabel = tk.Label( self.tk_handle.competitorFrame, text='  ', font=  self.tk_handle.customFontCompetitors)
-        #opponentNameLabel = tk.Label(master, text='Princess Twilight Sparkle', font=master.customFontCompetitors)
-        self.tk_handle.opponentNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
-        self.tk_handle.opponentNameLabel.bind("<Button-1>",EditOpponentEvent)
-
-
-        ## Reviewer ##
-        self.tk_handle.reviewerLabel = tk.Label( self.tk_handle.competitorFrame, text="Reviewer:", font= self.tk_handle.customFontCompetitors)
-        self.tk_handle.reviewerLabel.configure(background=defaultBackgroundColour, fg= textColour)
-        self.tk_handle.reviewerLabel.bind("<Button-1>",EditReviewerEvent)
-
-        self.tk_handle.reviewerNameLabel = tk.Label( self.tk_handle.competitorFrame, text='  ', font= self.tk_handle.customFontCompetitors)
-        #reviewerNameLabel = tk.Label(master, text='Shining Armor', font=master.customFontCompetitors)
-        self.tk_handle.reviewerNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
-        self.tk_handle.reviewerNameLabel.bind("<Button-1>",EditReviewerEvent)
-
-    def forget_frame_position(self):
-        self.tk_handle.competitorFrame.grid_forget()
-        horizontalLine.grid_remove()
-
-    def position(self):
-        self.tk_handle.reporterLabel.grid(row=0, column=0)
-        self.tk_handle.reporterNameLabel.grid(row=0, column=1, sticky=tk.W)
-        self.tk_handle.opponentLabel.grid(row=1, column=0)
-        self.tk_handle.opponentNameLabel.grid(row=1, column=1, sticky=tk.W )
-        self.tk_handle.reviewerLabel.grid(row=2, column=0)
-        self.tk_handle.reviewerNameLabel.grid(row=2, column=1, sticky=tk.W)
-        self.tk_handle.competitorFrame.grid(row=11, rowspan = 3, column =2, columnspan=2)
-        horizontalLine.grid()
-
-        
-master.competitorFrameClass = CompetitorFrameClass(master)   
+verticalLineLeft.grid(row=0, column=1, columnspan=1, rowspan=15, sticky='NS')
 
 
 ####################
@@ -660,21 +598,27 @@ master.IPTClock.countdownText.bind("<Button-1>", SetTimePopUp)
 # Create frame for top buttons
 
 class ControlButtonFrameClass():
+    
+
     def  __init__(self,tk_handle):
         self.tk_handle = tk_handle
         self._initialise()
         self.position_frame()
         self.position_buttons()
+        self.visible = 0
+        self.stuck = 0
 
     def _initialise(self):
         self.controlButton_frame = tk.Frame(self.tk_handle)
+        self.visible=1
+        self.stuck=0
 
         #start button
-        self.startButton = tk.Button(master=self.controlButton_frame, text='Start', command=self.tk_handle.IPTClock.start, font= master.customFontButtons)
+        self.startButton = tk.Button(master=self.controlButton_frame, text=' Start ', command=self.tk_handle.IPTClock.start, font= master.customFontButtons)
         self.startButton.configure(background=defaultBackgroundColour, fg= textColour)
 
         # Pause Button
-        self.pauseButton = tk.Button(master=self.controlButton_frame, text='Pause', command=self.tk_handle.IPTClock.pause, font= self.tk_handle.customFontButtons)
+        self.pauseButton = tk.Button(master=self.controlButton_frame, text=' Pause ', command=self.tk_handle.IPTClock.pause, font= self.tk_handle.customFontButtons)
         self.pauseButton.configure(background=defaultBackgroundColour, fg= textColour)
 
         # Fullscreen
@@ -692,10 +636,9 @@ class ControlButtonFrameClass():
         # timeout
         def HandleReturn():
             return self.tk_handle.IPTClock, self.tk_handle
-
         
         # Timeout button
-    #    self.timeoutButton = tk.Button(master=self.tk_handle, text='Timeout', command=lambda clockHandle = self.tk_handle.IPTClock: Timeout(clockHandle) , font= self.tk_handle.customFontButtons)
+        # self.timeoutButton = tk.Button(master=self.tk_handle, text='Timeout', command=lambda clockHandle = self.tk_handle.IPTClock: Timeout(clockHandle) , font= self.tk_handle.customFontButtons)
         self.timeoutButton = tk.Button(master=self.tk_handle, text='Timeout', command= self.timeoutButtonAction , font= self.tk_handle.customFontButtons)
         self.timeoutButton.configure(background=defaultBackgroundColour, fg= textColour)
 
@@ -709,22 +652,57 @@ class ControlButtonFrameClass():
         self.quitButton.configure(background=defaultBackgroundColour, fg= textColour)
 
     def position_frame(self):
-        self.controlButton_frame.grid(row=3, column=7, rowspan=7, sticky="WES", pady=20)
-        
+        self.stuck=0
+        self.controlButton_frame.grid(row=6, column=7, rowspan=6, sticky="WEN", pady=20)
+        if(self.visible==1):
+            self.startButton.grid(row=6, column=7, sticky="WEN",pady=2)
+            self.pauseButton.grid(row=7, column=7, sticky="WEN",pady=2)
+            self.fullscreenButton.grid(row=8, column=7, sticky="WEN",pady=2)
+            self.previousStageButton.grid(row=9, column=7, sticky="WEN",pady=2)
+            self.nextStageButton.grid(row=10, column=7, sticky="WEN",pady=3)
+            self.timeoutButton.grid(row=11,column=7,sticky='WEN',pady=2)
+            self.resetButton.grid(row=12, column=7, sticky='WEN',pady=2)
+            self.quitButton.grid(row=14, column=7, sticky='WEN',pady=2) 
+
+    def position_frame_2(self):
+        self.stuck=1
+        self.controlButton_frame.grid(row=5, column=7, rowspan=6, sticky="WEN", pady=20)    
+        if(self.visible==1):
+            self.startButton.grid(row=7, column=7, sticky="WEN",pady=2)
+            self.pauseButton.grid(row=8, column=7, sticky="WEN",pady=2)
+            self.fullscreenButton.grid(row=9, column=7, sticky="WEN",pady=2)
+            self.previousStageButton.grid(row=10, column=7, sticky="WEN",pady=2)
+            self.nextStageButton.grid(row=11, column=7, sticky="WEN",pady=2)
+            self.timeoutButton.grid(row=12,column=7,sticky='WEN',pady=2)
+            self.resetButton.grid(row=13, column=7, sticky='WEN',pady=2)
+            self.quitButton.grid(row=14, column=7, sticky='WEN',pady=2)  
+
     def forget_frame_position(self):
         self.controlButton_frame.grid_forget()
 
     def position_buttons(self):
-        self.startButton.grid(row=0, sticky="WE")
-        self.pauseButton.grid(row=1, sticky="WE")
-        self.fullscreenButton.grid(row=2, sticky="WE")
-        self.previousStageButton.grid(row=3, sticky="WE")
-        self.nextStageButton.grid(row=4, sticky="WE")
-        
-        self.timeoutButton.grid(row=10,column=7,sticky='WE')
-        self.resetButton.grid(row=11, column=7, sticky='WEN')
-        self.quitButton.grid(row=13, column=7, sticky='WE')
+        if(self.stuck==0):
+            self.controlButton_frame.grid(row=6, column=7, rowspan=6, sticky="WEN", pady=20)
+            self.startButton.grid(row=6, column=7, sticky="WEN",pady=2)
+            self.pauseButton.grid(row=7, column=7, sticky="WEN",pady=2)
+            self.fullscreenButton.grid(row=8, column=7, sticky="WEN",pady=2)
+            self.previousStageButton.grid(row=9, column=7, sticky="WEN",pady=2)
+            self.nextStageButton.grid(row=10, column=7, sticky="WEN",pady=3)
+            self.timeoutButton.grid(row=11,column=7,sticky='WEN',pady=2)
+            self.resetButton.grid(row=12, column=7, sticky='WEN',pady=2)
+            self.quitButton.grid(row=14, column=7, sticky='WEN',pady=2)
+        elif(self.stuck==1):
+            self.controlButton_frame.grid(row=5, column=7, rowspan=6, sticky="WEN", pady=20)    
+            self.startButton.grid(row=7, column=7, sticky="WEN",pady=2)
+            self.pauseButton.grid(row=8, column=7, sticky="WEN",pady=2)
+            self.fullscreenButton.grid(row=9, column=7, sticky="WEN",pady=2)
+            self.previousStageButton.grid(row=10, column=7, sticky="WEN",pady=2)
+            self.nextStageButton.grid(row=11, column=7, sticky="WEN",pady=2)
+            self.timeoutButton.grid(row=12,column=7,sticky='WEN',pady=2)
+            self.resetButton.grid(row=13, column=7, sticky='WEN',pady=2)
+            self.quitButton.grid(row=14, column=7, sticky='WEN',pady=2)      
         verticalLineRight.grid()
+        self.visible=1
    
 
     def hide_buttons(self):
@@ -737,6 +715,7 @@ class ControlButtonFrameClass():
         self.resetButton.grid_forget()
         self.quitButton.grid_forget()
         verticalLineRight.grid_remove()
+        self.visible=0
         
     def fullscreenToggle(self):
         toogleFullscreenButton()
@@ -750,6 +729,74 @@ class ControlButtonFrameClass():
         
 # create frame class fro buttons
 master.ControlButtonFrameClass = ControlButtonFrameClass(master)
+
+
+####################
+# Competitor Names #
+####################
+
+class CompetitorFrameClass():
+    def __init__(self,tk_handle):
+        self.tk_handle = tk_handle
+        self._initialise()
+        self.visible = 0
+
+    def _initialise(self):
+        self.tk_handle.competitorFrame = tk.Frame(self.tk_handle)
+        self.tk_handle.competitorFrame.configure(background=defaultBackgroundColour)
+        self.visible = 1
+
+        ## Reporter ##
+        self.tk_handle.reporterLabel = tk.Label( self.tk_handle.competitorFrame, text="Reporter:", font= self.tk_handle.customFontCompetitors)
+        self.tk_handle.reporterLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        self.tk_handle.reporterLabel.bind("<Button-1>",EditReporterEvent)
+        self.tk_handle.reporterNameLabel = tk.Label( self.tk_handle.competitorFrame, text='', font=  self.tk_handle.customFontCompetitors)
+        self.tk_handle.reporterNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        self.tk_handle.reporterNameLabel.bind("<Button-1>",EditReporterEvent)
+
+
+        ## Opponent ##
+        self.tk_handle.opponentLabel = tk.Label( self.tk_handle.competitorFrame, text="Opponent:",font=  self.tk_handle.customFontCompetitors)
+        self.tk_handle.opponentLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        self.tk_handle.opponentLabel.bind("<Button-1>",EditOpponentEvent)
+        self.tk_handle.opponentNameLabel = tk.Label( self.tk_handle.competitorFrame, text='', font=  self.tk_handle.customFontCompetitors)
+        self.tk_handle.opponentNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        self.tk_handle.opponentNameLabel.bind("<Button-1>",EditOpponentEvent)
+
+
+        ## Reviewer ##
+        self.tk_handle.reviewerLabel = tk.Label( self.tk_handle.competitorFrame, text="Reviewer:", font= self.tk_handle.customFontCompetitors)
+        self.tk_handle.reviewerLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        self.tk_handle.reviewerLabel.bind("<Button-1>",EditReviewerEvent)
+        self.tk_handle.reviewerNameLabel = tk.Label( self.tk_handle.competitorFrame, text='', font= self.tk_handle.customFontCompetitors)
+        self.tk_handle.reviewerNameLabel.configure(background=defaultBackgroundColour, fg= textColour)
+        self.tk_handle.reviewerNameLabel.bind("<Button-1>",EditReviewerEvent)
+
+        ## Dummy label ##
+        self.tk_handle.dummylabel = tk.Label(  self.tk_handle.competitorFrame, text="  ", font= self.tk_handle.customFontCompetitors)
+        self.tk_handle.dummylabel.configure(background=defaultBackgroundColour, fg= textColour)
+       
+
+    def forget_frame_position(self):
+        self.tk_handle.competitorFrame.grid_forget()
+        #horizontalLine.grid_remove()
+        master.ControlButtonFrameClass.position_frame()
+        self.visible=0
+
+    def position(self):
+        self.tk_handle.reporterLabel.grid(row=11, column=0)
+        self.tk_handle.reporterNameLabel.grid(row=11, column=1, sticky=tk.W)
+        self.tk_handle.opponentLabel.grid(row=12, column=0)
+        self.tk_handle.opponentNameLabel.grid(row=12, column=1, sticky=tk.W)
+        self.tk_handle.reviewerLabel.grid(row=13, column=0)
+        self.tk_handle.reviewerNameLabel.grid(row=13, column=1, sticky=tk.W)
+        self.tk_handle.dummylabel.grid(row=14, column=1,sticky=tk.W)
+        self.tk_handle.competitorFrame.grid(row=11, rowspan = 4, column =2, columnspan=2)
+        #horizontalLine.grid()
+        master.ControlButtonFrameClass.position_frame_2()
+        self.visible=1
+        
+master.competitorFrameClass = CompetitorFrameClass(master)   
 
 
 ##########################
@@ -791,13 +838,13 @@ master.config(menu=menubar) # set the final menu
 #######################################
 # change column behaviour for scaling #
 #######################################
+master.resizable(True,False) #To restrict resizing. Disable when not needed.
 #master.rowconfigure(0, weight=1)
 #master.rowconfigure(1, weight=1)
 #master.rowconfigure(2, weight=1)#, minsize = 200)
 master.rowconfigure(3, weight=2)
-
+master.rowconfigure(11,weight=0)
 master.rowconfigure(9, minsize=125)
-
 #master.sponsWidth = 150
 master.sponsWidth = tk.IntVar()
 master.sponsWidth.set(150)
@@ -806,9 +853,10 @@ master.columnconfigure(0, weight=2, minsize = master.sponsWidth.get()) # minsize
 #master.columnconfigure(1, weight=1)
 ####master.columnconfigure(3, weight=1)
 master.clockWidth = 250
-master.columnconfigure(3, weight=1, minsize= master.clockWidth )
+master.columnconfigure(3, weight=1, minsize= master.clockWidth)
 #master.columnconfigure(7, minsize=240)
 #master.columnconfigure(7, weight=1)
+
 
 
 #######################
@@ -842,7 +890,7 @@ master.fullscreenSwitch.trace('w', SponsImageFullscreen) # watch the variable ma
 master.protocol("WM_DELETE_WINDOW", on_closing)  # necessary to cleanly exit the program when using the windows manager
 
 # resize by dragging window
-master.bind('<Configure>', ResizeObjectsOnEvent )
+master.bind('<Configure>', ResizeObjectsOnEvent)
 
 
 # Methods for manually change size of sponsor column

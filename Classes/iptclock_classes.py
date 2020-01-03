@@ -190,18 +190,18 @@ def create_clock_labels(tkLabel):
 
 
 def create_clock_canvas(tkHandle,wedgeBgColour):
-#    fig = plt.figure(figsize=(16, 16), edgecolor=None, facecolor=wedgeBgColour)
+    #fig = plt.figure(figsize=(16, 16), edgecolor=None, facecolor=wedgeBgColour)
     fig = plt.figure(figsize=(16, 16), edgecolor = None, facecolor=wedgeBackgroundColour)
     ax = fig.add_subplot(111)
-#    ax.set_axis_bgcolor(None) ###
-#    ax.set_facecolor(None)  #######
+    #ax.set_axis_bgcolor(None) ###
+    #ax.set_facecolor(None)  #######
     ax.set_xlim(-1, 1)
     ax.set_ylim(-1, 1)
     ax.set_aspect(1)  # similar to "axis('equal')", but better.
     ax.axis('off')  # makes axis borders etc invisible.
 
     canvas = FigureCanvasTkAgg(fig, master=tkHandle)
-#    canvas.get_tk_widget().configure(highlightthickness=0, highlightcolor=None)
+    #canvas.get_tk_widget().configure(highlightthickness=0, highlightcolor=None)
     canvas.draw()
    
     canvas.get_tk_widget().grid(row=2, column=2, columnspan=3, rowspan=7)  # , sticky=tk.N)
@@ -220,7 +220,7 @@ def get_backgroundColour():
 
 class Clock:
     def __init__(self, tkHandle):
-#        self.low_health_ratio =
+        #self.low_health_ratio =
         self._low_health_time = 15 # time left in second for activating low health mode
         self.is_low_health = False # boolean controlling low health mode
         self._tkHandle = tkHandle
@@ -300,7 +300,7 @@ class Clock:
             self.countdownText.configure(text=self.timer.string())
 
             # Update the clock graphics. Clock starts at 0 then negative direction clockwise
-#            angle = -360 * ((self.timer.start_time() - self.timer.time()) / self.timer.start_time())
+            # angle = -360 * ((self.timer.start_time() - self.timer.time()) / self.timer.start_time())
             angle = -360 * ((self.timer.start_time() - self.timer.time()) / float(self.timer.start_time()) ) # added float since python2 returns int else.
 
             self.clock_graphics.set_angle(angle)
@@ -550,7 +550,7 @@ class TimeoutClass:
         self.top.configure(bg= defaultBackgroundColour)
 
       
-        self.msg = tk.Label(self.top, text=self.timer.string,  font=('Courier New', 60) )
+        self.msg = tk.Label(self.top, text=self.timer.string,  font=('TkDefaultFont', 60) )
         self.msg.pack(fill='x')
         self.msg.configure(bg=defaultBackgroundColour, fg= textColour)
 
@@ -659,7 +659,7 @@ class SponsImage():
 
         # align frame and let canvas expand
         self.SponsFrame.grid(row=0, column=0, columnspan=1, rowspan=14 , sticky='NW') 
-   #     sponsCanvas.get_tk_widget().grid(row=0, column=0, columnspan=1, rowspan=14 , sticky='NWES')
+        #sponsCanvas.get_tk_widget().grid(row=0, column=0, columnspan=1, rowspan=14 , sticky='NWES')
         sponsCanvas.get_tk_widget().pack(expand=True)
         plt.gca().set_position([0,0,1,1])
         return sponsFig, sponsCanvas, imgplot 
@@ -752,10 +752,9 @@ class EditFrame():
     def __init__(self,tkHandle):
         self.tk_handle = tkHandle
         self.hide_competitors = tk.IntVar() # for controling appearance of competitors
-        self.hide_competitors.set(1)
-
-        self.hide_buttons = tk.IntVar()
-        self.hide_buttons.set(1)
+        self.hide_buttons = tk.IntVar() # for controlling appearance of control buttons 
+        self.hide_competitors.set(int(not self.tk_handle.competitorFrameClass.visible))
+        self.hide_buttons.set(int(not self.tk_handle.ControlButtonFrameClass.visible))
 
         
         self._create_top_frame()
@@ -767,10 +766,12 @@ class EditFrame():
     def _create_top_frame(self):        
         # create and positions the pop up frame
         self.top = tk.Toplevel()
+        self.top.resizable(False,False)
         self.top.title("Edit")
         self.top.configure(bg= defaultBackgroundColour)
         self.top.protocol("WM_DELETE_WINDOW", self.exit) # if push x on border
         
+
         # Appearance Catgegory
         self.appearanceTitle = tk.Label(self.top, text="Appearance", font=("TkDefaultFont",20), anchor='w', padx=20, pady=20)
         self.appearanceTitle.grid(column=0,row=0,sticky='W')
@@ -783,47 +784,44 @@ class EditFrame():
         self.stageLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
         
-       # self.stageSpinBox = tk.Spinbox(self.top, from_=1, to=self.tk_handle.maxStageFontSize, textvariable = self.tk_handle.stageFontSize)
-        self.stageSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.stageFontSize)
+        # self.stageSpinBox = tk.Spinbox(self.top, from_=1, to=self.tk_handle.maxStageFontSize, textvariable = self.tk_handle.stageFontSize)
+        self.stageSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.stageFontSize, command=self.update_customFontStage)
         self.stageSpinBox.grid(column=1, row=1, sticky='E')
         self.stageSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
+        self.stageSpinBox.bind('<Return>',lambda event : self.update_customFontStage())
         
         # Digital Clock
         self.clockLabel = tk.Label(self.top, text = "Clock font size:",anchor='e',padx=5)
         self.clockLabel.grid(column=0,row=2,sticky='E')
         self.clockLabel.configure(background=defaultBackgroundColour, fg= textColour)
         
-        self.clockSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.digitalClockFontSize)#self.tk_handle.stageFontSize)
+        self.clockSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.digitalClockFontSize,command=self.update_customFontDigitalClock)#self.tk_handle.stageFontSize)
         self.clockSpinBox.grid(column=1, row=2, sticky='E')
         self.clockSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
-        
+        self.clockSpinBox.bind('<Return>',lambda event : self.update_customFontDigitalClock())
+
         # Competitor labels
         self.competitorLabel = tk.Label(self.top, text = "Competitor font size:",anchor='e',padx=5)     
         self.competitorLabel.grid(column=0,row=3,sticky='E')
         self.competitorLabel.configure(background=defaultBackgroundColour, fg= textColour)
         
-        self.competitorSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.competitorFontSize)#self.tk_handle.stageFontSize)
+        self.competitorSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.competitorFontSize, command=self.update_customFontCompetitors)#self.tk_handle.stageFontSize)
         self.competitorSpinBox.grid(column=1, row=3, sticky='E')
         self.competitorSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
+        self.competitorSpinBox.bind('<Return>',lambda event : self.update_customFontCompetitors())
 
         # Buttons font size         
         self.buttonLabel = tk.Label(self.top, text = "Button font size:",anchor='e', justify='left',padx=5)
         self.buttonLabel.grid(column=0,row=4,sticky='E')
         self.buttonLabel.configure(background=defaultBackgroundColour, fg= textColour)
         
-        self.buttonSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.buttonFontSize)#self.tk_handle.stageFontSize)
+        self.buttonSpinBox = tk.Spinbox(self.top, from_=1, to=200, textvariable = self.tk_handle.buttonFontSize, command=self.update_customFontButtons)#self.tk_handle.stageFontSize)
         self.buttonSpinBox.grid(column=1, row=4, sticky='E')
         self.buttonSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
+        self.buttonSpinBox.bind('<Return>',lambda event : self.update_customFontButtons())
 
 
         # Hide Tick boxes  
-
-        self.trialLabel = tk.Label(self.top, text = " A ",anchor='w', justify='left',padx=5)
-        self.trialLabel.grid(column=2,row=2,sticky='W')
-        self.trialLabel.configure(background=defaultBackgroundColour, fg= textColour)
-       
-
-
         self.competitorHideTick = tk.Checkbutton(self.top, text="Hide competitors", var = self.hide_competitors , command= self.toggle_show_competitors, 
             padx=5, anchor="w")
         self.competitorHideTick.grid(column = 2, row = 2,sticky='W',padx=10)
@@ -845,9 +843,10 @@ class EditFrame():
         self.sponsImageLabel.grid(column=0,row=6,sticky='E')
         self.sponsImageLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
-        self.sponsImageSpinBox = tk.Spinbox(self.top, from_=1, to=1000, textvariable = self.tk_handle.sponsWidth)
+        self.sponsImageSpinBox = tk.Spinbox(self.top, from_=1, to=1000, textvariable = self.tk_handle.sponsWidth, command=self.update_sponsWidth)
         self.sponsImageSpinBox.grid(column=1, row=6, sticky='E')
         self.sponsImageSpinBox.configure(background=defaultBackgroundColour, fg= textColour)
+        self.sponsImageSpinBox.bind('<Return>',lambda event : self.update_sponsWidth())
 
         self.updateWidthButton = tk.Button(self.top, text="Update image", command=self.update_sponsWidth,padx=5)
         self.updateWidthButton.grid(column=2, row = 6, padx=10)
@@ -866,10 +865,11 @@ class EditFrame():
         self.reporterLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
         self.reporterStrVar = tk.StringVar()
-        self.reporterStrVar.set(self.tk_handle.reporterNameLabel.cget('text') )
-        self.reporterEntry = tk.Entry(self.top, text =  self.reporterStrVar )
+        self.reporterStrVar.set(self.tk_handle.reporterNameLabel.cget('text'))
+        self.reporterEntry = tk.Entry(self.top, text =  self.reporterStrVar)
         self.reporterEntry.grid(column=1, row=8, sticky='W', columnspan=1)
         self.reporterEntry.configure(background=defaultBackgroundColour, fg= textColour)
+        self.reporterEntry.bind('<Return>',lambda event : self.update_participantNames_reporter())
 
         # Opponent
         self.opponentLabel = tk.Label(self.top,  text="Opponent:", anchor='e',padx=5)
@@ -877,10 +877,11 @@ class EditFrame():
         self.opponentLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
         self.opponentStrVar = tk.StringVar()
-        self.opponentStrVar.set(self.tk_handle.opponentNameLabel.cget('text') )
-        self.opponentEntry = tk.Entry(self.top, text =  self.opponentStrVar )
+        self.opponentStrVar.set(self.tk_handle.opponentNameLabel.cget('text'))
+        self.opponentEntry = tk.Entry(self.top, text =  self.opponentStrVar)
         self.opponentEntry.grid(column=1, row=9, sticky='W', columnspan=1)
         self.opponentEntry.configure(background=defaultBackgroundColour, fg= textColour)
+        self.opponentEntry.bind('<Return>',lambda event : self.update_participantNames_opponent())
 
         # Reviewer
         self.reviewerLabel = tk.Label(self.top,  text="Reviewer:", anchor='e',padx=5)
@@ -888,14 +889,15 @@ class EditFrame():
         self.reviewerLabel.configure(background=defaultBackgroundColour, fg= textColour)
 
         self.reviewerStrVar = tk.StringVar()
-        self.reviewerStrVar.set(self.tk_handle.reviewerNameLabel.cget('text') )
-        self.reviewerEntry = tk.Entry(self.top, text =  self.reviewerStrVar )
+        self.reviewerStrVar.set(self.tk_handle.reviewerNameLabel.cget('text'))
+        self.reviewerEntry = tk.Entry(self.top, text =  self.reviewerStrVar)
         self.reviewerEntry.grid(column=1, row=10, sticky='W', columnspan=1)
         self.reviewerEntry.configure(background=defaultBackgroundColour, fg= textColour)
+        self.reviewerEntry.bind('<Return>',lambda event : self.update_participantNames_reviewer())
 
         
         # buttons
-        self.updateButton = tk.Button(self.top, text="Update text", command=self.update,padx=5 )
+        self.updateButton = tk.Button(self.top, text="Update text", command=self.update_allcommands,padx=5 )
         self.updateButton.grid(column=2, row = 10, padx=10)
         self.updateButton.configure(background=defaultBackgroundColour, fg= textColour)
 
@@ -907,7 +909,6 @@ class EditFrame():
         self.resetButton.grid(column=2, row = 4, padx=10)
         self.resetButton.configure(background=defaultBackgroundColour, fg= textColour)
         
-##########_---Horror Zone-----########
 
         # seperation line
         horizontalLine = tk.Label(self.top, text='-', background='white', height=1, font=('Courier New', 1), borderwidth=0)
@@ -1045,27 +1046,43 @@ class EditFrame():
         wrapLength = math.floor( self.tk_handle.IPTClock.wrapLength * widthRatio  )
         self.tk_handle.IPTClock.presentationTextLabel.configure(wraplength= wrapLength)
 
-        
-   
-    def update(self):
-        # Updates the fontsize from configuration menu
+
+    def update_customFontStage(self):
         self.tk_handle.customFontStage.configure(size=self.tk_handle.stageFontSize.get())
-        self.tk_handle.customFontDigitalClock.configure(size=self.tk_handle.digitalClockFontSize.get() )
-        self.tk_handle.customFontCompetitors.configure(size=self.tk_handle.competitorFontSize.get() )
-        self.tk_handle.customFontButtons.configure(size=self.tk_handle.buttonFontSize.get() )
 
-              
-        # update the competitors texts
+    def update_customFontDigitalClock(self):
+        self.tk_handle.customFontDigitalClock.configure(size=self.tk_handle.digitalClockFontSize.get())
+
+    def update_customFontCompetitors(self):
+        self.tk_handle.customFontCompetitors.configure(size=self.tk_handle.competitorFontSize.get())
+
+    def update_customFontButtons(self):
+        self.tk_handle.customFontButtons.configure(size=self.tk_handle.buttonFontSize.get())
+
+    def update_participantNames_reporter(self):
         self.tk_handle.reporterNameLabel.configure(text=self.reporterStrVar.get())
-
+    
+    def update_participantNames_opponent(self):
         self.tk_handle.opponentNameLabel.configure(text=self.opponentStrVar.get())
+        
+    def update_participantNames_reviewer(self):
+        self.tk_handle.reviewerNameLabel.configure(text=self.reviewerStrVar.get())   
 
-        self.tk_handle.reviewerNameLabel.configure(text=self.reviewerStrVar.get())
+    def update_allcommands(self):
+        self.update_customFontStage()               
+        self.update_customFontDigitalClock()
+        self.update_customFontCompetitors()
+        self.update_customFontButtons()
+        self.update_participantNames_reporter()
+        self.update_participantNames_opponent()
+        self.update_participantNames_reviewer()
+        
 
 
     def update_sponsWidth(self):
-         # update sponsImage width
-        self.tk_handle.columnconfigure(0, weight=0, minsize = self.tk_handle.sponsWidth.get() )    # weight is changes here. Should give tighter padding        self.tk_handle.IPTSpons.updateFigSize()
+        # update sponsImage width
+        self.tk_handle.columnconfigure(0, weight=0, minsize = self.tk_handle.sponsWidth.get() )    
+        #self.tk_handle.IPTSpons.updateFigSize() # For tighter padding
         
 		
     def centerTop(self, toplevel):
@@ -1094,11 +1111,15 @@ class EditFrame():
             self.tk_handle.ControlButtonFrameClass.forget_frame_position()
             self.tk_handle.ControlButtonFrameClass.hide_buttons()
         else:
-            self.tk_handle.ControlButtonFrameClass.position_frame()
+            if(self.hide_competitors.get()==0):
+                self.tk_handle.ControlButtonFrameClass.position_frame_2()
+            else:
+                self.tk_handle.ControlButtonFrameClass.position_frame()    
             self.tk_handle.ControlButtonFrameClass.position_buttons()
 
     def fullscreen_toggle(self):
         self.tk_handle.ControlButtonFrameClass.fullscreenToggle()
+        self.update_sponsWidth()
 
     def quitButtonAction(self):
         self.tk_handle.ControlButtonFrameClass.quitButtonAction()
