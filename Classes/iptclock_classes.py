@@ -743,6 +743,11 @@ class SponsImagePillow():
 
         self.tk_image = ImageTk.PhotoImage( self.image2 ) # convert resized file to tk readable format
         self.displayLabel.configure(image = self.tk_image) # update the displayed image
+        #self._tkHandle.columnconfigure(0, weight=0, minsize = self._tkHandle.sponsWidth.get())    
+        
+
+
+
 
 
 #######################
@@ -1081,7 +1086,7 @@ class EditFrame():
 
     def update_sponsWidth(self):
         # update sponsImage width
-        self.tk_handle.columnconfigure(0, weight=0, minsize = self.tk_handle.sponsWidth.get() )    
+        self.tk_handle.columnconfigure(0, weight=0, minsize = self.tk_handle.sponsWidth.get())    
         #self.tk_handle.IPTSpons.updateFigSize() # For tighter padding
         
 		
